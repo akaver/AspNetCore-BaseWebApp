@@ -2,15 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AspNetCore.Identity.Uow;
+using AspNetCore.Identity.Uow.Interfaces;
+using AspNetCore.Identity.Uow.Models;
+using DAL;
+using DAL.EntityFrameworkCore;
+using DAL.EntityFrameworkCore.Extensions;
+using DAL.EntityFrameworkCore.Helpers;
+using DAL.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using WebApp.Data;
-using WebApp.Models;
 using WebApp.Services;
 
 namespace WebApp
@@ -20,9 +25,9 @@ namespace WebApp
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+                .SetBasePath(basePath: env.ContentRootPath)
+                .AddJsonFile(path: "appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile(path: $"appsettings.{env.EnvironmentName}.json", optional: true);
 
             if (env.IsDevelopment())
             {
@@ -40,11 +45,25 @@ namespace WebApp
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<ApplicationDbContext>(optionsAction: options =>
+                options.UseSqlServer(connectionString: Configuration.GetConnectionString(name: "AppDbConnection")));
 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
+            services.AddScoped<IDataContext, ApplicationDbContext>();
+            services.AddScoped<IUnitOfWork, UnitOfWork<IDataContext>>();
+            services.AddScoped<IIdentityUnitOfWork, UnitOfWork<IDataContext>>();
+            services.AddScoped<IRepositoryProvider, EFRepositoryProvider<IDataContext>>();
+            services.AddSingleton<IRepositoryFactory, EFRepositoryFactory>();
+
+            services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddUnitOfWork<
+                    IIdentityUnitOfWork,
+                    IIdentityUserRepository<int, IdentityUser>,
+                    IIdentityRoleRepository<int, IdentityRole>,
+                    IIdentityUserRoleRepository,
+                    IIdentityUserLoginRepository,
+                    IIdentityUserClaimRepository,
+                    IIdentityUserTokenRepository,
+                    IIdentityRoleClaimRepository>()
                 .AddDefaultTokenProviders();
 
             services.AddMvc();
@@ -57,7 +76,7 @@ namespace WebApp
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+            loggerFactory.AddConsole(configuration: Configuration.GetSection(key: "Logging"));
             loggerFactory.AddDebug();
 
             if (env.IsDevelopment())
@@ -68,16 +87,37 @@ namespace WebApp
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler(errorHandlingPath: "/Home/Error");
             }
+
+
+            var dataContext = app.ApplicationServices.GetService<ApplicationDbContext>();
+            if (dataContext != null)
+            {
+                // key in appsettings.Development.json
+                if (Configuration.GetValue<Boolean>(key: "DropDatabaseAtStartup"))
+                {
+                    dataContext.Database.EnsureDeleted();
+                }
+
+                //dataContext.Database.EnsureCreated();
+
+                dataContext.Database.Migrate();
+                dataContext.EnsureSeedData();
+            }
+
 
             app.UseStaticFiles();
 
             app.UseIdentity();
 
+
+            // create default roles and users
+            app.EnsureDefaultUsersAndRoles();
+
             // Add external authentication middleware below. To configure them please see https://go.microsoft.com/fwlink/?LinkID=532715
 
-            app.UseMvc(routes =>
+            app.UseMvc(configureRoutes: routes =>
             {
                 routes.MapRoute(
                     name: "default",

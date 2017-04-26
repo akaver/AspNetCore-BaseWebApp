@@ -10,7 +10,7 @@ namespace DAL.EntityFrameworkCore.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "IdentityRole<int>",
+                name: "IdentityRoles",
                 columns: table => new
                 {
                     IdentityRoleId = table.Column<int>(nullable: false)
@@ -22,11 +22,11 @@ namespace DAL.EntityFrameworkCore.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_IdentityRole<int>", x => x.IdentityRoleId);
+                    table.PrimaryKey("PK_IdentityRoles", x => x.IdentityRoleId);
                 });
 
             migrationBuilder.CreateTable(
-                name: "IdentityUser<int>",
+                name: "IdentityUsers",
                 columns: table => new
                 {
                     IdentityUserId = table.Column<int>(nullable: false)
@@ -49,11 +49,11 @@ namespace DAL.EntityFrameworkCore.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_IdentityUser<int>", x => x.IdentityUserId);
+                    table.PrimaryKey("PK_IdentityUsers", x => x.IdentityUserId);
                 });
 
             migrationBuilder.CreateTable(
-                name: "IdentityRoleClaim<int>",
+                name: "IdentityRoleClaims",
                 columns: table => new
                 {
                     IdentityRoleClaimId = table.Column<int>(nullable: false)
@@ -65,17 +65,17 @@ namespace DAL.EntityFrameworkCore.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_IdentityRoleClaim<int>", x => x.IdentityRoleClaimId);
+                    table.PrimaryKey("PK_IdentityRoleClaims", x => x.IdentityRoleClaimId);
                     table.ForeignKey(
-                        name: "FK_IdentityRoleClaim<int>_IdentityRole<int>_RoleId",
+                        name: "FK_IdentityRoleClaims_IdentityRoles_RoleId",
                         column: x => x.RoleId,
-                        principalTable: "IdentityRole<int>",
+                        principalTable: "IdentityRoles",
                         principalColumn: "IdentityRoleId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "IdentityUserClaim<int>",
+                name: "IdentityUserClaims",
                 columns: table => new
                 {
                     IdentityUserClaimId = table.Column<int>(nullable: false)
@@ -87,17 +87,17 @@ namespace DAL.EntityFrameworkCore.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_IdentityUserClaim<int>", x => x.IdentityUserClaimId);
+                    table.PrimaryKey("PK_IdentityUserClaims", x => x.IdentityUserClaimId);
                     table.ForeignKey(
-                        name: "FK_IdentityUserClaim<int>_IdentityUser<int>_UserId",
+                        name: "FK_IdentityUserClaims_IdentityUsers_UserId",
                         column: x => x.UserId,
-                        principalTable: "IdentityUser<int>",
+                        principalTable: "IdentityUsers",
                         principalColumn: "IdentityUserId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "IdentityUserLogin<int>",
+                name: "IdentityUserLogins",
                 columns: table => new
                 {
                     IdentityUserLoginId = table.Column<int>(nullable: false)
@@ -110,17 +110,17 @@ namespace DAL.EntityFrameworkCore.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_IdentityUserLogin<int>", x => x.IdentityUserLoginId);
+                    table.PrimaryKey("PK_IdentityUserLogins", x => x.IdentityUserLoginId);
                     table.ForeignKey(
-                        name: "FK_IdentityUserLogin<int>_IdentityUser<int>_UserId",
+                        name: "FK_IdentityUserLogins_IdentityUsers_UserId",
                         column: x => x.UserId,
-                        principalTable: "IdentityUser<int>",
+                        principalTable: "IdentityUsers",
                         principalColumn: "IdentityUserId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "IdentityUserRole<int>",
+                name: "IdentityUserRoles",
                 columns: table => new
                 {
                     IdentityUserRoleId = table.Column<int>(nullable: false)
@@ -131,23 +131,23 @@ namespace DAL.EntityFrameworkCore.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_IdentityUserRole<int>", x => x.IdentityUserRoleId);
+                    table.PrimaryKey("PK_IdentityUserRoles", x => x.IdentityUserRoleId);
                     table.ForeignKey(
-                        name: "FK_IdentityUserRole<int>_IdentityRole<int>_RoleId",
+                        name: "FK_IdentityUserRoles_IdentityRoles_RoleId",
                         column: x => x.RoleId,
-                        principalTable: "IdentityRole<int>",
+                        principalTable: "IdentityRoles",
                         principalColumn: "IdentityRoleId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_IdentityUserRole<int>_IdentityUser<int>_UserId",
+                        name: "FK_IdentityUserRoles_IdentityUsers_UserId",
                         column: x => x.UserId,
-                        principalTable: "IdentityUser<int>",
+                        principalTable: "IdentityUsers",
                         principalColumn: "IdentityUserId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "IdentityUserToken<int>",
+                name: "IdentityUserTokens",
                 columns: table => new
                 {
                     IdentityUserTokenId = table.Column<int>(nullable: false)
@@ -160,77 +160,67 @@ namespace DAL.EntityFrameworkCore.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_IdentityUserToken<int>", x => x.IdentityUserTokenId);
+                    table.PrimaryKey("PK_IdentityUserTokens", x => x.IdentityUserTokenId);
                     table.ForeignKey(
-                        name: "FK_IdentityUserToken<int>_IdentityUser<int>_UserId",
+                        name: "FK_IdentityUserTokens_IdentityUsers_UserId",
                         column: x => x.UserId,
-                        principalTable: "IdentityUser<int>",
+                        principalTable: "IdentityUsers",
                         principalColumn: "IdentityUserId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
                 name: "RoleNameIndex",
-                table: "IdentityRole<int>",
+                table: "IdentityRoles",
                 column: "NormalizedName",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_IdentityRoleClaim<int>_RoleId",
-                table: "IdentityRoleClaim<int>",
+                name: "IX_IdentityRoleClaims_RoleId",
+                table: "IdentityRoleClaims",
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",
-                table: "IdentityUser<int>",
+                table: "IdentityUsers",
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
-                table: "IdentityUser<int>",
+                table: "IdentityUsers",
                 column: "NormalizedUserName",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_IdentityUserClaim<int>_UserId",
-                table: "IdentityUserClaim<int>",
+                name: "IX_IdentityUserClaims_UserId",
+                table: "IdentityUserClaims",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_IdentityUserLogin<int>_UserId",
-                table: "IdentityUserLogin<int>",
+                name: "IX_IdentityUserLogins_UserId",
+                table: "IdentityUserLogins",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_IdentityUserLogin<int>_LoginProvider_ProviderKey",
-                table: "IdentityUserLogin<int>",
+                name: "IX_IdentityUserLogins_LoginProvider_ProviderKey",
+                table: "IdentityUserLogins",
                 columns: new[] { "LoginProvider", "ProviderKey" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_IdentityUserRole<int>_RoleId",
-                table: "IdentityUserRole<int>",
+                name: "IX_IdentityUserRoles_RoleId",
+                table: "IdentityUserRoles",
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_IdentityUserRole<int>_UserId",
-                table: "IdentityUserRole<int>",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_IdentityUserRole<int>_UserId_RoleId",
-                table: "IdentityUserRole<int>",
+                name: "IX_IdentityUserRoles_UserId_RoleId",
+                table: "IdentityUserRoles",
                 columns: new[] { "UserId", "RoleId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_IdentityUserToken<int>_UserId",
-                table: "IdentityUserToken<int>",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_IdentityUserToken<int>_UserId_LoginProvider_Name",
-                table: "IdentityUserToken<int>",
+                name: "IX_IdentityUserTokens_UserId_LoginProvider_Name",
+                table: "IdentityUserTokens",
                 columns: new[] { "UserId", "LoginProvider", "Name" },
                 unique: true);
         }
@@ -238,25 +228,25 @@ namespace DAL.EntityFrameworkCore.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "IdentityRoleClaim<int>");
+                name: "IdentityRoleClaims");
 
             migrationBuilder.DropTable(
-                name: "IdentityUserClaim<int>");
+                name: "IdentityUserClaims");
 
             migrationBuilder.DropTable(
-                name: "IdentityUserLogin<int>");
+                name: "IdentityUserLogins");
 
             migrationBuilder.DropTable(
-                name: "IdentityUserRole<int>");
+                name: "IdentityUserRoles");
 
             migrationBuilder.DropTable(
-                name: "IdentityUserToken<int>");
+                name: "IdentityUserTokens");
 
             migrationBuilder.DropTable(
-                name: "IdentityRole<int>");
+                name: "IdentityRoles");
 
             migrationBuilder.DropTable(
-                name: "IdentityUser<int>");
+                name: "IdentityUsers");
         }
     }
 }

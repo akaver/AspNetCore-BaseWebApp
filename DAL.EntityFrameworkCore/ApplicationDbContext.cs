@@ -1,5 +1,6 @@
 ﻿using System;
 using AspNetCore.Identity.Uow.Models;
+using DAL.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.EntityFrameworkCore
@@ -24,11 +25,13 @@ namespace DAL.EntityFrameworkCore
         {
             //base.OnModelCreating(modelBuilder: modelBuilder);
 
+            modelBuilder.DisableCascadingDeletes();
+
             // configure identity entities
             // removed composite keys
             // renamed all PK-s as <ClassName>Id
             // added all possible navigation properties 
-            modelBuilder.Entity<IdentityRole>(buildAction: b =>
+            modelBuilder.Entity<IdentityRole<int>>(buildAction: b =>
             {
                 b.HasIndex(indexExpression: r => r.NormalizedName).HasName(name: "RoleNameIndex").IsUnique();
                 b.Property(propertyExpression: r => r.ConcurrencyStamp).IsConcurrencyToken();
@@ -36,12 +39,12 @@ namespace DAL.EntityFrameworkCore
                 b.ToTable(name: "IdentityRoles");
             });
 
-            modelBuilder.Entity<IdentityRoleClaim>(buildAction: b =>
+            modelBuilder.Entity<IdentityRoleClaim<int>>(buildAction: b =>
             {
                 b.ToTable(name: "IdentityRoleClaims");
             });
 
-            modelBuilder.Entity<IdentityUser>(buildAction: b =>
+            modelBuilder.Entity<IdentityUser<int>>(buildAction: b =>
             {
                 b.HasIndex(indexExpression: u => u.NormalizedUserName).HasName(name: "UserNameIndex").IsUnique();
                 b.HasIndex(indexExpression: u => u.NormalizedEmail).HasName(name: "EmailIndex");
@@ -50,27 +53,27 @@ namespace DAL.EntityFrameworkCore
                 b.ToTable(name: "IdentityUsers");
             });
 
-            modelBuilder.Entity<IdentityUserClaim>(buildAction: b =>
+            modelBuilder.Entity<IdentityUserClaim<int>>(buildAction: b =>
             {
 
                 b.ToTable(name: "IdentityUserClaims");
             });
 
-            modelBuilder.Entity<IdentityUserLogin>(buildAction: b =>
+            modelBuilder.Entity<IdentityUserLogin<int>>(buildAction: b =>
             {
                 b.HasIndex(indexExpression: l => new { l.LoginProvider, l.ProviderKey }).IsUnique();
 
                 b.ToTable(name: "IdentityUserLogins");
             });
 
-            modelBuilder.Entity<IdentityUserRole>(buildAction: b =>
+            modelBuilder.Entity<IdentityUserRole<int>>(buildAction: b =>
             {
                 b.HasIndex(indexExpression: r => new { r.UserId, r.RoleId }).IsUnique();
 
                 b.ToTable(name: "IdentityUserRoles");
             });
 
-            modelBuilder.Entity<IdentityUserToken>(buildAction: b =>
+            modelBuilder.Entity<IdentityUserToken<int>>(buildAction: b =>
             {
                 b.HasIndex(indexExpression: l => new { l.UserId, l.LoginProvider, l.Name }).IsUnique();
 

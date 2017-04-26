@@ -8,7 +8,7 @@ using DAL.EntityFrameworkCore;
 namespace DAL.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20170426085644_InitialMigration")]
+    [Migration("20170426104734_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,7 +36,11 @@ namespace DAL.EntityFrameworkCore.Migrations
 
                     b.HasKey("IdentityRoleId");
 
-                    b.ToTable("IdentityRole<int>");
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasName("RoleNameIndex");
+
+                    b.ToTable("IdentityRoles");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("IdentityRole<int>");
                 });
@@ -59,7 +63,7 @@ namespace DAL.EntityFrameworkCore.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("IdentityRoleClaim<int>");
+                    b.ToTable("IdentityRoleClaims");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("IdentityRoleClaim<int>");
                 });
@@ -107,7 +111,14 @@ namespace DAL.EntityFrameworkCore.Migrations
 
                     b.HasKey("IdentityUserId");
 
-                    b.ToTable("IdentityUser<int>");
+                    b.HasIndex("NormalizedEmail")
+                        .HasName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasName("UserNameIndex");
+
+                    b.ToTable("IdentityUsers");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser<int>");
                 });
@@ -130,7 +141,7 @@ namespace DAL.EntityFrameworkCore.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("IdentityUserClaim<int>");
+                    b.ToTable("IdentityUserClaims");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUserClaim<int>");
                 });
@@ -155,7 +166,10 @@ namespace DAL.EntityFrameworkCore.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("IdentityUserLogin<int>");
+                    b.HasIndex("LoginProvider", "ProviderKey")
+                        .IsUnique();
+
+                    b.ToTable("IdentityUserLogins");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUserLogin<int>");
                 });
@@ -176,9 +190,10 @@ namespace DAL.EntityFrameworkCore.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId", "RoleId")
+                        .IsUnique();
 
-                    b.ToTable("IdentityUserRole<int>");
+                    b.ToTable("IdentityUserRoles");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUserRole<int>");
                 });
@@ -201,9 +216,10 @@ namespace DAL.EntityFrameworkCore.Migrations
 
                     b.HasKey("IdentityUserTokenId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId", "LoginProvider", "Name")
+                        .IsUnique();
 
-                    b.ToTable("IdentityUserToken<int>");
+                    b.ToTable("IdentityUserTokens");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUserToken<int>");
                 });
@@ -213,11 +229,7 @@ namespace DAL.EntityFrameworkCore.Migrations
                     b.HasBaseType("AspNetCore.Identity.Uow.Models.IdentityRole<int>");
 
 
-                    b.HasIndex("NormalizedName")
-                        .IsUnique()
-                        .HasName("RoleNameIndex");
-
-                    b.ToTable("IdentityRoles");
+                    b.ToTable("IdentityRole");
 
                     b.HasDiscriminator().HasValue("IdentityRole");
                 });
@@ -227,7 +239,7 @@ namespace DAL.EntityFrameworkCore.Migrations
                     b.HasBaseType("AspNetCore.Identity.Uow.Models.IdentityRoleClaim<int>");
 
 
-                    b.ToTable("IdentityRoleClaims");
+                    b.ToTable("IdentityRoleClaim");
 
                     b.HasDiscriminator().HasValue("IdentityRoleClaim");
                 });
@@ -237,14 +249,7 @@ namespace DAL.EntityFrameworkCore.Migrations
                     b.HasBaseType("AspNetCore.Identity.Uow.Models.IdentityUser<int>");
 
 
-                    b.HasIndex("NormalizedEmail")
-                        .HasName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasName("UserNameIndex");
-
-                    b.ToTable("IdentityUsers");
+                    b.ToTable("IdentityUser");
 
                     b.HasDiscriminator().HasValue("IdentityUser");
                 });
@@ -254,7 +259,7 @@ namespace DAL.EntityFrameworkCore.Migrations
                     b.HasBaseType("AspNetCore.Identity.Uow.Models.IdentityUserClaim<int>");
 
 
-                    b.ToTable("IdentityUserClaims");
+                    b.ToTable("IdentityUserClaim");
 
                     b.HasDiscriminator().HasValue("IdentityUserClaim");
                 });
@@ -264,10 +269,7 @@ namespace DAL.EntityFrameworkCore.Migrations
                     b.HasBaseType("AspNetCore.Identity.Uow.Models.IdentityUserLogin<int>");
 
 
-                    b.HasIndex("LoginProvider", "ProviderKey")
-                        .IsUnique();
-
-                    b.ToTable("IdentityUserLogins");
+                    b.ToTable("IdentityUserLogin");
 
                     b.HasDiscriminator().HasValue("IdentityUserLogin");
                 });
@@ -277,10 +279,7 @@ namespace DAL.EntityFrameworkCore.Migrations
                     b.HasBaseType("AspNetCore.Identity.Uow.Models.IdentityUserRole<int>");
 
 
-                    b.HasIndex("UserId", "RoleId")
-                        .IsUnique();
-
-                    b.ToTable("IdentityUserRoles");
+                    b.ToTable("IdentityUserRole");
 
                     b.HasDiscriminator().HasValue("IdentityUserRole");
                 });
@@ -290,10 +289,7 @@ namespace DAL.EntityFrameworkCore.Migrations
                     b.HasBaseType("AspNetCore.Identity.Uow.Models.IdentityUserToken<int>");
 
 
-                    b.HasIndex("UserId", "LoginProvider", "Name")
-                        .IsUnique();
-
-                    b.ToTable("IdentityUserTokens");
+                    b.ToTable("IdentityUserToken");
 
                     b.HasDiscriminator().HasValue("IdentityUserToken");
                 });
@@ -302,45 +298,39 @@ namespace DAL.EntityFrameworkCore.Migrations
                 {
                     b.HasOne("AspNetCore.Identity.Uow.Models.IdentityRole<int>", "Role")
                         .WithMany("Claims")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("RoleId");
                 });
 
             modelBuilder.Entity("AspNetCore.Identity.Uow.Models.IdentityUserClaim<int>", b =>
                 {
                     b.HasOne("AspNetCore.Identity.Uow.Models.IdentityUser<int>", "User")
                         .WithMany("Claims")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("AspNetCore.Identity.Uow.Models.IdentityUserLogin<int>", b =>
                 {
                     b.HasOne("AspNetCore.Identity.Uow.Models.IdentityUser<int>", "User")
                         .WithMany("Logins")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("AspNetCore.Identity.Uow.Models.IdentityUserRole<int>", b =>
                 {
                     b.HasOne("AspNetCore.Identity.Uow.Models.IdentityRole<int>", "Role")
                         .WithMany("Users")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("RoleId");
 
                     b.HasOne("AspNetCore.Identity.Uow.Models.IdentityUser<int>", "User")
                         .WithMany("Roles")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("AspNetCore.Identity.Uow.Models.IdentityUserToken<int>", b =>
                 {
                     b.HasOne("AspNetCore.Identity.Uow.Models.IdentityUser<int>", "User")
                         .WithMany("Tokens")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId");
                 });
         }
     }

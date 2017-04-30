@@ -12,9 +12,11 @@ using DAL.EntityFrameworkCore.Helpers;
 using DAL.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using WebApp.Services;
 
@@ -54,17 +56,44 @@ namespace WebApp
             services.AddScoped<IRepositoryProvider, EFRepositoryProvider<IDataContext>>();
             services.AddSingleton<IRepositoryFactory, EFRepositoryFactory>();
 
+
+            var x = typeof(UserStore<,,,,,,,,,,,,,>).MakeGenericType(
+                typeof(int), //TKey
+                typeof(IdentityUser),
+                typeof(IdentityRole),
+                typeof(IdentityUserClaim<int>), //TUserClaim
+                typeof(IdentityUserRole<int>), //TUserRole
+                typeof(IdentityUserLogin<int>), //TUserLogin
+                typeof(IdentityUserToken<int>), //TUserToken
+                typeof(IdentityRoleClaim<int>), //TRoleClaim from roletype
+                typeof(IIdentityUserRepository),
+                typeof(IIdentityRoleRepository),
+                typeof(IIdentityUserRoleRepository<IdentityUserRole<int>>),
+                typeof(IIdentityUserLoginRepository<IdentityUserLogin<int>>),
+                typeof(IIdentityUserClaimRepository<IdentityUserClaim<int>>),
+                typeof(IIdentityUserTokenRepository<IdentityUserToken<int>>)
+            );
+
+            //services.TryAddScoped<IUserStore<IdentityUser>, 
+            //    UserStore<int, IdentityUser, IdentityRole, IdentityUserClaim, IdentityUserRole, IdentityUserLogin, IdentityUserToken, IdentityRoleClaim, 
+            //    IIdentityUserRepository, IIdentityRoleRepository, IIdentityUserRoleRepository, IIdentityUserLoginRepository, IIdentityUserClaimRepository, IIdentityUserTokenRepository>>();
+
+
+
             services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddUnitOfWork<
-                    IIdentityUnitOfWork,
-                    IIdentityUserRepository<int, IdentityUser>,
-                    IIdentityRoleRepository<int, IdentityRole>,
+                    IIdentityUserRepository,
+                    IIdentityRoleRepository,
+                    //IIdentityUserRepository<int, IdentityUser>,
+                    //IIdentityRoleRepository<int, IdentityRole>,
                     IIdentityUserRoleRepository,
                     IIdentityUserLoginRepository,
                     IIdentityUserClaimRepository,
                     IIdentityUserTokenRepository,
                     IIdentityRoleClaimRepository>()
                 .AddDefaultTokenProviders();
+
+
 
             services.AddMvc();
 
@@ -119,6 +148,10 @@ namespace WebApp
 
             app.UseMvc(configureRoutes: routes =>
             {
+                routes.MapRoute(
+                    name: "areaRoue",
+                    template: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Text;
 using System.Threading;
@@ -13,14 +14,14 @@ namespace AspNetCore.Identity.Uow.Interfaces
     {
     }
 
-    public interface IIdentityRoleClaimRepository<TKey> : IIdentityRoleClaimRepository<TKey, IdentityRoleClaim<TKey>>
-        where TKey : IEquatable<TKey>
+    public interface IIdentityRoleClaimRepository<TRoleClaim> : IIdentityRoleClaimRepository<int, TRoleClaim>
+        where TRoleClaim : IdentityRoleClaim<int>, new()
     {
     }
 
     public interface IIdentityRoleClaimRepository<TKey, TRoleClaim> : IRepository<TRoleClaim>
         where TKey : IEquatable<TKey>
-        where TRoleClaim : class, new()
+        where TRoleClaim : IdentityRoleClaim<TKey>, new()
     {
         Task<IList<Claim>> GetClaimsAsync(TKey roleId, CancellationToken cancellationToken = default(CancellationToken));
 

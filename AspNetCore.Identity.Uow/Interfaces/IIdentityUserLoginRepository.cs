@@ -9,19 +9,19 @@ using Microsoft.AspNetCore.Identity;
 
 namespace AspNetCore.Identity.Uow.Interfaces
 {
-    public interface IIdentityUserLoginRepository : IIdentityUserLoginRepository<int, IdentityUserLogin<int>>
+    public interface IIdentityUserLoginRepository : IIdentityUserLoginRepository<IdentityUserLogin<int>>
     {
 
     }
-    public interface IIdentityUserLoginRepository<TKey> : IIdentityUserLoginRepository<TKey, IdentityUserLogin<TKey>>
-        where TKey : IEquatable<TKey>
+    public interface IIdentityUserLoginRepository<TUserLogin> : IIdentityUserLoginRepository<int, TUserLogin>
+        where TUserLogin : IdentityUserLogin<int>, new()
     {
 
     }
 
     public interface IIdentityUserLoginRepository<TKey, TUserLogin> : IRepository<TUserLogin>
         where TKey: IEquatable<TKey>
-        where TUserLogin : class, new()
+        where TUserLogin : IdentityUserLogin<TKey>, new()
     {
         Task<TUserLogin> FindUserLoginAsync(TKey userId, string loginProvider, string providerKey, CancellationToken cancellationToken = default(CancellationToken));
 

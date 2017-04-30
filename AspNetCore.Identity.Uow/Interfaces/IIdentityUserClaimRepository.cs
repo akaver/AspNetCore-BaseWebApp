@@ -9,19 +9,19 @@ using DAL.Repositories;
 
 namespace AspNetCore.Identity.Uow.Interfaces
 {
-    public interface IIdentityUserClaimRepository : IIdentityUserClaimRepository<int, IdentityUserClaim<int>>
+    public interface IIdentityUserClaimRepository : IIdentityUserClaimRepository<IdentityUserClaim<int>>
     {
 
     }
-    public interface IIdentityUserClaimRepository<TKey> : IIdentityUserClaimRepository<TKey, IdentityUserClaim<TKey>>
-        where TKey : IEquatable<TKey>
+    public interface IIdentityUserClaimRepository<TUserClaim> : IIdentityUserClaimRepository<int, TUserClaim>
+        where TUserClaim : IdentityUserClaim<int>, new()
     {
 
     }
 
     public interface IIdentityUserClaimRepository<TKey, TUserClaim> : IRepository<TUserClaim>
         where TKey: IEquatable<TKey>
-        where TUserClaim : class, new()
+        where TUserClaim : IdentityUserClaim<TKey>, new()
     {
         Task<List<Claim>> GetClaimsAsync(TKey userId, CancellationToken cancellationToken = default(CancellationToken));
 

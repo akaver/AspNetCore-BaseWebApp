@@ -8,62 +8,27 @@ using System.Threading;
 using System.Threading.Tasks;
 using AspNetCore.Identity.Uow.Interfaces;
 using AspNetCore.Identity.Uow.Models;
+using DAL;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace AspNetCore.Identity.Uow
 {
 
+    public class RoleStore : RoleStore<IdentityRole>
+    {
+        public RoleStore(IIdentityUnitOfWork uow, IdentityErrorDescriber describer = null) : base(uow, describer)
+        {
+        }
+    }
 
-
-    /// <summary>
-    /// Creates a new instance of a persistence store for roles.
-    /// </summary>
-    /// <typeparam name="TRole">The type of the class representing a role</typeparam>
-    //public class RoleStore<TRole> : RoleStore<int, TRole, IdentityUserRole, IdentityRoleClaim, IIdentityUnitOfWork, IIdentityRoleRepository, IIdentityRoleClaimRepository>
-    //    where TRole : IdentityRole<int>
-    //{
-
-    //}
-
-    /// <summary>
-    /// Creates a new instance of a persistence store for roles.
-    /// </summary>
-    /// <typeparam name="TRole">The type of the class representing a role.</typeparam>
-    /// <typeparam name="TContext">The type of the data context class used to access the store.</typeparam>
-    //public class RoleStore<TRole, TContext> : RoleStore<TRole, TContext, string>
-    //    where TRole : IdentityRole<string>
-    //    where TContext : DbContext
-    //{
-    //    /// <summary>
-    //    /// Constructs a new instance of <see cref="RoleStore{TRole, TContext}"/>.
-    //    /// </summary>
-    //    /// <param name="context">The <see cref="DbContext"/>.</param>
-    //    /// <param name="describer">The <see cref="IdentityErrorDescriber"/>.</param>
-    //    public RoleStore(TContext context, IdentityErrorDescriber describer = null) : base(context: context, describer: describer) { }
-    //}
-
-    /// <summary>
-    /// Creates a new instance of a persistence store for roles.
-    /// </summary>
-    /// <typeparam name="TRole">The type of the class representing a role.</typeparam>
-    /// <typeparam name="TContext">The type of the data context class used to access the store.</typeparam>
-    /// <typeparam name="TKey">The type of the primary key for a role.</typeparam>
-    //public class RoleStore<TRole, TContext, TKey> : RoleStore<TRole, TContext, TKey, IdentityUserRole<TKey>, IdentityRoleClaim<TKey>>,
-    //    IQueryableRoleStore<TRole>,
-    //    IRoleClaimStore<TRole>
-    //    where TRole : IdentityRole<TKey>
-    //    where TKey : IEquatable<TKey>
-    //    where TContext : DbContext
-    //{
-    //    /// <summary>
-    //    /// Constructs a new instance of <see cref="RoleStore{TRole, TContext, TKey}"/>.
-    //    /// </summary>
-    //    /// <param name="context">The <see cref="DbContext"/>.</param>
-    //    /// <param name="describer">The <see cref="IdentityErrorDescriber"/>.</param>
-    //    public RoleStore(TContext context, IdentityErrorDescriber describer = null) : base(context: context, describer: describer) { }
-    //}
-
+    public class RoleStore<TRole> : RoleStore<int, TRole, IdentityUserRole, IdentityRoleClaim, IIdentityRoleRepository<TRole>, IIdentityRoleClaimRepository<IdentityRoleClaim>>
+        where TRole : IdentityRole<int>, new()
+    {
+        public RoleStore(IIdentityUnitOfWork uow, IdentityErrorDescriber describer = null) : base(uow, describer)
+        {
+        }
+    }
 
     /// <summary>
     /// Creates a new instance of a persistence store for roles.
@@ -72,25 +37,23 @@ namespace AspNetCore.Identity.Uow
     /// <typeparam name="TRole">The type of the class representing a role.</typeparam>
     /// <typeparam name="TUserRole">The type of the class representing a user role.</typeparam>
     /// <typeparam name="TRoleClaim">The type of the class representing a role claim.</typeparam>
-    /// <typeparam name="TUnitOfWork">The type of Unit of Work used to access the store.</typeparam>
     /// <typeparam name="TRoleRepository">The type of repository used to access the role store inside the uow.</typeparam>
     /// <typeparam name="TRoleClaimRepository">The type of repository used to access the roleclaim store inside the uow.</typeparam>
-    public class RoleStore<TKey, TRole, TUserRole, TRoleClaim, TUnitOfWork, TRoleRepository, TRoleClaimRepository> :
+    public class RoleStore<TKey, TRole, TUserRole, TRoleClaim, TRoleRepository, TRoleClaimRepository> :
         IRoleClaimStore<TRole>
         where TKey : IEquatable<TKey>
         where TRole : IdentityRole<TKey>, new()
         where TUserRole : IdentityUserRole<TKey>, new()
         where TRoleClaim : IdentityRoleClaim<TKey>, new()
-        where TUnitOfWork : IIdentityUnitOfWork
-        where TRoleRepository : class, IIdentityRoleRepository<TKey,TRole>
-        where TRoleClaimRepository : class, IIdentityRoleClaimRepository<TKey,TRoleClaim>
+        where TRoleRepository : class, IIdentityRoleRepository<TKey, TRole>
+        where TRoleClaimRepository : class, IIdentityRoleClaimRepository<TKey, TRoleClaim>
     {
         /// <summary>
         /// Constructs a new instance of <see cref="RoleStore{TKey, TRole, TUserRole, TRoleClaim, TUnitOfWork, TRoleRepository}"/>.
         /// </summary>
         /// <param name="uow">The <see cref="IIdentityUnitOfWork"/>.</param>
         /// <param name="describer">The <see cref="IdentityErrorDescriber"/>.</param>
-        public RoleStore(TUnitOfWork uow, IdentityErrorDescriber describer = null)
+        public RoleStore(IIdentityUnitOfWork uow, IdentityErrorDescriber describer = null)
         {
 
             Uow = uow;
@@ -107,7 +70,7 @@ namespace AspNetCore.Identity.Uow
         /// <summary>
         /// Gets the database context for this store.
         /// </summary>
-        public TUnitOfWork Uow { get; private set; }
+        public IIdentityUnitOfWork Uow { get; private set; }
 
         /// <summary>
         /// Gets or sets the <see cref="IdentityErrorDescriber"/> for any error that occurred with the current operation.

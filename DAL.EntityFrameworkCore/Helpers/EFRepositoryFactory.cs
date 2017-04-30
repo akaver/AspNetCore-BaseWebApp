@@ -32,10 +32,10 @@ namespace DAL.EntityFrameworkCore.Helpers
             {
                 // "No factory for repository type AspNetCore.Identity.Uow.Interfaces.IIdentityRoleRepository`2[[System.Int32, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[AspNetCore.Identity.Uow.Models.IdentityRole, AspNetCore.Identity.Uow, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"
                 {typeof(IIdentityRoleClaimRepository), dbContext => new IdentityRoleClaimRepository(dataContext: dbContext)},
-                {typeof(IIdentityRoleRepository<int, IdentityRole>), dbContext => new IdentityRoleRepository<int, IdentityRole>(dataContext: dbContext)},
+                {typeof(IIdentityRoleRepository), dbContext => new IdentityRoleRepository(dataContext: dbContext)},
                 {typeof(IIdentityUserClaimRepository), dbContext => new IdentityUserClaimRepository(dataContext: dbContext)},
                 {typeof(IIdentityUserLoginRepository), dbContext => new IdentityUserLoginRepository(dataContext: dbContext)},
-                {typeof(IIdentityUserRepository<int,IdentityUser>), dbContext => new IdentityUserRepository<int,IdentityUser>(dataContext: dbContext)},
+                {typeof(IIdentityUserRepository), dbContext => new IdentityUserRepository(dataContext: dbContext)},
                 {typeof(IIdentityUserRoleRepository), dbContext => new IdentityUserRoleRepository(dataContext: dbContext)},
                 {typeof(IIdentityUserTokenRepository), dbContext => new IdentityUserTokenRepository(dataContext: dbContext)},
             };

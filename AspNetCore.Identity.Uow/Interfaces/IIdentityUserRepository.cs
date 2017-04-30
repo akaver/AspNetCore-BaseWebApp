@@ -9,19 +9,23 @@ using DAL.Repositories;
 
 namespace AspNetCore.Identity.Uow.Interfaces
 {
-    public interface IIdentityUserRepository : IIdentityUserRepository<int, IdentityUser<int>>
+    public interface IIdentityUserRepository : IIdentityUserRepository<IdentityUser>
     {
     }
 
-    public interface IIdentityUserRepository<TKey> : IIdentityUserRepository<TKey, IdentityUser<TKey>>
-        where TKey : IEquatable<TKey>
+    public interface IIdentityUserRepository<TUser> : IIdentityUserRepository<int, TUser>
+        where TUser : IdentityUser<int>, new()
     {
     }
 
     public interface IIdentityUserRepository<TKey, TUser> : IRepository<TUser>
         where TKey : IEquatable<TKey>
-        where TUser : class, new()
+        where TUser : IdentityUser<TKey>, new()
     {
+        bool Exists(TKey id);
+
+        Task<bool> ExistsAsync(TKey id);
+
         Task<TUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken = default(CancellationToken));
 
         Task<TUser> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken = default(CancellationToken));

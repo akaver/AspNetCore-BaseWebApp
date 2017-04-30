@@ -35,7 +35,7 @@ namespace DAL.EntityFrameworkCore
             {
                 b.HasIndex(indexExpression: r => r.NormalizedName).HasName(name: "RoleNameIndex").IsUnique();
                 b.Property(propertyExpression: r => r.ConcurrencyStamp).IsConcurrencyToken();
-
+               
                 b.ToTable(name: "IdentityRoles");
             });
 

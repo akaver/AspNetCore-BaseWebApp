@@ -11,15 +11,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.EntityFrameworkCore.Repositories
 {
-    public class IdentityUserRepository : IdentityUserRepository<int>, IIdentityUserRepository
+    public class IdentityUserRepository : IdentityUserRepository<IdentityUser>, IIdentityUserRepository
     {
         public IdentityUserRepository(IDataContext dataContext) : base(dataContext: dataContext)
         {
         }
     }
 
-    public class IdentityUserRepository<TKey> : IdentityUserRepository<TKey, IdentityUser<TKey>>, IIdentityUserRepository<TKey>
-        where TKey: IEquatable<TKey>
+    public class IdentityUserRepository<TUser> : IdentityUserRepository<int, TUser>, IIdentityUserRepository<TUser>
+        where TUser: IdentityUser<int>, new()
     {
         public IdentityUserRepository(IDataContext dataContext) : base(dataContext: dataContext)
         {
@@ -32,6 +32,20 @@ namespace DAL.EntityFrameworkCore.Repositories
     {
         public IdentityUserRepository(IDataContext dataContext) : base(dataContext: dataContext)
         {
+        }
+
+        public bool Exists(TKey id)
+        {
+            // ReSharper disable ArgumentsStyleNamedExpression
+            return RepositoryDbSet.Any(predicate: u => u.IdentityUserId.Equals(id));
+            // ReSharper restore ArgumentsStyleNamedExpression
+        }
+
+        public Task<bool> ExistsAsync(TKey id)
+        {
+            // ReSharper disable ArgumentsStyleNamedExpression
+            return RepositoryDbSet.AnyAsync(predicate: u => u.IdentityUserId.Equals(id));
+            // ReSharper restore ArgumentsStyleNamedExpression
         }
 
         public Task<TUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken = default(CancellationToken))

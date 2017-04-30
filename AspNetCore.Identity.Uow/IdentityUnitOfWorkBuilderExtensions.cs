@@ -23,8 +23,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="builder">The <see cref="IdentityBuilder"/> instance this method extends.</param>
         /// <returns>The <see cref="IdentityBuilder"/> instance this method extends.</returns>
         //  TODO: specify TKey for repo types
-        public static IdentityBuilder AddUnitOfWork<TUnitOfWork, TUserRepository, TRoleRepository, TUserRoleRepository, TUserLoginRepository, TUserClaimRepository, TUserTokenRepository, TRoleClaimRepository>(this IdentityBuilder builder)
-            where TUnitOfWork : IIdentityUnitOfWork
+        public static IdentityBuilder AddUnitOfWork<TUserRepository, TRoleRepository, TUserRoleRepository, TUserLoginRepository, TUserClaimRepository, TUserTokenRepository, TRoleClaimRepository>(this IdentityBuilder builder)
             where TUserRepository : class //IIdentityUserRepository
             where TRoleRepository : class //IIdentityRoleRepository
             where TUserRoleRepository : class //IIdentityUserRoleRepository
@@ -34,7 +33,6 @@ namespace AspNetCore.Identity.Uow
             where TRoleClaimRepository : class //IIdentityRoleClaimRepository
         {
             AddStores(services: builder.Services, userType: builder.UserType, roleType: builder.RoleType,
-                unitOfWorkType: typeof(TUnitOfWork),
                 userRepositoryType: typeof(TUserRepository),
                 roleRepositoryType: typeof(TRoleRepository),
                 userRoleRepositoryType: typeof(TUserRoleRepository),
@@ -46,7 +44,7 @@ namespace AspNetCore.Identity.Uow
         }
 
         private static void AddStores(IServiceCollection services, Type userType, Type roleType,
-            Type unitOfWorkType, Type userRepositoryType, Type roleRepositoryType, Type userRoleRepositoryType, Type userLoginRepositoryType, Type userClaimRepositoryType, Type userTokenRepositoryType, Type roleClaimRepositoryType)
+            Type userRepositoryType, Type roleRepositoryType, Type userRoleRepositoryType, Type userLoginRepositoryType, Type userClaimRepositoryType, Type userTokenRepositoryType, Type roleClaimRepositoryType)
         {
             // public class IdentityUser<TKey, TUserClaim, TUserRole, TUserLogin, TUserToken>
             var identityUserType = FindGenericBaseType(currentType: userType, genericBaseType: typeof(IdentityUser<,,,,>));
@@ -65,14 +63,13 @@ namespace AspNetCore.Identity.Uow
 
 
             // public class RoleStore<TKey, TRole, TUserRole, TRoleClaim, TUnitOfWork, TRoleRepository, TRoleClaimRepository>
-            services.TryAddScoped(
+         services.TryAddScoped(
                 service: typeof(IRoleStore<>).MakeGenericType(roleType),
-                implementationType: typeof(RoleStore<,,,,,,>).MakeGenericType(
+                implementationType: typeof(RoleStore<,,,,,>).MakeGenericType(
                     identityRoleType.GenericTypeArguments[0], // tkey
                     roleType,                                 // trole
                     identityRoleType.GenericTypeArguments[1], // TUserRole
                     identityRoleType.GenericTypeArguments[2], // TRoleClaim
-                    unitOfWorkType,
                     roleRepositoryType,
                     roleClaimRepositoryType
                 ));
@@ -82,7 +79,7 @@ namespace AspNetCore.Identity.Uow
             // public class UserStore<TKey, TUser, TRole, TUserClaim, TUserRole, TUserLogin, TUserToken, TRoleClaim, TUnitOfWork, TUserRepository, TRoleRepository, TUserRoleRepository, TUserLoginRepository, TUserClaimRepository, TUserTokenRepository>
             services.TryAddScoped(
                 service: typeof(IUserStore<>).MakeGenericType(userType),
-                implementationType: typeof(UserStore<,,,,,,,,,,,,,,>).MakeGenericType(
+                implementationType: typeof(UserStore<,,,,,,,,,,,,,>).MakeGenericType(
                     identityUserType.GenericTypeArguments[0], //TKey
                     userType,
                     roleType,
@@ -91,7 +88,6 @@ namespace AspNetCore.Identity.Uow
                     identityUserType.GenericTypeArguments[3], //TUserLogin
                     identityUserType.GenericTypeArguments[4], //TUserToken
                     identityRoleType.GenericTypeArguments[2], //TRoleClaim from roletype
-                    unitOfWorkType,
                     userRepositoryType,
                     roleRepositoryType,
                     userRoleRepositoryType,

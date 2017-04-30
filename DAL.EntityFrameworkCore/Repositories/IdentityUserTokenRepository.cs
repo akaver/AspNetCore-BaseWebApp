@@ -9,15 +9,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.EntityFrameworkCore.Repositories
 {
-    public class IdentityUserTokenRepository : IdentityUserTokenRepository<int>, IIdentityUserTokenRepository
+    public class IdentityUserTokenRepository : IdentityUserTokenRepository<IdentityUserToken<int>>, IIdentityUserTokenRepository
     {
         public IdentityUserTokenRepository(IDataContext dataContext) : base(dataContext: dataContext)
         {
         }
     }
 
-    public class IdentityUserTokenRepository<TKey> : IdentityUserTokenRepository<TKey, IdentityUserToken<TKey>>, IIdentityUserTokenRepository<TKey>
-        where TKey : IEquatable<TKey>
+    public class IdentityUserTokenRepository<TUserToken> : IdentityUserTokenRepository<int, TUserToken>, IIdentityUserTokenRepository<TUserToken>
+        where TUserToken : IdentityUserToken<int>, new()
     {
         public IdentityUserTokenRepository(IDataContext dataContext) : base(dataContext: dataContext)
         {

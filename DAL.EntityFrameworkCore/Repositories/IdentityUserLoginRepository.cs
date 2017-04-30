@@ -12,14 +12,14 @@ using Microsoft.EntityFrameworkCore;
 namespace DAL.EntityFrameworkCore.Repositories
 {
 
-    public class IdentityUserLoginRepository : IdentityUserLoginRepository<int>, IIdentityUserLoginRepository
+    public class IdentityUserLoginRepository : IdentityUserLoginRepository<IdentityUserLogin<int>>, IIdentityUserLoginRepository
     {
         public IdentityUserLoginRepository(IDataContext dataContext) : base(dataContext: dataContext)
         {
         }
     }
-    public class IdentityUserLoginRepository<TKey> : IdentityUserLoginRepository<TKey, IdentityUserLogin<TKey>>, IIdentityUserLoginRepository<TKey>
-        where TKey : IEquatable<TKey>
+    public class IdentityUserLoginRepository<TUserLogin> : IdentityUserLoginRepository<int, TUserLogin>, IIdentityUserLoginRepository<TUserLogin>
+        where TUserLogin : IdentityUserLogin<int>, new()
     {
         public IdentityUserLoginRepository(IDataContext dataContext) : base(dataContext: dataContext)
         {

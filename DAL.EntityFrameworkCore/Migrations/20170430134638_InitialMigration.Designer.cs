@@ -8,7 +8,7 @@ using DAL.EntityFrameworkCore;
 namespace DAL.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20170426104734_InitialMigration")]
+    [Migration("20170430134638_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

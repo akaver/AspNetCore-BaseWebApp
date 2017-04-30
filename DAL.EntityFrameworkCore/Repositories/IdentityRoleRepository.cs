@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,15 +11,15 @@ using Microsoft.EntityFrameworkCore;
 namespace DAL.EntityFrameworkCore.Repositories
 {
 
-    public class IdentityRoleRepository : IdentityRoleRepository<int>, IIdentityRoleRepository
+    public class IdentityRoleRepository : IdentityRoleRepository<IdentityRole>, IIdentityRoleRepository
     {
         public IdentityRoleRepository(IDataContext dataContext) : base(dataContext: dataContext)
         {
         }
     }
 
-    public class IdentityRoleRepository<TKey> : IdentityRoleRepository<TKey, IdentityRole<TKey>>, IIdentityRoleRepository<TKey>
-        where TKey : IEquatable<TKey>
+    public class IdentityRoleRepository<TRole> : IdentityRoleRepository<int, TRole>, IIdentityRoleRepository<TRole>
+        where TRole : IdentityRole<int>, new()
     {
         public IdentityRoleRepository(IDataContext dataContext) : base(dataContext: dataContext)
         {
@@ -32,6 +33,11 @@ namespace DAL.EntityFrameworkCore.Repositories
     {
         public IdentityRoleRepository(IDataContext dataContext) : base(dataContext: dataContext)
         {
+        }
+
+        public bool Exists(TKey id)
+        {
+            return RepositoryDbSet.Any(r => r.IdentityRoleId.Equals(id));
         }
 
         public Task<TRole> FindByNameAsync(string normalizedName, CancellationToken cancellationToken = new CancellationToken())

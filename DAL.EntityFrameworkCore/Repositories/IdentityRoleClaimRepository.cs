@@ -11,14 +11,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.EntityFrameworkCore.Repositories
 {
-    public class IdentityRoleClaimRepository : IdentityRoleClaimRepository<int>, IIdentityRoleClaimRepository
+    public class IdentityRoleClaimRepository : IdentityRoleClaimRepository<IdentityRoleClaim<int>>, IIdentityRoleClaimRepository
     {
         public IdentityRoleClaimRepository(IDataContext dataContext) : base(dataContext: dataContext)
         {
         }
     }
-    public class IdentityRoleClaimRepository<TKey> : IdentityRoleClaimRepository<TKey, IdentityRoleClaim<TKey>>, IIdentityRoleClaimRepository<TKey>
-        where TKey : IEquatable<TKey>
+    public class IdentityRoleClaimRepository<TRoleClaim> : IdentityRoleClaimRepository<int, TRoleClaim>, IIdentityRoleClaimRepository<TRoleClaim>
+        where TRoleClaim : IdentityRoleClaim<int>, new()
     {
         public IdentityRoleClaimRepository(IDataContext dataContext) : base(dataContext: dataContext)
         {

@@ -8,19 +8,19 @@ using DAL.Repositories;
 
 namespace AspNetCore.Identity.Uow.Interfaces
 {
-    public interface IIdentityUserRoleRepository : IIdentityUserRoleRepository<int>
+    public interface IIdentityUserRoleRepository : IIdentityUserRoleRepository<IdentityUserRole<int>>
     {
 
     }
-    public interface IIdentityUserRoleRepository<TKey> : IIdentityUserRoleRepository<TKey, IdentityUserRole<TKey>>
-        where TKey : IEquatable<TKey>
+    public interface IIdentityUserRoleRepository<TUserRole> : IIdentityUserRoleRepository<int, TUserRole>
+        where TUserRole : IdentityUserRole<int>, new()
     {
 
     }
 
     public interface IIdentityUserRoleRepository<TKey, TUserRole> : IRepository<TUserRole>
         where TKey : IEquatable<TKey>
-        where TUserRole : class, new()
+        where TUserRole : IdentityUserRole<TKey>, new()
     {
         Task<TUserRole> FindUserRoleAsync(TKey userId, TKey roleId, CancellationToken cancellationToken = default(CancellationToken));
 

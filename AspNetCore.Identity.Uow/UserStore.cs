@@ -14,88 +14,40 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AspNetCore.Identity.Uow
 {
-    /// <summary>
-    /// Represents a new instance of a persistence store for users, using the default implementation
-    /// of <see cref="IdentityUser{TKey}"/> with a string as a primary key.
-    /// </summary>
-    //public class UserStore : UserStore<IdentityUser<string>>
-    //{
-    //    /// <summary>
-    //    /// Constructs a new instance of <see cref="UserStore"/>.
-    //    /// </summary>
-    //    /// <param name="context">The <see cref="DbContext"/>.</param>
-    //    /// <param name="describer">The <see cref="IdentityErrorDescriber"/>.</param>
-    //    public UserStore(DbContext context, IdentityErrorDescriber describer = null) : base(context, describer) { }
-    //}
+    public class UserStore : UserStore<IdentityUser>
+    {
+        public UserStore(IIdentityUnitOfWork uow, IdentityErrorDescriber describer = null) : base(uow, describer)
+        {
+        }
+    }
 
-    /// <summary>
-    /// Creates a new instance of a persistence store for the specified user type.
-    /// </summary>
-    /// <typeparam name="TUser">The type representing a user.</typeparam>
-    //public class UserStore<TUser> : UserStore<TUser, IdentityRole, DbContext, string>
-    //    where TUser : IdentityUser<string>, new()
-    //{
-    //    /// <summary>
-    //    /// Constructs a new instance of <see cref="UserStore{TUser}"/>.
-    //    /// </summary>
-    //    /// <param name="context">The <see cref="DbContext"/>.</param>
-    //    /// <param name="describer">The <see cref="IdentityErrorDescriber"/>.</param>
-    //    public UserStore(DbContext context, IdentityErrorDescriber describer = null) : base(context, describer) { }
-    //}
+    public class UserStore<TUser> : UserStore<
+        int, TUser, IdentityRole, IdentityUserClaim, IdentityUserRole, IdentityUserLogin, IdentityUserToken, IdentityRoleClaim, 
+        IIdentityUserRepository<TUser>,
+        IIdentityRoleRepository<IdentityRole>, 
+        IIdentityUserRoleRepository<IdentityUserRole>,
+        IIdentityUserLoginRepository<IdentityUserLogin>,
+        IIdentityUserClaimRepository<IdentityUserClaim>,
+        IIdentityUserTokenRepository<IdentityUserToken>>
+        where TUser : IdentityUser<int>, new()
+    {
+        public UserStore(IIdentityUnitOfWork uow, IdentityErrorDescriber describer = null) : base(uow, describer)
+        {
+        }
+    }
 
     /// <summary>
     /// Represents a new instance of a persistence store for the specified user and role types.
     /// </summary>
     /// <typeparam name="TUser">The type representing a user.</typeparam>
     /// <typeparam name="TRole">The type representing a role.</typeparam>
-    /// <typeparam name="TContext">The type of the data context class used to access the store.</typeparam>
-    //public class UserStore<TUser, TRole, TContext> : UserStore<TUser, TRole, TContext, string>
-    //    where TUser : IdentityUser<string>
-    //    where TRole : IdentityRole<string>
-    //    where TContext : DbContext
-    //{
-    //    /// <summary>
-    //    /// Constructs a new instance of <see cref="UserStore{TUser, TRole, TContext}"/>.
-    //    /// </summary>
-    //    /// <param name="context">The <see cref="DbContext"/>.</param>
-    //    /// <param name="describer">The <see cref="IdentityErrorDescriber"/>.</param>
-    //    public UserStore(TContext context, IdentityErrorDescriber describer = null) : base(context, describer) { }
-    //}
-
-    /// <summary>
-    /// Represents a new instance of a persistence store for the specified user and role types.
-    /// </summary>
-    /// <typeparam name="TUser">The type representing a user.</typeparam>
-    /// <typeparam name="TRole">The type representing a role.</typeparam>
-    /// <typeparam name="TContext">The type of the data context class used to access the store.</typeparam>
-    /// <typeparam name="TKey">The type of the primary key for a role.</typeparam>
-    //public class UserStore<TUser, TRole, TContext, TKey> : UserStore<TUser, TRole, TContext, TKey, IdentityUserClaim<TKey>, IdentityUserRole<TKey>, IdentityUserLogin<TKey>, IdentityUserToken<TKey>, IdentityRoleClaim<TKey>>
-    //    where TUser : IdentityUser<TKey>
-    //    where TRole : IdentityRole<TKey>
-    //    where TContext : DbContext
-    //    where TKey : IEquatable<TKey>
-    //{
-    //    /// <summary>
-    //    /// Constructs a new instance of <see cref="UserStore{TUser, TRole, TContext, TKey}"/>.
-    //    /// </summary>
-    //    /// <param name="context">The <see cref="DbContext"/>.</param>
-    //    /// <param name="describer">The <see cref="IdentityErrorDescriber"/>.</param>
-    //    public UserStore(TContext context, IdentityErrorDescriber describer = null) : base(context, describer) { }
-    //}
-
-    /// <summary>
-    /// Represents a new instance of a persistence store for the specified user and role types.
-    /// </summary>
-    /// <typeparam name="TUser">The type representing a user.</typeparam>
-    /// <typeparam name="TRole">The type representing a role.</typeparam>
-    /// <typeparam name="TContext">The type of the data context class used to access the store.</typeparam>
     /// <typeparam name="TKey">The type of the primary key for a role.</typeparam>
     /// <typeparam name="TUserClaim">The type representing a claim.</typeparam>
     /// <typeparam name="TUserRole">The type representing a user role.</typeparam>
     /// <typeparam name="TUserLogin">The type representing a user external login.</typeparam>
     /// <typeparam name="TUserToken">The type representing a user token.</typeparam>
     /// <typeparam name="TRoleClaim">The type representing a role claim.</typeparam>
-    public class UserStore<TKey, TUser, TRole, TUserClaim, TUserRole, TUserLogin, TUserToken, TRoleClaim, TUnitOfWork, TUserRepository, TRoleRepository, TUserRoleRepository, TUserLoginRepository, TUserClaimRepository, TUserTokenRepository> :
+    public class UserStore<TKey, TUser, TRole, TUserClaim, TUserRole, TUserLogin, TUserToken, TRoleClaim, TUserRepository, TRoleRepository, TUserRoleRepository, TUserLoginRepository, TUserClaimRepository, TUserTokenRepository> :
         IUserLoginStore<TUser>,
         IUserRoleStore<TUser>,
         IUserClaimStore<TUser>,
@@ -116,7 +68,6 @@ namespace AspNetCore.Identity.Uow
         where TUserLogin : IdentityUserLogin<TKey>, new()
         where TUserToken : IdentityUserToken<TKey>, new()
         where TRoleClaim : IdentityRoleClaim<TKey>, new()
-        where TUnitOfWork : IIdentityUnitOfWork
         where TUserRepository : class, IIdentityUserRepository<TKey, TUser>
         where TRoleRepository : class, IIdentityRoleRepository<TKey, TRole>
         where TUserRoleRepository : class, IIdentityUserRoleRepository<TKey, TUserRole>
@@ -129,13 +80,9 @@ namespace AspNetCore.Identity.Uow
         /// </summary>
         /// <param name="context">The context used to access the store.</param>
         /// <param name="describer">The <see cref="IdentityErrorDescriber"/> used to describe store errors.</param>
-        public UserStore(TUnitOfWork uow, IdentityErrorDescriber describer = null)
+        public UserStore(IIdentityUnitOfWork uow, IdentityErrorDescriber describer = null)
         {
-            if (uow == null)
-            {
-                throw new ArgumentNullException(paramName: nameof(uow));
-            }
-            Uow = uow;
+            Uow = uow ?? throw new ArgumentNullException(paramName: nameof(uow));
             ErrorDescriber = describer ?? new IdentityErrorDescriber();
         }
 
@@ -144,7 +91,7 @@ namespace AspNetCore.Identity.Uow
         /// <summary>
         /// Gets the database context for this store.
         /// </summary>
-        public TUnitOfWork Uow { get; private set; }
+        public IIdentityUnitOfWork Uow { get; private set; }
 
         /// <summary>
         /// Gets or sets the <see cref="IdentityErrorDescriber"/> for any error that occurred with the current operation.

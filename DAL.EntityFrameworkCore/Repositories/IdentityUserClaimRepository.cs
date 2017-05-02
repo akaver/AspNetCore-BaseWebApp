@@ -11,35 +11,37 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.EntityFrameworkCore.Repositories
 {
-    public class IdentityUserClaimRepository : IdentityUserClaimRepository<IdentityUserClaim<int>>, IIdentityUserClaimRepository
-    {
-        public IdentityUserClaimRepository(IDataContext dataContext) : base(dataContext: dataContext)
-        {
-        }
-    }
-
-    public class IdentityUserClaimRepository<TUserClaim> : IdentityUserClaimRepository<int, TUserClaim>, IIdentityUserClaimRepository<TUserClaim>
-        where TUserClaim : IdentityUserClaim<int>, new()
-    {
-        public IdentityUserClaimRepository(IDataContext dataContext) : base(dataContext: dataContext)
-        {
-        }
-    }
-
-
-    public class IdentityUserClaimRepository<TKey, TUserClaim> : EFRepository<TUserClaim>, IIdentityUserClaimRepository<TKey, TUserClaim>
-        where TKey: IEquatable<TKey>
-        where TUserClaim: IdentityUserClaim<TKey>, new()
+    public class IdentityUserClaimRepository : EFRepository<IdentityUserClaim>, IIdentityUserClaimRepository
     {
         public IdentityUserClaimRepository(IDataContext dataContext) : base(dataContext: dataContext)
         {
         }
 
-        public Task<List<Claim>> GetClaimsAsync(TKey userId, CancellationToken cancellationToken = new CancellationToken())
+        public bool Exists(int id)
+        {
+            return RepositoryDbSet.Any(uc => uc.IdentityUserClaimId == id);
+        }
+
+        public Task<bool> ExistsAsync(int id)
+        {
+            return RepositoryDbSet.AnyAsync(uc => uc.IdentityUserClaimId == id);
+        }
+
+        public Task<List<IdentityUserClaim>> AllIncludeUserAsync()
+        {
+            return RepositoryDbSet.Include(uc => uc.User).ToListAsync();
+        }
+
+        public Task<IdentityUserClaim> SingleByIdIncludeUserAsync(int id)
+        {
+            return RepositoryDbSet.Include(uc => uc.User).SingleOrDefaultAsync(u => u.IdentityUserClaimId == id);
+        }
+
+        public Task<List<Claim>> GetClaimsAsync(int userId, CancellationToken cancellationToken = new CancellationToken())
         {
             return RepositoryDbSet
                 // ReSharper disable ArgumentsStyleNamedExpression
-                .Where(predicate: uc => uc.UserId.Equals(userId))
+                .Where(predicate: uc => uc.UserId == userId)
                 // ReSharper restore ArgumentsStyleNamedExpression
                 .Select(selector: c => c.ToClaim())
                 .ToListAsync(cancellationToken: cancellationToken);
@@ -47,12 +49,12 @@ namespace DAL.EntityFrameworkCore.Repositories
             // UserClaims.Where(uc => uc.UserId.Equals(user.Id)).Select(c => c.ToClaim()).ToListAsync(cancellationToken);
         }
 
-        public async Task ReplaceClaimAsync(TKey userId, Claim claim, Claim newClaim,
+        public async Task ReplaceClaimAsync(int userId, Claim claim, Claim newClaim,
             CancellationToken cancellationToken = new CancellationToken())
         {
             var matchedClaims = await RepositoryDbSet
                 // ReSharper disable ArgumentsStyleNamedExpression
-                .Where(predicate: uc => uc.UserId.Equals(userId) && uc.ClaimValue == claim.Value && uc.ClaimType == claim.Type)
+                .Where(predicate: uc => uc.UserId == userId && uc.ClaimValue == claim.Value && uc.ClaimType == claim.Type)
                 // ReSharper restore ArgumentsStyleNamedExpression
                 .ToListAsync(cancellationToken: cancellationToken);
             foreach (var matchedClaim in matchedClaims)
@@ -63,7 +65,7 @@ namespace DAL.EntityFrameworkCore.Repositories
 
         }
 
-        public async Task RemoveClaimsAsync(TKey userId, IEnumerable<Claim> claims, CancellationToken cancellationToken = new CancellationToken())
+        public async Task RemoveClaimsAsync(int userId, IEnumerable<Claim> claims, CancellationToken cancellationToken = new CancellationToken())
         {
             foreach (var claim in claims)
             {

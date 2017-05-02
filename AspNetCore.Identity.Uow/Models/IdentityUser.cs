@@ -6,66 +6,17 @@ using System.Text;
 namespace AspNetCore.Identity.Uow.Models
 {
     /// <summary>
-    /// The default implementation of <see cref="IdentityUser{TKey}"/> which uses a int as a primary key.
-    /// </summary>
-    public class IdentityUser : IdentityUser<int>
-    {
-        /// <summary>
-        /// Initializes a new instance of <see cref="IdentityUser"/>.
-        /// </summary>
-        public IdentityUser()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of <see cref="IdentityUser"/>.
-        /// </summary>
-        /// <param name="userName">The user name.</param>
-        /// <remarks>
-        /// The Id property is initialized to form a new GUID string value.
-        /// </remarks>
-        public IdentityUser(string userName) : this()
-        {
-            UserName = userName;
-        }
-    }
-
-    /// <summary>
     /// Represents a user in the identity system
     /// </summary>
-    /// <typeparam name="TKey">The type used for the primary key for the user.</typeparam>
-    public class IdentityUser<TKey> : IdentityUser<TKey, IdentityUserClaim<TKey>, IdentityUserRole<TKey>,
-        IdentityUserLogin<TKey>, IdentityUserToken<TKey>>
-        where TKey : IEquatable<TKey>
-    {
-        public IdentityUser()
-        {
-        }
-
-        public IdentityUser(string userName) : this()
-        {
-            UserName = userName;
-        }
-    }
-
-    /// <summary>
-    /// Represents a user in the identity system
-    /// </summary>
-    /// <typeparam name="TKey">The type used for the primary key for the user.</typeparam>
-    /// <typeparam name="TUserClaim">The type representing a claim.</typeparam>
-    /// <typeparam name="TUserRole">The type representing a user role.</typeparam>
-    /// <typeparam name="TUserLogin">The type representing a user external login.</typeparam>
-    /// <typeparam name="TUserToken">The type representing a user external login.</typeparam>
-    public class IdentityUser<TKey, TUserClaim, TUserRole, TUserLogin, TUserToken> 
-        where TKey : IEquatable<TKey>
+    public class IdentityUser
     {
         /// <summary>
-        /// Initializes a new instance of <see cref="IdentityUser{TKey}"/>.
+        /// Initializes a new instance of IdentityUser.
         /// </summary>
         public IdentityUser() { }
 
         /// <summary>
-        /// Initializes a new instance of <see cref="IdentityUser{TKey}"/>.
+        /// Initializes a new instance of IdentityUser.
         /// </summary>
         /// <param name="userName">The user name.</param>
         public IdentityUser(string userName) : this()
@@ -78,7 +29,7 @@ namespace AspNetCore.Identity.Uow.Models
         /// Gets or sets the primary key for this user.
         /// </summary>
         [Key]
-        public virtual TKey IdentityUserId { get; set; }
+        public virtual int IdentityUserId { get; set; }
 
         /// <summary>
         /// Gets or sets the user name for this user.
@@ -164,22 +115,22 @@ namespace AspNetCore.Identity.Uow.Models
         /// <summary>
         /// Navigation property for the roles this user belongs to.
         /// </summary>
-        public virtual ICollection<TUserRole> Roles { get; } = new List<TUserRole>();
+        public virtual ICollection<IdentityUserRole> Roles { get; } = new List<IdentityUserRole>();
 
         /// <summary>
         /// Navigation property for the claims this user possesses.
         /// </summary>
-        public virtual ICollection<TUserClaim> Claims { get; } = new List<TUserClaim>();
+        public virtual ICollection<IdentityUserClaim> Claims { get; } = new List<IdentityUserClaim>();
 
         /// <summary>
         /// Navigation property for this users login accounts.
         /// </summary>
-        public virtual ICollection<TUserLogin> Logins { get; } = new List<TUserLogin>();
+        public virtual ICollection<IdentityUserLogin> Logins { get; } = new List<IdentityUserLogin>();
 
         /// <summary>
         /// Navigation property for this users tokens.
         /// </summary>
-        public virtual ICollection<TUserToken> Tokens { get; } = new List<TUserToken>();
+        public virtual ICollection<IdentityUserToken> Tokens { get; } = new List<IdentityUserToken>();
 
         /// <summary>
         /// Returns the username for this user.

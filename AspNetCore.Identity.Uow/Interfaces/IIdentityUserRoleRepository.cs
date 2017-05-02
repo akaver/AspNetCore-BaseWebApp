@@ -8,22 +8,18 @@ using DAL.Repositories;
 
 namespace AspNetCore.Identity.Uow.Interfaces
 {
-    public interface IIdentityUserRoleRepository : IIdentityUserRoleRepository<IdentityUserRole<int>>
+
+    public interface IIdentityUserRoleRepository : IRepository<IdentityUserRole>
     {
+        bool Exists(int id);
+        Task<bool> ExistsAsync(int id);
 
-    }
-    public interface IIdentityUserRoleRepository<TUserRole> : IIdentityUserRoleRepository<int, TUserRole>
-        where TUserRole : IdentityUserRole<int>, new()
-    {
+        Task<IdentityUserRole> SingleIncludeUserAndRoleAsync(int id);
 
-    }
+        Task<List<IdentityUserRole>> AllIncludeRoleAndUserAsync();
 
-    public interface IIdentityUserRoleRepository<TKey, TUserRole> : IRepository<TUserRole>
-        where TKey : IEquatable<TKey>
-        where TUserRole : IdentityUserRole<TKey>, new()
-    {
-        Task<TUserRole> FindUserRoleAsync(TKey userId, TKey roleId, CancellationToken cancellationToken = default(CancellationToken));
+        Task<IdentityUserRole> FindUserRoleAsync(int userId, int roleId, CancellationToken cancellationToken = default(CancellationToken));
 
-        Task<List<string>> GetRolesAsync(TKey userId, CancellationToken cancellationToken = default(CancellationToken));
+        Task<List<string>> GetRolesAsync(int userId, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

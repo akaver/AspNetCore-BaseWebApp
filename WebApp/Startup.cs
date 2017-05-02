@@ -57,27 +57,6 @@ namespace WebApp
             services.AddSingleton<IRepositoryFactory, EFRepositoryFactory>();
 
 
-            var x = typeof(UserStore<,,,,,,,,,,,,,>).MakeGenericType(
-                typeof(int), //TKey
-                typeof(IdentityUser),
-                typeof(IdentityRole),
-                typeof(IdentityUserClaim<int>), //TUserClaim
-                typeof(IdentityUserRole<int>), //TUserRole
-                typeof(IdentityUserLogin<int>), //TUserLogin
-                typeof(IdentityUserToken<int>), //TUserToken
-                typeof(IdentityRoleClaim<int>), //TRoleClaim from roletype
-                typeof(IIdentityUserRepository),
-                typeof(IIdentityRoleRepository),
-                typeof(IIdentityUserRoleRepository<IdentityUserRole<int>>),
-                typeof(IIdentityUserLoginRepository<IdentityUserLogin<int>>),
-                typeof(IIdentityUserClaimRepository<IdentityUserClaim<int>>),
-                typeof(IIdentityUserTokenRepository<IdentityUserToken<int>>)
-            );
-
-            //services.TryAddScoped<IUserStore<IdentityUser>, 
-            //    UserStore<int, IdentityUser, IdentityRole, IdentityUserClaim, IdentityUserRole, IdentityUserLogin, IdentityUserToken, IdentityRoleClaim, 
-            //    IIdentityUserRepository, IIdentityRoleRepository, IIdentityUserRoleRepository, IIdentityUserLoginRepository, IIdentityUserClaimRepository, IIdentityUserTokenRepository>>();
-
 
 
             services.AddIdentity<IdentityUser, IdentityRole>()

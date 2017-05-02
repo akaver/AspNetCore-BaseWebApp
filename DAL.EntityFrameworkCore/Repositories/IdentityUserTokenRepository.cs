@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,31 +10,35 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.EntityFrameworkCore.Repositories
 {
-    public class IdentityUserTokenRepository : IdentityUserTokenRepository<IdentityUserToken<int>>, IIdentityUserTokenRepository
-    {
-        public IdentityUserTokenRepository(IDataContext dataContext) : base(dataContext: dataContext)
-        {
-        }
-    }
 
-    public class IdentityUserTokenRepository<TUserToken> : IdentityUserTokenRepository<int, TUserToken>, IIdentityUserTokenRepository<TUserToken>
-        where TUserToken : IdentityUserToken<int>, new()
-    {
-        public IdentityUserTokenRepository(IDataContext dataContext) : base(dataContext: dataContext)
-        {
-        }
-    }
-
-    public class IdentityUserTokenRepository<TKey, TUserToken> : EFRepository<TUserToken>, IIdentityUserTokenRepository<TKey, TUserToken>
-            where TKey : IEquatable<TKey>
-            where TUserToken : IdentityUserToken<TKey>, new()
+    public class IdentityUserTokenRepository : EFRepository<IdentityUserToken>, IIdentityUserTokenRepository
     {
         public IdentityUserTokenRepository(IDataContext dataContext) : base(dataContext: dataContext)
         {
         }
 
 
-        public Task<TUserToken> FindTokenAsync(TKey userId, string loginProvider, string name,
+        public bool Exists(int id)
+        {
+            return RepositoryDbSet.Any(ut => ut.IdentityUserTokenId == id);
+        }
+
+        public Task<bool> ExistsAsync(int id)
+        {
+            return RepositoryDbSet.AnyAsync(ut => ut.IdentityUserTokenId == id);
+        }
+
+        public Task<List<IdentityUserToken>> AllIncludeUserAsync()
+        {
+            return RepositoryDbSet.Include(ut => ut.User).ToListAsync();
+        }
+
+        public Task<IdentityUserToken> SingleByIdIncludeUserAsync(int id)
+        {
+            return RepositoryDbSet.Include(ut => ut.User).SingleOrDefaultAsync(ut => ut.IdentityUserTokenId == id);
+        }
+
+        public Task<IdentityUserToken> FindTokenAsync(int userId, string loginProvider, string name,
             CancellationToken cancellationToken = new CancellationToken())
         {
             return RepositoryDbSet

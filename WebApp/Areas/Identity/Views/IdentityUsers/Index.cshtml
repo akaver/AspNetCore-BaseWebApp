@@ -1,7 +1,7 @@
-@model IEnumerable<AspNetCore.Identity.Uow.Models.IdentityUser<int>>
+@model IEnumerable<AspNetCore.Identity.Uow.Models.IdentityUser>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData[index: "Title"] = "Index";
 }
 
 <h2>Index</h2>
@@ -12,54 +12,66 @@
 <table class="table">
     <thead>
         <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.UserName)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Email)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.PhoneNumber)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.LockoutEnd)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.LockoutEnabled)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.AccessFailedCount)
-                </th>
+            <th>
+                @Html.DisplayNameFor(expression: model => model.UserName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(expression: model => model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(expression: model => model.PhoneNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(expression: model => model.LockoutEnd)
+            </th>
+            <th>
+                @Html.DisplayNameFor(expression: model => model.LockoutEnabled)
+            </th>
+            <th>
+                @Html.DisplayNameFor(expression: model => model.AccessFailedCount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(expression: model => model.Roles)
+            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.UserName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PhoneNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LockoutEnd)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LockoutEnabled)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AccessFailedCount)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.IdentityUserId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IdentityUserId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IdentityUserId">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(expression: modelItem => item.UserName)
+                </td>
+                <td>
+                    @Html.DisplayFor(expression: modelItem => item.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(expression: modelItem => item.PhoneNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(expression: modelItem => item.LockoutEnd)
+                </td>
+                <td>
+                    @Html.DisplayFor(expression: modelItem => item.LockoutEnabled)
+                </td>
+                <td>
+                    @Html.DisplayFor(expression: modelItem => item.AccessFailedCount)
+                </td>
+                <td>
+                    @item.Roles.Count
+                    @if (item.Roles.Count > 0)
+                    {
+                        var roles = item.Roles.Take(count: 3).Select(selector: r => r.Role.Name);
+                        <text>(</text>@string.Join(separator: ", ", values: roles)<text>)</text>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.IdentityUserId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.IdentityUserId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.IdentityUserId">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

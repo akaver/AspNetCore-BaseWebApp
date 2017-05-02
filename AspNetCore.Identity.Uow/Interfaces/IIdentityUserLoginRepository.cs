@@ -9,25 +9,19 @@ using Microsoft.AspNetCore.Identity;
 
 namespace AspNetCore.Identity.Uow.Interfaces
 {
-    public interface IIdentityUserLoginRepository : IIdentityUserLoginRepository<IdentityUserLogin<int>>
+    public interface IIdentityUserLoginRepository : IRepository<IdentityUserLogin>
     {
+        bool Exists(int id);
+        Task<bool> ExistsAsync(int id);
 
-    }
-    public interface IIdentityUserLoginRepository<TUserLogin> : IIdentityUserLoginRepository<int, TUserLogin>
-        where TUserLogin : IdentityUserLogin<int>, new()
-    {
+        Task<List<IdentityUserLogin>> AllIncludeUserAsync();
+        Task<IdentityUserLogin> SingleByIdIncludeUserAsync(int id);
 
-    }
+        Task<IdentityUserLogin> FindUserLoginAsync(int userId, string loginProvider, string providerKey, CancellationToken cancellationToken = default(CancellationToken));
 
-    public interface IIdentityUserLoginRepository<TKey, TUserLogin> : IRepository<TUserLogin>
-        where TKey: IEquatable<TKey>
-        where TUserLogin : IdentityUserLogin<TKey>, new()
-    {
-        Task<TUserLogin> FindUserLoginAsync(TKey userId, string loginProvider, string providerKey, CancellationToken cancellationToken = default(CancellationToken));
+        Task<IdentityUserLogin> FindUserLoginAsync(string loginProvider, string providerKey, CancellationToken cancellationToken = default(CancellationToken));
 
-        Task<TUserLogin> FindUserLoginAsync(string loginProvider, string providerKey, CancellationToken cancellationToken = default(CancellationToken));
-
-        Task<List<UserLoginInfo>> GetLoginsAsync(TKey userId, CancellationToken cancellationToken = default(CancellationToken));
+        Task<List<UserLoginInfo>> GetLoginsAsync(int userId, CancellationToken cancellationToken = default(CancellationToken));
     }
 
 }

@@ -1,0 +1,26 @@
+﻿@model AspNetCore.Identity.Uow.Models.IdentityUserLogin
+
+<dt>
+    @Html.DisplayNameFor(model => model.LoginProvider)
+</dt>
+<dd>
+    @Html.DisplayFor(model => model.LoginProvider)
+</dd>
+<dt>
+    @Html.DisplayNameFor(model => model.ProviderKey)
+</dt>
+<dd>
+    @Html.DisplayFor(model => model.ProviderKey)
+</dd>
+<dt>
+    @Html.DisplayNameFor(model => model.ProviderDisplayName)
+</dt>
+<dd>
+    @Html.DisplayFor(model => model.ProviderDisplayName)
+</dd>
+<dt>
+    @Html.DisplayNameFor(model => model.User)
+</dt>
+<dd>
+    @Html.DisplayFor(model => model.User.Discriminator)
+</dd>

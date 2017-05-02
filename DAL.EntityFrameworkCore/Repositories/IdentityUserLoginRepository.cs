@@ -12,30 +12,33 @@ using Microsoft.EntityFrameworkCore;
 namespace DAL.EntityFrameworkCore.Repositories
 {
 
-    public class IdentityUserLoginRepository : IdentityUserLoginRepository<IdentityUserLogin<int>>, IIdentityUserLoginRepository
-    {
-        public IdentityUserLoginRepository(IDataContext dataContext) : base(dataContext: dataContext)
-        {
-        }
-    }
-    public class IdentityUserLoginRepository<TUserLogin> : IdentityUserLoginRepository<int, TUserLogin>, IIdentityUserLoginRepository<TUserLogin>
-        where TUserLogin : IdentityUserLogin<int>, new()
-    {
-        public IdentityUserLoginRepository(IDataContext dataContext) : base(dataContext: dataContext)
-        {
-        }
-    }
-
-
-    public class IdentityUserLoginRepository<TKey, TUserLogin> : EFRepository<TUserLogin>, IIdentityUserLoginRepository<TKey, TUserLogin>
-        where TKey : IEquatable<TKey>
-        where TUserLogin : IdentityUserLogin<TKey>, new()
+    public class IdentityUserLoginRepository : EFRepository<IdentityUserLogin>, IIdentityUserLoginRepository
     {
         public IdentityUserLoginRepository(IDataContext dataContext) : base(dataContext: dataContext)
         {
         }
 
-        public Task<TUserLogin> FindUserLoginAsync(TKey userId, string loginProvider, string providerKey,
+        public bool Exists(int id)
+        {
+            return RepositoryDbSet.Any(ul => ul.IdentityUserLoginId == id);
+        }
+
+        public Task<bool> ExistsAsync(int id)
+        {
+            return RepositoryDbSet.AnyAsync(ul => ul.IdentityUserLoginId == id);
+        }
+
+        public Task<List<IdentityUserLogin>> AllIncludeUserAsync()
+        {
+            return RepositoryDbSet.Include(ul => ul.User).ToListAsync();
+        }
+
+        public Task<IdentityUserLogin> SingleByIdIncludeUserAsync(int id)
+        {
+            return RepositoryDbSet.Include(ul => ul.User).SingleOrDefaultAsync(ul => ul.IdentityUserLoginId == id);
+        }
+
+        public Task<IdentityUserLogin> FindUserLoginAsync(int userId, string loginProvider, string providerKey,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             return RepositoryDbSet.SingleOrDefaultAsync(
@@ -46,7 +49,7 @@ namespace DAL.EntityFrameworkCore.Repositories
 
         }
 
-        public Task<TUserLogin> FindUserLoginAsync(string loginProvider, string providerKey,
+        public Task<IdentityUserLogin> FindUserLoginAsync(string loginProvider, string providerKey,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             return RepositoryDbSet.SingleOrDefaultAsync(
@@ -56,7 +59,7 @@ namespace DAL.EntityFrameworkCore.Repositories
                 cancellationToken: cancellationToken);
         }
 
-        public Task<List<UserLoginInfo>> GetLoginsAsync(TKey userId, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<List<UserLoginInfo>> GetLoginsAsync(int userId, CancellationToken cancellationToken = default(CancellationToken))
         {
             return RepositoryDbSet
                 // ReSharper disable ArgumentsStyleNamedExpression

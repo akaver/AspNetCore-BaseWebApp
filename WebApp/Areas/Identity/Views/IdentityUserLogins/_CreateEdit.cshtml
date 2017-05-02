@@ -1,0 +1,29 @@
+﻿@model WebApp.Areas.Identity.ViewModels.IdentityUserLoginsCreateEditViewModel
+
+<div class="form-group">
+    <label asp-for="IdentityUserLogin.UserId" class="col-md-2 control-label"></label>
+    <div class="col-md-10">
+        <select asp-for="IdentityUserLogin.UserId" class="form-control" asp-items="Model.UserSelectList"></select>
+    </div>
+</div>
+<div class="form-group">
+    <label asp-for="IdentityUserLogin.LoginProvider" class="col-md-2 control-label"></label>
+    <div class="col-md-10">
+        <input asp-for="IdentityUserLogin.LoginProvider" class="form-control" />
+        <span asp-validation-for="IdentityUserLogin.LoginProvider" class="text-danger"></span>
+    </div>
+</div>
+<div class="form-group">
+    <label asp-for="IdentityUserLogin.ProviderDisplayName" class="col-md-2 control-label"></label>
+    <div class="col-md-10">
+        <input asp-for="IdentityUserLogin.ProviderDisplayName" class="form-control" />
+        <span asp-validation-for="IdentityUserLogin.ProviderDisplayName" class="text-danger"></span>
+    </div>
+</div>
+<div class="form-group">
+    <label asp-for="IdentityUserLogin.ProviderKey" class="col-md-2 control-label"></label>
+    <div class="col-md-10">
+        <input asp-for="IdentityUserLogin.ProviderKey" class="form-control" />
+        <span asp-validation-for="IdentityUserLogin.ProviderKey" class="text-danger"></span>
+    </div>
+</div>

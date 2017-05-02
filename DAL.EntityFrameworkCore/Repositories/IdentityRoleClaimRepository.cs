@@ -11,35 +11,35 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.EntityFrameworkCore.Repositories
 {
-    public class IdentityRoleClaimRepository : IdentityRoleClaimRepository<IdentityRoleClaim<int>>, IIdentityRoleClaimRepository
+    public class IdentityRoleClaimRepository : EFRepository<IdentityRoleClaim>, IIdentityRoleClaimRepository
     {
-        public IdentityRoleClaimRepository(IDataContext dataContext) : base(dataContext: dataContext)
+        public bool Exists(int id)
         {
-        }
-    }
-    public class IdentityRoleClaimRepository<TRoleClaim> : IdentityRoleClaimRepository<int, TRoleClaim>, IIdentityRoleClaimRepository<TRoleClaim>
-        where TRoleClaim : IdentityRoleClaim<int>, new()
-    {
-        public IdentityRoleClaimRepository(IDataContext dataContext) : base(dataContext: dataContext)
-        {
-        }
-    }
-
-    public class IdentityRoleClaimRepository<TKey, TIdentityRoleClaim> : EFRepository<TIdentityRoleClaim>, IIdentityRoleClaimRepository<TKey, TIdentityRoleClaim>
-        where TKey : IEquatable<TKey>
-        where TIdentityRoleClaim : IdentityRoleClaim<TKey>, new()
-    {
-        public IdentityRoleClaimRepository(IDataContext dataContext) : base(dataContext: dataContext)
-        {
+            return RepositoryDbSet.Any(r => r.IdentityRoleClaimId.Equals(id));
         }
 
-        public async Task<IList<Claim>> GetClaimsAsync(TKey roleId, CancellationToken cancellationToken = new CancellationToken())
+        public Task<bool> ExistsAsync(int id)
+        {
+            return RepositoryDbSet.AnyAsync(r => r.IdentityRoleClaimId.Equals(id));
+        }
+
+        public Task<List<IdentityRoleClaim>> AllIncludeRoleAsync()
+        {
+            return RepositoryDbSet.Include(r => r.Role).ToListAsync();
+        }
+
+        public Task<IdentityRoleClaim> SingleByIdIncludeRole(int id)
+        {
+            return RepositoryDbSet.Include(rc => rc.Role).SingleOrDefaultAsync(rc => rc.IdentityRoleClaimId == id);
+        }
+
+        public async Task<IList<Claim>> GetClaimsAsync(int roleId, CancellationToken cancellationToken = new CancellationToken())
         {
             // ReSharper disable once ArgumentsStyleNamedExpression
             return await RepositoryDbSet.Where(predicate: rc => rc.RoleId.Equals(roleId)).Select(selector: c => new Claim(c.ClaimType, c.ClaimValue)).ToListAsync(cancellationToken: cancellationToken);
         }
 
-        public async Task RemoveClaimAsync(TKey roleId, Claim claim, CancellationToken cancellationToken = new CancellationToken())
+        public async Task RemoveClaimAsync(int roleId, Claim claim, CancellationToken cancellationToken = new CancellationToken())
         {
             // ReSharper disable once ArgumentsStyleNamedExpression
             var claims = await RepositoryDbSet.Where(predicate: rc => rc.RoleId.Equals(roleId) && rc.ClaimValue == claim.Value && rc.ClaimType == claim.Type).ToListAsync(cancellationToken: cancellationToken);
@@ -49,6 +49,11 @@ namespace DAL.EntityFrameworkCore.Repositories
             }
 
         }
+
+        public IdentityRoleClaimRepository(IDataContext dataContext) : base(dataContext: dataContext)
+        {
+        }
+
     }
 
 }

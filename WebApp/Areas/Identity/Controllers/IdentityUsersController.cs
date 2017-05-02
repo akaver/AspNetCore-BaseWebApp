@@ -9,10 +9,12 @@ using Microsoft.EntityFrameworkCore;
 using AspNetCore.Identity.Uow.Models;
 using DAL;
 using DAL.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebApp.Areas.Identity.Controllers
 {
     [Area(areaName: "Identity")]
+    [Authorize(Roles = "Admin")]
     public class IdentityUsersController : Controller
     {
         private readonly IIdentityUnitOfWork _uow;
@@ -25,7 +27,7 @@ namespace WebApp.Areas.Identity.Controllers
         // GET: Identity/IdentityUsers
         public async Task<IActionResult> Index()
         {
-            return View(model: await _uow.IdentityUsers.AllAsync());
+            return View(model: await _uow.IdentityUsers.AllIncludeRolesAsync());
         }
 
         // GET: Identity/IdentityUsers/Details/5
@@ -36,7 +38,7 @@ namespace WebApp.Areas.Identity.Controllers
                 return NotFound();
             }
 
-            var identityUser = await _uow.IdentityUsers.FindAsync(id.Value);
+            var identityUser = await _uow.IdentityUsers.FindByIdIncludeRolesAsync(id.Value);
             if (identityUser == null)
             {
                 return NotFound();
@@ -123,7 +125,7 @@ namespace WebApp.Areas.Identity.Controllers
                 return NotFound();
             }
 
-            var identityUser = await _uow.IdentityUsers.FindAsync(id.Value);
+            var identityUser = await _uow.IdentityUsers.FindByIdIncludeRolesAsync(id.Value);
             if (identityUser == null)
             {
                 return NotFound();

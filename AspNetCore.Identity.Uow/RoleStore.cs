@@ -15,41 +15,14 @@ using Microsoft.EntityFrameworkCore;
 namespace AspNetCore.Identity.Uow
 {
 
-    public class RoleStore : RoleStore<IdentityRole>
-    {
-        public RoleStore(IIdentityUnitOfWork uow, IdentityErrorDescriber describer = null) : base(uow, describer)
-        {
-        }
-    }
-
-    public class RoleStore<TRole> : RoleStore<int, TRole, IdentityUserRole, IdentityRoleClaim, IIdentityRoleRepository<TRole>, IIdentityRoleClaimRepository<IdentityRoleClaim>>
-        where TRole : IdentityRole<int>, new()
-    {
-        public RoleStore(IIdentityUnitOfWork uow, IdentityErrorDescriber describer = null) : base(uow, describer)
-        {
-        }
-    }
 
     /// <summary>
     /// Creates a new instance of a persistence store for roles.
     /// </summary>
-    /// <typeparam name="TKey">The type of the primary key for a role.</typeparam>
-    /// <typeparam name="TRole">The type of the class representing a role.</typeparam>
-    /// <typeparam name="TUserRole">The type of the class representing a user role.</typeparam>
-    /// <typeparam name="TRoleClaim">The type of the class representing a role claim.</typeparam>
-    /// <typeparam name="TRoleRepository">The type of repository used to access the role store inside the uow.</typeparam>
-    /// <typeparam name="TRoleClaimRepository">The type of repository used to access the roleclaim store inside the uow.</typeparam>
-    public class RoleStore<TKey, TRole, TUserRole, TRoleClaim, TRoleRepository, TRoleClaimRepository> :
-        IRoleClaimStore<TRole>
-        where TKey : IEquatable<TKey>
-        where TRole : IdentityRole<TKey>, new()
-        where TUserRole : IdentityUserRole<TKey>, new()
-        where TRoleClaim : IdentityRoleClaim<TKey>, new()
-        where TRoleRepository : class, IIdentityRoleRepository<TKey, TRole>
-        where TRoleClaimRepository : class, IIdentityRoleClaimRepository<TKey, TRoleClaim>
+    public class RoleStore : IRoleClaimStore<IdentityRole>
     {
         /// <summary>
-        /// Constructs a new instance of <see cref="RoleStore{TKey, TRole, TUserRole, TRoleClaim, TUnitOfWork, TRoleRepository}"/>.
+        /// Constructs a new instance of RoleStore.
         /// </summary>
         /// <param name="uow">The <see cref="IIdentityUnitOfWork"/>.</param>
         /// <param name="describer">The <see cref="IdentityErrorDescriber"/>.</param>
@@ -102,7 +75,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="role">The role to create in the store.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>A <see cref="Task{TResult}"/> that represents the <see cref="IdentityResult"/> of the asynchronous query.</returns>
-        public virtual async Task<IdentityResult> CreateAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<IdentityResult> CreateAsync(IdentityRole role, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -110,7 +83,7 @@ namespace AspNetCore.Identity.Uow
             {
                 throw new ArgumentNullException(paramName: nameof(role));
             }
-            Uow.GetCustomRepository<TRoleRepository>().Add(entity: role);
+            Uow.GetCustomRepository<IIdentityRoleRepository>().Add(entity: role);
             await SaveChanges(cancellationToken: cancellationToken);
             return IdentityResult.Success;
         }
@@ -121,7 +94,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="role">The role to update in the store.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>A <see cref="Task{TResult}"/> that represents the <see cref="IdentityResult"/> of the asynchronous query.</returns>
-        public virtual async Task<IdentityResult> UpdateAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<IdentityResult> UpdateAsync(IdentityRole role, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -132,7 +105,7 @@ namespace AspNetCore.Identity.Uow
 
             //Context.Attach(role);
             role.ConcurrencyStamp = Guid.NewGuid().ToString();
-            Uow.GetCustomRepository<TRoleRepository>().Update(entity: role);
+            Uow.GetCustomRepository<IIdentityRoleRepository>().Update(entity: role);
 
             try
             {
@@ -155,7 +128,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="role">The role to delete from the store.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>A <see cref="Task{TResult}"/> that represents the <see cref="IdentityResult"/> of the asynchronous query.</returns>
-        public virtual async Task<IdentityResult> DeleteAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<IdentityResult> DeleteAsync(IdentityRole role, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -163,7 +136,7 @@ namespace AspNetCore.Identity.Uow
             {
                 throw new ArgumentNullException(paramName: nameof(role));
             }
-            Uow.GetCustomRepository<TRoleRepository>().Remove(entity: role);
+            Uow.GetCustomRepository<IIdentityRoleRepository>().Remove(entity: role);
             try
             {
                 await SaveChanges(cancellationToken: cancellationToken);
@@ -185,7 +158,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="role">The role whose ID should be returned.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>A <see cref="Task{TResult}"/> that contains the ID of the role.</returns>
-        public virtual Task<string> GetRoleIdAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<string> GetRoleIdAsync(IdentityRole role, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -202,7 +175,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="role">The role whose name should be returned.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>A <see cref="Task{TResult}"/> that contains the name of the role.</returns>
-        public virtual Task<string> GetRoleNameAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<string> GetRoleNameAsync(IdentityRole role, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -220,7 +193,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="roleName">The name of the role.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public virtual Task SetRoleNameAsync(TRole role, string roleName, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task SetRoleNameAsync(IdentityRole role, string roleName, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -236,14 +209,14 @@ namespace AspNetCore.Identity.Uow
         /// Converts the provided <paramref name="id"/> to a strongly typed key object.
         /// </summary>
         /// <param name="id">The id to convert.</param>
-        /// <returns>An instance of <typeparamref name="TKey"/> representing the provided <paramref name="id"/>.</returns>
-        public virtual TKey ConvertIdFromString(string id)
+        /// <returns>An instance of <typeparamref name="int"/> representing the provided <paramref name="id"/>.</returns>
+        public virtual int ConvertIdFromString(string id)
         {
             if (id == null)
             {
-                return default(TKey);
+                return default(int);
             }
-            return (TKey)TypeDescriptor.GetConverter(type: typeof(TKey)).ConvertFromInvariantString(text: id);
+            return (int)TypeDescriptor.GetConverter(type: typeof(int)).ConvertFromInvariantString(text: id);
         }
 
         /// <summary>
@@ -251,9 +224,9 @@ namespace AspNetCore.Identity.Uow
         /// </summary>
         /// <param name="id">The id to convert.</param>
         /// <returns>An <see cref="string"/> representation of the provided <paramref name="id"/>.</returns>
-        public virtual string ConvertIdToString(TKey id)
+        public virtual string ConvertIdToString(int id)
         {
-            if (id.Equals(other: default(TKey)))
+            if (id.Equals(default(int)))
             {
                 return null;
             }
@@ -266,13 +239,13 @@ namespace AspNetCore.Identity.Uow
         /// <param name="id">The role ID to look for.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>A <see cref="Task{TResult}"/> that result of the look up.</returns>
-        public virtual Task<TRole> FindByIdAsync(string id, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<IdentityRole> FindByIdAsync(string id, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
 
             var roleId = ConvertIdFromString(id: id);
-            return Uow.GetCustomRepository<TRoleRepository>().FindAsync(roleId, cancellationToken);
+            return Uow.GetCustomRepository<IIdentityRoleRepository>().FindAsync(roleId, cancellationToken);
             
             //return Roles.FirstOrDefaultAsync(predicate: u => u.IdentityRoleId.Equals(roleId), cancellationToken: cancellationToken);
         }
@@ -283,12 +256,12 @@ namespace AspNetCore.Identity.Uow
         /// <param name="normalizedName">The normalized role name to look for.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>A <see cref="Task{TResult}"/> that result of the look up.</returns>
-        public virtual Task<TRole> FindByNameAsync(string normalizedName, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<IdentityRole> FindByNameAsync(string normalizedName, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
 
-            return Uow.GetCustomRepository<TRoleRepository>().FindByNameAsync(normalizedName: normalizedName, cancellationToken: cancellationToken);
+            return Uow.GetCustomRepository<IIdentityRoleRepository>().FindByNameAsync(normalizedName: normalizedName, cancellationToken: cancellationToken);
 
             // return Roles.FirstOrDefaultAsync(predicate: r => r.NormalizedName == normalizedName, cancellationToken: cancellationToken);
         }
@@ -299,7 +272,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="role">The role whose normalized name should be retrieved.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>A <see cref="Task{TResult}"/> that contains the name of the role.</returns>
-        public virtual Task<string> GetNormalizedRoleNameAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<string> GetNormalizedRoleNameAsync(IdentityRole role, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -317,7 +290,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="normalizedName">The normalized name to set</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public virtual Task SetNormalizedRoleNameAsync(TRole role, string normalizedName, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task SetNormalizedRoleNameAsync(IdentityRole role, string normalizedName, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -354,7 +327,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="role">The role whose claims should be retrieved.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>A <see cref="Task{TResult}"/> that contains the claims granted to a role.</returns>
-        public virtual async Task<IList<Claim>> GetClaimsAsync(TRole role, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<IList<Claim>> GetClaimsAsync(IdentityRole role, CancellationToken cancellationToken = default(CancellationToken))
         {
             ThrowIfDisposed();
             if (role == null)
@@ -362,7 +335,7 @@ namespace AspNetCore.Identity.Uow
                 throw new ArgumentNullException(paramName: nameof(role));
             }
 
-            return await Uow.GetCustomRepository<TRoleClaimRepository>().GetClaimsAsync(roleId: role.IdentityRoleId, cancellationToken: cancellationToken);
+            return await Uow.GetCustomRepository<IIdentityRoleClaimRepository>().GetClaimsAsync(roleId: role.IdentityRoleId, cancellationToken: cancellationToken);
 
             //return await RoleClaims.Where(predicate: rc => rc.RoleId.Equals(other: role.Id)).Select(selector: c => new Claim(type: c.ClaimType, value: c.ClaimValue)).ToListAsync(cancellationToken);
         }
@@ -374,7 +347,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="claim">The claim to add to the role.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public virtual Task AddClaimAsync(TRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task AddClaimAsync(IdentityRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
         {
             ThrowIfDisposed();
             if (role == null)
@@ -386,7 +359,7 @@ namespace AspNetCore.Identity.Uow
                 throw new ArgumentNullException(paramName: nameof(claim));
             }
 
-            Uow.GetCustomRepository<TRoleClaimRepository>().Add(entity: CreateRoleClaim(role: role, claim: claim));
+            Uow.GetCustomRepository<IIdentityRoleClaimRepository>().Add(entity: CreateRoleClaim(role: role, claim: claim));
             return Task.FromResult(result: false);
         }
 
@@ -397,7 +370,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="claim">The claim to remove from the role.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public virtual async Task RemoveClaimAsync(TRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task RemoveClaimAsync(IdentityRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
         {
             ThrowIfDisposed();
             if (role == null)
@@ -411,7 +384,7 @@ namespace AspNetCore.Identity.Uow
 
             //var claims = await RoleClaims.Where(predicate: rc => rc.RoleId.Equals(other: role.Id) && rc.ClaimValue == claim.Value && rc.ClaimType == claim.Type).ToListAsync(cancellationToken);
 
-            await Uow.GetCustomRepository<TRoleClaimRepository>()
+            await Uow.GetCustomRepository<IIdentityRoleClaimRepository>()
                 .RemoveClaimAsync(roleId: role.IdentityRoleId, claim: claim, cancellationToken: cancellationToken);
         }
 
@@ -421,9 +394,9 @@ namespace AspNetCore.Identity.Uow
         /// <param name="role">The associated role.</param>
         /// <param name="claim">The associated claim.</param>
         /// <returns>The role claim entity.</returns>
-        protected virtual TRoleClaim CreateRoleClaim(TRole role, Claim claim)
+        protected virtual IdentityRoleClaim CreateRoleClaim(IdentityRole role, Claim claim)
         {
-            return new TRoleClaim { RoleId = role.IdentityRoleId, ClaimType = claim.Type, ClaimValue = claim.Value };
+            return new IdentityRoleClaim { RoleId = role.IdentityRoleId, ClaimType = claim.Type, ClaimValue = claim.Value };
         }
     }
 }

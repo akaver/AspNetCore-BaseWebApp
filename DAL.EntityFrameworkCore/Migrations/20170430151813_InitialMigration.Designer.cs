@@ -8,7 +8,7 @@ using DAL.EntityFrameworkCore;
 namespace DAL.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20170430134638_InitialMigration")]
+    [Migration("20170430151813_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -17,16 +17,13 @@ namespace DAL.EntityFrameworkCore.Migrations
                 .HasAnnotation("ProductVersion", "1.1.1")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("AspNetCore.Identity.Uow.Models.IdentityRole<int>", b =>
+            modelBuilder.Entity("AspNetCore.Identity.Uow.Models.IdentityRole", b =>
                 {
                     b.Property<int>("IdentityRoleId")
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired();
 
                     b.Property<string>("Name")
                         .HasMaxLength(255);
@@ -41,11 +38,9 @@ namespace DAL.EntityFrameworkCore.Migrations
                         .HasName("RoleNameIndex");
 
                     b.ToTable("IdentityRoles");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityRole<int>");
                 });
 
-            modelBuilder.Entity("AspNetCore.Identity.Uow.Models.IdentityRoleClaim<int>", b =>
+            modelBuilder.Entity("AspNetCore.Identity.Uow.Models.IdentityRoleClaim", b =>
                 {
                     b.Property<int>("IdentityRoleClaimId")
                         .ValueGeneratedOnAdd();
@@ -54,9 +49,6 @@ namespace DAL.EntityFrameworkCore.Migrations
 
                     b.Property<string>("ClaimValue");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired();
-
                     b.Property<int>("RoleId");
 
                     b.HasKey("IdentityRoleClaimId");
@@ -64,11 +56,9 @@ namespace DAL.EntityFrameworkCore.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("IdentityRoleClaims");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityRoleClaim<int>");
                 });
 
-            modelBuilder.Entity("AspNetCore.Identity.Uow.Models.IdentityUser<int>", b =>
+            modelBuilder.Entity("AspNetCore.Identity.Uow.Models.IdentityUser", b =>
                 {
                     b.Property<int>("IdentityUserId")
                         .ValueGeneratedOnAdd();
@@ -77,9 +67,6 @@ namespace DAL.EntityFrameworkCore.Migrations
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired();
 
                     b.Property<string>("Email")
                         .HasMaxLength(255);
@@ -119,11 +106,9 @@ namespace DAL.EntityFrameworkCore.Migrations
                         .HasName("UserNameIndex");
 
                     b.ToTable("IdentityUsers");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser<int>");
                 });
 
-            modelBuilder.Entity("AspNetCore.Identity.Uow.Models.IdentityUserClaim<int>", b =>
+            modelBuilder.Entity("AspNetCore.Identity.Uow.Models.IdentityUserClaim", b =>
                 {
                     b.Property<int>("IdentityUserClaimId")
                         .ValueGeneratedOnAdd();
@@ -132,9 +117,6 @@ namespace DAL.EntityFrameworkCore.Migrations
 
                     b.Property<string>("ClaimValue");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired();
-
                     b.Property<int>("UserId");
 
                     b.HasKey("IdentityUserClaimId");
@@ -142,17 +124,12 @@ namespace DAL.EntityFrameworkCore.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("IdentityUserClaims");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUserClaim<int>");
                 });
 
-            modelBuilder.Entity("AspNetCore.Identity.Uow.Models.IdentityUserLogin<int>", b =>
+            modelBuilder.Entity("AspNetCore.Identity.Uow.Models.IdentityUserLogin", b =>
                 {
                     b.Property<int>("IdentityUserLoginId")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired();
 
                     b.Property<string>("LoginProvider");
 
@@ -170,17 +147,12 @@ namespace DAL.EntityFrameworkCore.Migrations
                         .IsUnique();
 
                     b.ToTable("IdentityUserLogins");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUserLogin<int>");
                 });
 
-            modelBuilder.Entity("AspNetCore.Identity.Uow.Models.IdentityUserRole<int>", b =>
+            modelBuilder.Entity("AspNetCore.Identity.Uow.Models.IdentityUserRole", b =>
                 {
                     b.Property<int>("IdentityUserRoleId")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired();
 
                     b.Property<int>("RoleId");
 
@@ -194,17 +166,12 @@ namespace DAL.EntityFrameworkCore.Migrations
                         .IsUnique();
 
                     b.ToTable("IdentityUserRoles");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUserRole<int>");
                 });
 
-            modelBuilder.Entity("AspNetCore.Identity.Uow.Models.IdentityUserToken<int>", b =>
+            modelBuilder.Entity("AspNetCore.Identity.Uow.Models.IdentityUserToken", b =>
                 {
                     b.Property<int>("IdentityUserTokenId")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired();
 
                     b.Property<string>("LoginProvider");
 
@@ -220,115 +187,43 @@ namespace DAL.EntityFrameworkCore.Migrations
                         .IsUnique();
 
                     b.ToTable("IdentityUserTokens");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUserToken<int>");
-                });
-
-            modelBuilder.Entity("AspNetCore.Identity.Uow.Models.IdentityRole", b =>
-                {
-                    b.HasBaseType("AspNetCore.Identity.Uow.Models.IdentityRole<int>");
-
-
-                    b.ToTable("IdentityRole");
-
-                    b.HasDiscriminator().HasValue("IdentityRole");
                 });
 
             modelBuilder.Entity("AspNetCore.Identity.Uow.Models.IdentityRoleClaim", b =>
                 {
-                    b.HasBaseType("AspNetCore.Identity.Uow.Models.IdentityRoleClaim<int>");
-
-
-                    b.ToTable("IdentityRoleClaim");
-
-                    b.HasDiscriminator().HasValue("IdentityRoleClaim");
-                });
-
-            modelBuilder.Entity("AspNetCore.Identity.Uow.Models.IdentityUser", b =>
-                {
-                    b.HasBaseType("AspNetCore.Identity.Uow.Models.IdentityUser<int>");
-
-
-                    b.ToTable("IdentityUser");
-
-                    b.HasDiscriminator().HasValue("IdentityUser");
+                    b.HasOne("AspNetCore.Identity.Uow.Models.IdentityRole", "Role")
+                        .WithMany("Claims")
+                        .HasForeignKey("RoleId");
                 });
 
             modelBuilder.Entity("AspNetCore.Identity.Uow.Models.IdentityUserClaim", b =>
                 {
-                    b.HasBaseType("AspNetCore.Identity.Uow.Models.IdentityUserClaim<int>");
-
-
-                    b.ToTable("IdentityUserClaim");
-
-                    b.HasDiscriminator().HasValue("IdentityUserClaim");
+                    b.HasOne("AspNetCore.Identity.Uow.Models.IdentityUser", "User")
+                        .WithMany("Claims")
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("AspNetCore.Identity.Uow.Models.IdentityUserLogin", b =>
                 {
-                    b.HasBaseType("AspNetCore.Identity.Uow.Models.IdentityUserLogin<int>");
-
-
-                    b.ToTable("IdentityUserLogin");
-
-                    b.HasDiscriminator().HasValue("IdentityUserLogin");
-                });
-
-            modelBuilder.Entity("AspNetCore.Identity.Uow.Models.IdentityUserRole", b =>
-                {
-                    b.HasBaseType("AspNetCore.Identity.Uow.Models.IdentityUserRole<int>");
-
-
-                    b.ToTable("IdentityUserRole");
-
-                    b.HasDiscriminator().HasValue("IdentityUserRole");
-                });
-
-            modelBuilder.Entity("AspNetCore.Identity.Uow.Models.IdentityUserToken", b =>
-                {
-                    b.HasBaseType("AspNetCore.Identity.Uow.Models.IdentityUserToken<int>");
-
-
-                    b.ToTable("IdentityUserToken");
-
-                    b.HasDiscriminator().HasValue("IdentityUserToken");
-                });
-
-            modelBuilder.Entity("AspNetCore.Identity.Uow.Models.IdentityRoleClaim<int>", b =>
-                {
-                    b.HasOne("AspNetCore.Identity.Uow.Models.IdentityRole<int>", "Role")
-                        .WithMany("Claims")
-                        .HasForeignKey("RoleId");
-                });
-
-            modelBuilder.Entity("AspNetCore.Identity.Uow.Models.IdentityUserClaim<int>", b =>
-                {
-                    b.HasOne("AspNetCore.Identity.Uow.Models.IdentityUser<int>", "User")
-                        .WithMany("Claims")
-                        .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("AspNetCore.Identity.Uow.Models.IdentityUserLogin<int>", b =>
-                {
-                    b.HasOne("AspNetCore.Identity.Uow.Models.IdentityUser<int>", "User")
+                    b.HasOne("AspNetCore.Identity.Uow.Models.IdentityUser", "User")
                         .WithMany("Logins")
                         .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("AspNetCore.Identity.Uow.Models.IdentityUserRole<int>", b =>
+            modelBuilder.Entity("AspNetCore.Identity.Uow.Models.IdentityUserRole", b =>
                 {
-                    b.HasOne("AspNetCore.Identity.Uow.Models.IdentityRole<int>", "Role")
+                    b.HasOne("AspNetCore.Identity.Uow.Models.IdentityRole", "Role")
                         .WithMany("Users")
                         .HasForeignKey("RoleId");
 
-                    b.HasOne("AspNetCore.Identity.Uow.Models.IdentityUser<int>", "User")
+                    b.HasOne("AspNetCore.Identity.Uow.Models.IdentityUser", "User")
                         .WithMany("Roles")
                         .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("AspNetCore.Identity.Uow.Models.IdentityUserToken<int>", b =>
+            modelBuilder.Entity("AspNetCore.Identity.Uow.Models.IdentityUserToken", b =>
                 {
-                    b.HasOne("AspNetCore.Identity.Uow.Models.IdentityUser<int>", "User")
+                    b.HasOne("AspNetCore.Identity.Uow.Models.IdentityUser", "User")
                         .WithMany("Tokens")
                         .HasForeignKey("UserId");
                 });

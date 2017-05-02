@@ -11,6 +11,7 @@
   <PropertyGroup>
     <UserSecretsId>aspnet-WebApp-2d8fbc15-9ef7-435f-876b-34551211bd04</UserSecretsId>
   </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore" Version="1.1.1" />
@@ -40,7 +41,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\Identity\Controllers\" />
-    <Folder Include="Areas\Identity\ViewModels\" />
   </ItemGroup>
 
 </Project>

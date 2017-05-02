@@ -9,10 +9,12 @@ using Microsoft.EntityFrameworkCore;
 using AspNetCore.Identity.Uow.Models;
 using DAL;
 using DAL.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebApp.Areas.Identity.Controllers
 {
-    [Area("Identity")]
+    [Area(areaName: "Identity")]
+    [Authorize(Roles = "Admin")]
     public class IdentityRolesController : Controller
     {
         private readonly IIdentityUnitOfWork _uow;
@@ -25,7 +27,8 @@ namespace WebApp.Areas.Identity.Controllers
         // GET: Identity/IdentityRoles
         public async Task<IActionResult> Index()
         {
-            return View(model: await _uow.IdentityRoles.AllAsync());
+
+            return View(model: await _uow.IdentityRoles.AllIncludeUserAsync());
         }
 
         // GET: Identity/IdentityRoles/Details/5
@@ -42,7 +45,7 @@ namespace WebApp.Areas.Identity.Controllers
                 return NotFound();
             }
 
-            return View(identityRole);
+            return View(model: identityRole);
         }
 
         // GET: Identity/IdentityRoles/Create
@@ -60,11 +63,11 @@ namespace WebApp.Areas.Identity.Controllers
         {
             if (ModelState.IsValid)
             {
-                _uow.IdentityRoles.Add(identityRole);
+                _uow.IdentityRoles.Add(entity: identityRole);
                 await _uow.SaveChangesAsync();
-                return RedirectToAction("Index");
+                return RedirectToAction(actionName: nameof(Index));
             }
-            return View(identityRole);
+            return View(model: identityRole);
         }
 
         // GET: Identity/IdentityRoles/Edit/5
@@ -80,7 +83,7 @@ namespace WebApp.Areas.Identity.Controllers
             {
                 return NotFound();
             }
-            return View(identityRole);
+            return View(model: identityRole);
         }
 
         // POST: Identity/IdentityRoles/Edit/5
@@ -99,12 +102,12 @@ namespace WebApp.Areas.Identity.Controllers
             {
                 try
                 {
-                    _uow.IdentityRoles.Update(identityRole);
+                    _uow.IdentityRoles.Update(entity: identityRole);
                     await _uow.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!IdentityRoleExists(identityRole.IdentityRoleId))
+                    if (!IdentityRoleExists(id: identityRole.IdentityRoleId))
                     {
                         return NotFound();
                     }
@@ -113,9 +116,9 @@ namespace WebApp.Areas.Identity.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("Index");
+                return RedirectToAction(actionName: nameof(Index));
             }
-            return View(identityRole);
+            return View(model: identityRole);
         }
 
         // GET: Identity/IdentityRoles/Delete/5
@@ -132,22 +135,22 @@ namespace WebApp.Areas.Identity.Controllers
                 return NotFound();
             }
 
-            return View(identityRole);
+            return View(model: identityRole);
         }
 
         // POST: Identity/IdentityRoles/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost, ActionName(name: nameof(Delete))]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             _uow.IdentityRoles.Remove(id);
             await _uow.SaveChangesAsync();
-            return RedirectToAction("Index");
+            return RedirectToAction(actionName: nameof(Index));
         }
 
         private bool IdentityRoleExists(int id)
         {
-            return _uow.IdentityRoles.Exists(id);
+            return _uow.IdentityRoles.Exists(id: id);
         }
     }
 }

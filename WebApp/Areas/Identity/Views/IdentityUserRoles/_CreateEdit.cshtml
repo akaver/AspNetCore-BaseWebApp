@@ -1,0 +1,15 @@
+﻿@model WebApp.Areas.Identity.ViewModels.IdentityUserRolesCreateEditViewModel
+
+<div class="form-group">
+    <label asp-for="IdentityUserRole.User" class="col-md-2 control-label"></label>
+    <div class="col-md-10">
+        <select asp-for="IdentityUserRole.UserId" class ="form-control" asp-items="Model.UserSelectList"></select>
+    </div>
+</div>
+
+<div class="form-group">
+    <label asp-for="IdentityUserRole.Role" class="col-md-2 control-label"></label>
+    <div class="col-md-10">
+        <select asp-for="IdentityUserRole.RoleId" class ="form-control" asp-items="Model.RoleSelectList"></select>
+    </div>
+</div>

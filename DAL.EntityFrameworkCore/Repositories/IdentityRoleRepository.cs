@@ -10,37 +10,35 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.EntityFrameworkCore.Repositories
 {
-
-    public class IdentityRoleRepository : IdentityRoleRepository<IdentityRole>, IIdentityRoleRepository
-    {
-        public IdentityRoleRepository(IDataContext dataContext) : base(dataContext: dataContext)
-        {
-        }
-    }
-
-    public class IdentityRoleRepository<TRole> : IdentityRoleRepository<int, TRole>, IIdentityRoleRepository<TRole>
-        where TRole : IdentityRole<int>, new()
-    {
-        public IdentityRoleRepository(IDataContext dataContext) : base(dataContext: dataContext)
-        {
-        }
-    }
-
-
-    public class IdentityRoleRepository<TKey, TRole> : EFRepository<TRole>, IIdentityRoleRepository<TKey, TRole>
-        where TKey : IEquatable<TKey>
-        where TRole : IdentityRole<TKey>, new()
+    public class IdentityRoleRepository : EFRepository<IdentityRole>, IIdentityRoleRepository
     {
         public IdentityRoleRepository(IDataContext dataContext) : base(dataContext: dataContext)
         {
         }
 
-        public bool Exists(TKey id)
+        public bool Exists(int id)
         {
             return RepositoryDbSet.Any(r => r.IdentityRoleId.Equals(id));
         }
 
-        public Task<TRole> FindByNameAsync(string normalizedName, CancellationToken cancellationToken = new CancellationToken())
+        public Task<bool> ExistsAsync(int id)
+        {
+            return RepositoryDbSet.AnyAsync(r => r.IdentityRoleId.Equals(id));
+        }
+
+        public Task<IdentityRole> SingleByIdIncludeUserAsync(int id)
+        {
+            return RepositoryDbSet.Include(r => r.Users)
+                .ThenInclude(u => u.User)
+                .SingleOrDefaultAsync(r => r.IdentityRoleId == id);
+        }
+
+        public Task<List<IdentityRole>> AllIncludeUserAsync()
+        {
+            return RepositoryDbSet.Include(r => r.Users).ThenInclude(u => u.User).ToListAsync();
+        }
+
+        public Task<IdentityRole> FindByNameAsync(string normalizedName, CancellationToken cancellationToken = new CancellationToken())
         {
             return RepositoryDbSet.FirstOrDefaultAsync(predicate: r => r.NormalizedName == normalizedName, cancellationToken: cancellationToken);
         }

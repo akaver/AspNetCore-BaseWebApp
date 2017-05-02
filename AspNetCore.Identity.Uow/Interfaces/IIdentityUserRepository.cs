@@ -9,30 +9,24 @@ using DAL.Repositories;
 
 namespace AspNetCore.Identity.Uow.Interfaces
 {
-    public interface IIdentityUserRepository : IIdentityUserRepository<IdentityUser>
+
+    public interface IIdentityUserRepository : IRepository<IdentityUser>
     {
-    }
+        bool Exists(int id);
 
-    public interface IIdentityUserRepository<TUser> : IIdentityUserRepository<int, TUser>
-        where TUser : IdentityUser<int>, new()
-    {
-    }
+        Task<bool> ExistsAsync(int id);
 
-    public interface IIdentityUserRepository<TKey, TUser> : IRepository<TUser>
-        where TKey : IEquatable<TKey>
-        where TUser : IdentityUser<TKey>, new()
-    {
-        bool Exists(TKey id);
+        Task<List<IdentityUser>> AllIncludeRolesAsync();
 
-        Task<bool> ExistsAsync(TKey id);
+        Task<IdentityUser> FindByIdIncludeRolesAsync(int userId);
 
-        Task<TUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken = default(CancellationToken));
+        Task<IdentityUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken = default(CancellationToken));
 
-        Task<TUser> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken = default(CancellationToken));
+        Task<IdentityUser> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken = default(CancellationToken));
 
-        Task<List<TUser>> GetUsersForClaimAsync(Claim claim, CancellationToken cancellationToken = default(CancellationToken));
+        Task<List<IdentityUser>> GetUsersForClaimAsync(Claim claim, CancellationToken cancellationToken = default(CancellationToken));
 
-        Task<List<TUser>> GetUsersInRoleAsync(TKey roleId, CancellationToken cancellationToken = default(CancellationToken));
+        Task<List<IdentityUser>> GetUsersInRoleAsync(int roleId, CancellationToken cancellationToken = default(CancellationToken));
 
     }
 

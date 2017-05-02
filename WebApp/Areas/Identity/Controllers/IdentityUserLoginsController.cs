@@ -2,29 +2,33 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AspNetCore.Identity.Uow.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AspNetCore.Identity.Uow.Models;
 using DAL.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using WebApp.Areas.Identity.ViewModels;
 
 namespace WebApp.Areas.Identity.Controllers
 {
-    [Area("Identity")]
+    [Area(areaName: "Identity")]
+    [Authorize(Roles = "Admin")]
     public class IdentityUserLoginsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IIdentityUnitOfWork _uow;
 
-        public IdentityUserLoginsController(ApplicationDbContext context)
+        public IdentityUserLoginsController(IIdentityUnitOfWork uow)
         {
-            _context = context;    
+            _uow = uow;
         }
 
         // GET: Identity/IdentityUserLogins
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.IdentityUserLogins.Include(i => i.User);
-            return View(await applicationDbContext.ToListAsync());
+            var userLogins = await _uow.IdentityUserLogins.AllIncludeUserAsync();
+            return View(model: userLogins);
         }
 
         // GET: Identity/IdentityUserLogins/Details/5
@@ -35,22 +39,21 @@ namespace WebApp.Areas.Identity.Controllers
                 return NotFound();
             }
 
-            var identityUserLogin = await _context.IdentityUserLogins
-                .Include(i => i.User)
-                .SingleOrDefaultAsync(m => m.IdentityUserLoginId == id);
+            var identityUserLogin = await _uow.IdentityUserLogins.SingleByIdIncludeUserAsync(id: id.Value);
             if (identityUserLogin == null)
             {
                 return NotFound();
             }
 
-            return View(identityUserLogin);
+            return View(model: identityUserLogin);
         }
 
         // GET: Identity/IdentityUserLogins/Create
         public IActionResult Create()
         {
-            ViewData["UserId"] = new SelectList(_context.IdentityUsers, "IdentityUserId", "Discriminator");
-            return View();
+            var vm = new IdentityUserLoginsCreateEditViewModel();
+            vm.UserSelectList = new SelectList(items: _uow.IdentityUsers.All(), dataValueField: nameof(IdentityUser.IdentityUserId), dataTextField: nameof(IdentityUser.Email));
+            return View(model: vm);
         }
 
         // POST: Identity/IdentityUserLogins/Create
@@ -58,16 +61,16 @@ namespace WebApp.Areas.Identity.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdentityUserLoginId,LoginProvider,ProviderKey,ProviderDisplayName,UserId")] IdentityUserLogin identityUserLogin)
+        public async Task<IActionResult> Create(IdentityUserLoginsCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(identityUserLogin);
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Index");
+                _uow.IdentityUserLogins.Add(entity: vm.IdentityUserLogin);
+                await _uow.SaveChangesAsync();
+                return RedirectToAction(actionName: nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.IdentityUsers, "IdentityUserId", "Discriminator", identityUserLogin.UserId);
-            return View(identityUserLogin);
+            vm.UserSelectList = new SelectList(items: _uow.IdentityUsers.All(), dataValueField: nameof(IdentityUser.IdentityUserId), dataTextField: nameof(IdentityUser.Email), selectedValue: vm.IdentityUserLogin.UserId);
+            return View(model: vm);
         }
 
         // GET: Identity/IdentityUserLogins/Edit/5
@@ -78,13 +81,19 @@ namespace WebApp.Areas.Identity.Controllers
                 return NotFound();
             }
 
-            var identityUserLogin = await _context.IdentityUserLogins.SingleOrDefaultAsync(m => m.IdentityUserLoginId == id);
+            var identityUserLogin = await _uow.IdentityUserLogins.SingleByIdIncludeUserAsync(id: id.Value);
             if (identityUserLogin == null)
             {
                 return NotFound();
             }
-            ViewData["UserId"] = new SelectList(_context.IdentityUsers, "IdentityUserId", "Discriminator", identityUserLogin.UserId);
-            return View(identityUserLogin);
+            var vm = new IdentityUserLoginsCreateEditViewModel();
+            vm.IdentityUserLogin = identityUserLogin;
+            vm.UserSelectList = new SelectList(
+                items: _uow.IdentityUsers.All(), 
+                dataValueField: nameof(IdentityUser.IdentityUserId), 
+                dataTextField: nameof(IdentityUser.Email), 
+                selectedValue: vm.IdentityUserLogin.UserId);
+            return View(model: vm);
         }
 
         // POST: Identity/IdentityUserLogins/Edit/5
@@ -92,9 +101,9 @@ namespace WebApp.Areas.Identity.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdentityUserLoginId,LoginProvider,ProviderKey,ProviderDisplayName,UserId")] IdentityUserLogin identityUserLogin)
+        public async Task<IActionResult> Edit(int id, IdentityUserLoginsCreateEditViewModel vm)
         {
-            if (id != identityUserLogin.IdentityUserLoginId)
+            if (id != vm.IdentityUserLogin.IdentityUserLoginId)
             {
                 return NotFound();
             }
@@ -103,12 +112,12 @@ namespace WebApp.Areas.Identity.Controllers
             {
                 try
                 {
-                    _context.Update(identityUserLogin);
-                    await _context.SaveChangesAsync();
+                    _uow.IdentityUserLogins.Update(entity: vm.IdentityUserLogin);
+                    await _uow.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!IdentityUserLoginExists(identityUserLogin.IdentityUserLoginId))
+                    if (!_uow.IdentityUserLogins.Exists(id: vm.IdentityUserLogin.IdentityUserLoginId))
                     {
                         return NotFound();
                     }
@@ -117,10 +126,14 @@ namespace WebApp.Areas.Identity.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("Index");
+                return RedirectToAction(actionName: nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.IdentityUsers, "IdentityUserId", "Discriminator", identityUserLogin.UserId);
-            return View(identityUserLogin);
+            vm.UserSelectList = new SelectList(
+                items: _uow.IdentityUsers.All(),
+                dataValueField: nameof(IdentityUser.IdentityUserId),
+                dataTextField: nameof(IdentityUser.Email),
+                selectedValue: vm.IdentityUserLogin.UserId);
+            return View(model: vm);
         }
 
         // GET: Identity/IdentityUserLogins/Delete/5
@@ -131,31 +144,24 @@ namespace WebApp.Areas.Identity.Controllers
                 return NotFound();
             }
 
-            var identityUserLogin = await _context.IdentityUserLogins
-                .Include(i => i.User)
-                .SingleOrDefaultAsync(m => m.IdentityUserLoginId == id);
+            var identityUserLogin = await _uow.IdentityUserLogins.SingleByIdIncludeUserAsync(id: id.Value);
             if (identityUserLogin == null)
             {
                 return NotFound();
             }
 
-            return View(identityUserLogin);
+            return View(model: identityUserLogin);
         }
 
         // POST: Identity/IdentityUserLogins/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost, ActionName(name: nameof(Delete))]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var identityUserLogin = await _context.IdentityUserLogins.SingleOrDefaultAsync(m => m.IdentityUserLoginId == id);
-            _context.IdentityUserLogins.Remove(identityUserLogin);
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Index");
+            _uow.IdentityUserLogins.Remove(id);
+            await _uow.SaveChangesAsync();
+            return RedirectToAction(actionName: nameof(Index));
         }
 
-        private bool IdentityUserLoginExists(int id)
-        {
-            return _context.IdentityUserLogins.Any(e => e.IdentityUserLoginId == id);
-        }
     }
 }

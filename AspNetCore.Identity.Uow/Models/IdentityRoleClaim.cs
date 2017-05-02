@@ -7,38 +7,24 @@ using System.Text;
 namespace AspNetCore.Identity.Uow.Models
 {
 
-    /// <summary>
-    /// Represents a claim that is granted to all users within a role.
-    /// </summary>
-    public class IdentityRoleClaim : IdentityRoleClaim<int>
-    {
-    }
-
-    public class IdentityRoleClaim<TKey> : IdentityRoleClaim<TKey, IdentityRole<TKey>>
-        where TKey : IEquatable<TKey>
-    {
-    }
 
     /// <summary>
     /// Represents a claim that is granted to all users within a role.
     /// </summary>
-    /// <typeparam name="TKey">The type of the primary key of the role associated with this claim.</typeparam>
-    public class IdentityRoleClaim<TKey, TRole> 
-        where TKey : IEquatable<TKey>
-        where TRole : class, new()
+    public class IdentityRoleClaim
     {
         /// <summary>
         /// Gets or sets the identifier for this role claim.
         /// </summary>
         [Key]
-        public virtual TKey IdentityRoleClaimId { get; set; }
+        public virtual int IdentityRoleClaimId { get; set; }
 
         /// <summary>
         /// Gets or sets the of the primary key of the role associated with this claim.
         /// </summary>
-        public virtual TKey RoleId { get; set; }
+        public virtual int RoleId { get; set; }
 
-        public virtual TRole Role { get; set; }
+        public virtual IdentityRole Role { get; set; }
 
         /// <summary>
         /// Gets or sets the claim type for this claim.

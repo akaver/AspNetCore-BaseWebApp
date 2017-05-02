@@ -1,43 +1,19 @@
-@model AspNetCore.Identity.Uow.Models.IdentityUserLogin
+@model WebApp.Areas.Identity.ViewModels.IdentityUserLoginsCreateEditViewModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData[index: "Title"] = "Create";
 }
 
 <h2>Create</h2>
 
 <form asp-action="Create">
     <div class="form-horizontal">
-        <h4>IdentityUserLogin</h4>
+        <h4>UserLogin</h4>
         <hr />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <div class="form-group">
-            <label asp-for="LoginProvider" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="LoginProvider" class="form-control" />
-                <span asp-validation-for="LoginProvider" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="ProviderKey" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="ProviderKey" class="form-control" />
-                <span asp-validation-for="ProviderKey" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="ProviderDisplayName" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="ProviderDisplayName" class="form-control" />
-                <span asp-validation-for="ProviderDisplayName" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="UserId" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <select asp-for="UserId" class ="form-control" asp-items="ViewBag.UserId"></select>
-            </div>
-        </div>
+
+        @Html.Partial(partialViewName: "_CreateEdit", model: Model)
+        
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Create" class="btn btn-default" />
@@ -51,5 +27,5 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{await Html.RenderPartialAsync(partialViewName: "_ValidationScriptsPartial");}
 }

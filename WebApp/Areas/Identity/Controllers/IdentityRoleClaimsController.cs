@@ -2,29 +2,33 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AspNetCore.Identity.Uow.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AspNetCore.Identity.Uow.Models;
 using DAL.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using WebApp.Areas.Identity.ViewModels;
 
 namespace WebApp.Areas.Identity.Controllers
 {
-    [Area("Identity")]
+    [Area(areaName: "Identity")]
+    [Authorize(Roles = "Admin")]
     public class IdentityRoleClaimsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IIdentityUnitOfWork _uow;
 
-        public IdentityRoleClaimsController(ApplicationDbContext context)
+        public IdentityRoleClaimsController(IIdentityUnitOfWork uow)
         {
-            _context = context;    
+            _uow = uow;    
         }
 
         // GET: Identity/IdentityRoleClaims
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.IdentityRoleClaims.Include(i => i.Role);
-            return View(await applicationDbContext.ToListAsync());
+            var roleClaims = await _uow.IdentityRoleClaims.AllIncludeRoleAsync();
+            return View(model: roleClaims);
         }
 
         // GET: Identity/IdentityRoleClaims/Details/5
@@ -35,22 +39,24 @@ namespace WebApp.Areas.Identity.Controllers
                 return NotFound();
             }
 
-            var identityRoleClaim = await _context.IdentityRoleClaims
-                .Include(i => i.Role)
-                .SingleOrDefaultAsync(m => m.IdentityRoleClaimId == id);
-            if (identityRoleClaim == null)
+            var roleClaim = await _uow.IdentityRoleClaims.SingleByIdIncludeRole(id: id.Value);
+
+            if (roleClaim == null)
             {
                 return NotFound();
             }
 
-            return View(identityRoleClaim);
+            return View(model: roleClaim);
         }
 
         // GET: Identity/IdentityRoleClaims/Create
         public IActionResult Create()
         {
-            ViewData["RoleId"] = new SelectList(_context.IdentityRoles, "IdentityRoleId", "Discriminator");
-            return View();
+            var vm = new IdentityRoleClaimsCreateEditViewModel()
+            {
+                RoleSelectList = new SelectList(items: _uow.IdentityRoles.All(), dataValueField: nameof(IdentityRole.IdentityRoleId),dataTextField: nameof(IdentityRole.Name))
+        };
+            return View(model: vm);
         }
 
         // POST: Identity/IdentityRoleClaims/Create
@@ -58,16 +64,17 @@ namespace WebApp.Areas.Identity.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdentityRoleClaimId,RoleId,ClaimType,ClaimValue")] IdentityRoleClaim identityRoleClaim)
+        public async Task<IActionResult> Create(IdentityRoleClaimsCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(identityRoleClaim);
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Index");
+                _uow.IdentityRoleClaims.Add(entity: vm.IdentityRoleClaim);
+                await _uow.SaveChangesAsync();
+                return RedirectToAction(actionName: nameof(Index));
             }
-            ViewData["RoleId"] = new SelectList(_context.IdentityRoles, "IdentityRoleId", "Discriminator", identityRoleClaim.RoleId);
-            return View(identityRoleClaim);
+            vm.RoleSelectList = new SelectList(items: _uow.IdentityRoles.All(), dataValueField: nameof(IdentityRole.IdentityRoleId),
+                dataTextField: nameof(IdentityRole.Name), selectedValue: vm.IdentityRoleClaim.IdentityRoleClaimId);
+            return View(model: vm);
         }
 
         // GET: Identity/IdentityRoleClaims/Edit/5
@@ -78,13 +85,18 @@ namespace WebApp.Areas.Identity.Controllers
                 return NotFound();
             }
 
-            var identityRoleClaim = await _context.IdentityRoleClaims.SingleOrDefaultAsync(m => m.IdentityRoleClaimId == id);
+            var identityRoleClaim = await _uow.IdentityRoleClaims.SingleByIdIncludeRole(id: id.Value);
             if (identityRoleClaim == null)
             {
                 return NotFound();
             }
-            ViewData["RoleId"] = new SelectList(_context.IdentityRoles, "IdentityRoleId", "Discriminator", identityRoleClaim.RoleId);
-            return View(identityRoleClaim);
+
+            var vm = new IdentityRoleClaimsCreateEditViewModel()
+            {
+                RoleSelectList = new SelectList(items: _uow.IdentityRoles.All(), dataValueField: nameof(IdentityRole.IdentityRoleId), dataTextField: nameof(IdentityRole.Name), selectedValue: identityRoleClaim.RoleId)
+            };
+
+            return View(model: vm);
         }
 
         // POST: Identity/IdentityRoleClaims/Edit/5
@@ -92,9 +104,9 @@ namespace WebApp.Areas.Identity.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdentityRoleClaimId,RoleId,ClaimType,ClaimValue")] IdentityRoleClaim identityRoleClaim)
+        public async Task<IActionResult> Edit(int id, IdentityRoleClaimsCreateEditViewModel vm)
         {
-            if (id != identityRoleClaim.IdentityRoleClaimId)
+            if (id != vm.IdentityRoleClaim.IdentityRoleClaimId)
             {
                 return NotFound();
             }
@@ -103,12 +115,12 @@ namespace WebApp.Areas.Identity.Controllers
             {
                 try
                 {
-                    _context.Update(identityRoleClaim);
-                    await _context.SaveChangesAsync();
+                    _uow.IdentityRoleClaims.Update(entity: vm.IdentityRoleClaim);
+                    await _uow.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!IdentityRoleClaimExists(identityRoleClaim.IdentityRoleClaimId))
+                    if (!_uow.IdentityRoleClaims.Exists(id: vm.IdentityRoleClaim.IdentityRoleClaimId))
                     {
                         return NotFound();
                     }
@@ -117,10 +129,11 @@ namespace WebApp.Areas.Identity.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("Index");
+                return RedirectToAction(actionName: nameof(Index));
             }
-            ViewData["RoleId"] = new SelectList(_context.IdentityRoles, "IdentityRoleId", "Discriminator", identityRoleClaim.RoleId);
-            return View(identityRoleClaim);
+            vm.RoleSelectList = new SelectList(items: _uow.IdentityRoles.All(), dataValueField: nameof(IdentityRole.IdentityRoleId),
+                dataTextField: nameof(IdentityRole.Name), selectedValue: vm.IdentityRoleClaim.RoleId);
+            return View(model: vm);
         }
 
         // GET: Identity/IdentityRoleClaims/Delete/5
@@ -131,31 +144,24 @@ namespace WebApp.Areas.Identity.Controllers
                 return NotFound();
             }
 
-            var identityRoleClaim = await _context.IdentityRoleClaims
-                .Include(i => i.Role)
-                .SingleOrDefaultAsync(m => m.IdentityRoleClaimId == id);
+            var identityRoleClaim = await _uow.IdentityRoleClaims.SingleByIdIncludeRole(id: id.Value);
             if (identityRoleClaim == null)
             {
                 return NotFound();
             }
 
-            return View(identityRoleClaim);
+            return View(model: identityRoleClaim);
         }
 
         // POST: Identity/IdentityRoleClaims/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost, ActionName(name: nameof(Delete))]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var identityRoleClaim = await _context.IdentityRoleClaims.SingleOrDefaultAsync(m => m.IdentityRoleClaimId == id);
-            _context.IdentityRoleClaims.Remove(identityRoleClaim);
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Index");
+            _uow.IdentityRoleClaims.Remove(id);
+            await _uow.SaveChangesAsync();
+            return RedirectToAction(actionName: nameof(Index));
         }
 
-        private bool IdentityRoleClaimExists(int id)
-        {
-            return _context.IdentityRoleClaims.Any(e => e.IdentityRoleClaimId == id);
-        }
     }
 }

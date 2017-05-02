@@ -8,31 +8,18 @@ namespace AspNetCore.Identity.Uow.Models
     /// <summary>
     /// Represents an authentication token for a user.
     /// </summary>
-    public class IdentityUserToken : IdentityUserToken<int>
-    {
-    }
-
-    public class IdentityUserToken<TKey> : IdentityUserToken<TKey, IdentityUser<TKey>>
-        where TKey: IEquatable<TKey>
-    {
-    }
-
-    /// <summary>
-    /// Represents an authentication token for a user.
-    /// </summary>
     /// <typeparam name="TKey">The type of the primary key used for users.</typeparam>
-    public class IdentityUserToken<TKey, TUser> 
-        where TKey : IEquatable<TKey>
+    public class IdentityUserToken
     {
         [Key]
-        public virtual TKey IdentityUserTokenId { get; set; }
+        public virtual int IdentityUserTokenId { get; set; }
 
 
         /// <summary>
         /// Gets or sets the primary key of the user that the token belongs to.
         /// </summary>
-        public virtual TKey UserId { get; set; }
-        public virtual TUser User { get; set; }
+        public virtual int UserId { get; set; }
+        public virtual IdentityUser User { get; set; }
 
         /// <summary>
         /// Gets or sets the LoginProvider this token is from.

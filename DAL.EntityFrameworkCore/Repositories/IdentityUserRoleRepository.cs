@@ -10,33 +10,38 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.EntityFrameworkCore.Repositories
 {
-
-    public class IdentityUserRoleRepository : IdentityUserRoleRepository<IdentityUserRole<int>>, IIdentityUserRoleRepository
-    {
-        public IdentityUserRoleRepository(IDataContext dataContext) : base(dataContext: dataContext)
-        {
-        }
-    }
-
-    public class IdentityUserRoleRepository<TUserRole> : IdentityUserRoleRepository<int, TUserRole>, IIdentityUserRoleRepository<TUserRole>
-        where TUserRole : IdentityUserRole<int>, new()
-    {
-        public IdentityUserRoleRepository(IDataContext dataContext) : base(dataContext: dataContext)
-        {
-        }
-    }
-
-
-
-    public class IdentityUserRoleRepository<TKey, TUserRole> : EFRepository<TUserRole>, IIdentityUserRoleRepository<TKey, TUserRole>
-        where TKey : IEquatable<TKey>
-        where TUserRole : IdentityUserRole<TKey>, new()
+    public class IdentityUserRoleRepository : EFRepository<IdentityUserRole>, IIdentityUserRoleRepository
     {
         public IdentityUserRoleRepository(IDataContext dataContext) : base(dataContext: dataContext)
         {
         }
 
-        public Task<TUserRole> FindUserRoleAsync(TKey userId, TKey roleId, CancellationToken cancellationToken = default(CancellationToken))
+        public bool Exists(int id)
+        {
+            return RepositoryDbSet.Any(r => r.IdentityUserRoleId.Equals(id));
+        }
+
+        public Task<bool> ExistsAsync(int id)
+        {
+            return RepositoryDbSet.AnyAsync(r => r.IdentityUserRoleId.Equals(id));
+        }
+
+        
+        public Task<IdentityUserRole> SingleIncludeUserAndRoleAsync(int id)
+        {
+            return RepositoryDbSet.Include(i => i.Role)
+                .Include(i => i.User)
+                .SingleOrDefaultAsync(m => m.IdentityUserRoleId == id);
+        }
+
+
+
+        public Task<List<IdentityUserRole>> AllIncludeRoleAndUserAsync()
+        {
+            return RepositoryDbSet.Include(r => r.Role).Include(u => u.User).ToListAsync();
+        }
+
+        public Task<IdentityUserRole> FindUserRoleAsync(int userId, int roleId, CancellationToken cancellationToken = default(CancellationToken))
         {
             return RepositoryDbSet.FirstOrDefaultAsync(
                 // ReSharper disable ArgumentsStyleNamedExpression
@@ -45,7 +50,7 @@ namespace DAL.EntityFrameworkCore.Repositories
                 cancellationToken: cancellationToken);
         }
 
-        public Task<List<string>> GetRolesAsync(TKey userId, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<List<string>> GetRolesAsync(int userId, CancellationToken cancellationToken = default(CancellationToken))
         {
             var query = RepositoryDbSet.Where(u => u.UserId.Equals(userId))
                 .Include(a => a.Role)

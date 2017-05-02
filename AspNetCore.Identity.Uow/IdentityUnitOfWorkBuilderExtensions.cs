@@ -47,57 +47,32 @@ namespace AspNetCore.Identity.Uow
             Type userRepositoryType, Type roleRepositoryType, Type userRoleRepositoryType, Type userLoginRepositoryType, Type userClaimRepositoryType, Type userTokenRepositoryType, Type roleClaimRepositoryType)
         {
             // public class IdentityUser<TKey, TUserClaim, TUserRole, TUserLogin, TUserToken>
-            var identityUserType = FindGenericBaseType(currentType: userType, genericBaseType: typeof(IdentityUser<,,,,>));
-            if (identityUserType == null)
-            {
-                throw new InvalidOperationException(message: "NotIdentityUser");
-            }
+            //var identityUserType = FindGenericBaseType(currentType: userType, genericBaseType: typeof(IdentityUser));
+            //if (identityUserType == null)
+            //{
+            //    throw new InvalidOperationException(message: "NotIdentityUser");
+            //}
 
             // public class IdentityRole<TKey, TUserRole, TRoleClaim>
-            var identityRoleType = FindGenericBaseType(currentType: roleType, genericBaseType: typeof(IdentityRole<,,>));
-            if (identityRoleType == null)
-            {
-                throw new InvalidOperationException(message: "NotIdentityRole");
-            }
+            //var identityRoleType = FindGenericBaseType(currentType: roleType, genericBaseType: typeof(IdentityRole));
+            //if (identityRoleType == null)
+            //{
+            //    throw new InvalidOperationException(message: "NotIdentityRole");
+            //}
 
 
 
             // public class RoleStore<TKey, TRole, TUserRole, TRoleClaim, TUnitOfWork, TRoleRepository, TRoleClaimRepository>
          services.TryAddScoped(
                 service: typeof(IRoleStore<>).MakeGenericType(roleType),
-                implementationType: typeof(RoleStore<,,,,,>).MakeGenericType(
-                    identityRoleType.GenericTypeArguments[0], // tkey
-                    roleType,                                 // trole
-                    identityRoleType.GenericTypeArguments[1], // TUserRole
-                    identityRoleType.GenericTypeArguments[2], // TRoleClaim
-                    roleRepositoryType,
-                    roleClaimRepositoryType
-                ));
+                implementationType: typeof(RoleStore));
 
 
 
             // public class UserStore<TKey, TUser, TRole, TUserClaim, TUserRole, TUserLogin, TUserToken, TRoleClaim, TUnitOfWork, TUserRepository, TRoleRepository, TUserRoleRepository, TUserLoginRepository, TUserClaimRepository, TUserTokenRepository>
             services.TryAddScoped(
                 service: typeof(IUserStore<>).MakeGenericType(userType),
-                implementationType: typeof(UserStore<,,,,,,,,,,,,,>).MakeGenericType(
-                    identityUserType.GenericTypeArguments[0], //TKey
-                    userType,
-                    roleType,
-                    identityUserType.GenericTypeArguments[1], //TUserClaim
-                    identityUserType.GenericTypeArguments[2], //TUserRole
-                    identityUserType.GenericTypeArguments[3], //TUserLogin
-                    identityUserType.GenericTypeArguments[4], //TUserToken
-                    identityRoleType.GenericTypeArguments[2], //TRoleClaim from roletype
-                    userRepositoryType,
-                    roleRepositoryType,
-                    userRoleRepositoryType,
-                    userLoginRepositoryType,
-                    userClaimRepositoryType,
-                    userTokenRepositoryType
-                    ));
-
-
-
+                implementationType: typeof(UserStore));
         }
 
         private static TypeInfo FindGenericBaseType(Type currentType, Type genericBaseType)

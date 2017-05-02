@@ -14,66 +14,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AspNetCore.Identity.Uow
 {
-    public class UserStore : UserStore<IdentityUser>
-    {
-        public UserStore(IIdentityUnitOfWork uow, IdentityErrorDescriber describer = null) : base(uow, describer)
-        {
-        }
-    }
-
-    public class UserStore<TUser> : UserStore<
-        int, TUser, IdentityRole, IdentityUserClaim, IdentityUserRole, IdentityUserLogin, IdentityUserToken, IdentityRoleClaim, 
-        IIdentityUserRepository<TUser>,
-        IIdentityRoleRepository<IdentityRole>, 
-        IIdentityUserRoleRepository<IdentityUserRole>,
-        IIdentityUserLoginRepository<IdentityUserLogin>,
-        IIdentityUserClaimRepository<IdentityUserClaim>,
-        IIdentityUserTokenRepository<IdentityUserToken>>
-        where TUser : IdentityUser<int>, new()
-    {
-        public UserStore(IIdentityUnitOfWork uow, IdentityErrorDescriber describer = null) : base(uow, describer)
-        {
-        }
-    }
-
     /// <summary>
     /// Represents a new instance of a persistence store for the specified user and role types.
     /// </summary>
-    /// <typeparam name="TUser">The type representing a user.</typeparam>
-    /// <typeparam name="TRole">The type representing a role.</typeparam>
-    /// <typeparam name="TKey">The type of the primary key for a role.</typeparam>
-    /// <typeparam name="TUserClaim">The type representing a claim.</typeparam>
-    /// <typeparam name="TUserRole">The type representing a user role.</typeparam>
-    /// <typeparam name="TUserLogin">The type representing a user external login.</typeparam>
-    /// <typeparam name="TUserToken">The type representing a user token.</typeparam>
-    /// <typeparam name="TRoleClaim">The type representing a role claim.</typeparam>
-    public class UserStore<TKey, TUser, TRole, TUserClaim, TUserRole, TUserLogin, TUserToken, TRoleClaim, TUserRepository, TRoleRepository, TUserRoleRepository, TUserLoginRepository, TUserClaimRepository, TUserTokenRepository> :
-        IUserLoginStore<TUser>,
-        IUserRoleStore<TUser>,
-        IUserClaimStore<TUser>,
-        IUserPasswordStore<TUser>,
-        IUserSecurityStampStore<TUser>,
-        IUserEmailStore<TUser>,
-        IUserLockoutStore<TUser>,
-        IUserPhoneNumberStore<TUser>,
-        IUserTwoFactorStore<TUser>,
-        IUserAuthenticationTokenStore<TUser>
-//        IUserAuthenticatorKeyStore<TUser>,
-//        IUserTwoFactorRecoveryCodeStore<TUser>
-        where TKey : IEquatable<TKey>
-        where TUser : IdentityUser<TKey>, new()
-        where TRole : IdentityRole<TKey>, new()
-        where TUserClaim : IdentityUserClaim<TKey>, new()
-        where TUserRole : IdentityUserRole<TKey>, new()
-        where TUserLogin : IdentityUserLogin<TKey>, new()
-        where TUserToken : IdentityUserToken<TKey>, new()
-        where TRoleClaim : IdentityRoleClaim<TKey>, new()
-        where TUserRepository : class, IIdentityUserRepository<TKey, TUser>
-        where TRoleRepository : class, IIdentityRoleRepository<TKey, TRole>
-        where TUserRoleRepository : class, IIdentityUserRoleRepository<TKey, TUserRole>
-        where TUserLoginRepository : class, IIdentityUserLoginRepository<TKey, TUserLogin>
-        where TUserClaimRepository : class, IIdentityUserClaimRepository<TKey, TUserClaim>
-        where TUserTokenRepository : class, IIdentityUserTokenRepository<TKey, TUserToken>
+    public class UserStore : 
+        IUserLoginStore<IdentityUser>,
+        IUserRoleStore<IdentityUser>,
+        IUserClaimStore<IdentityUser>,
+        IUserPasswordStore<IdentityUser>,
+        IUserSecurityStampStore<IdentityUser>,
+        IUserEmailStore<IdentityUser>,
+        IUserLockoutStore<IdentityUser>,
+        IUserPhoneNumberStore<IdentityUser>,
+        IUserTwoFactorStore<IdentityUser>,
+        IUserAuthenticationTokenStore<IdentityUser>
     {
         /// <summary>
         /// Creates a new instance of <see cref="UserStore"/>.
@@ -99,14 +53,14 @@ namespace AspNetCore.Identity.Uow
         public IdentityErrorDescriber ErrorDescriber { get; set; }
 
         /// <summary>
-        /// Called to create a new instance of a <see cref="IdentityUserRole{TKey}"/>.
+        /// Called to create a new instance of a <see cref="IdentityUserRole{int}"/>.
         /// </summary>
         /// <param name="user">The associated user.</param>
         /// <param name="role">The associated role.</param>
         /// <returns></returns>
-        protected virtual TUserRole CreateUserRole(TUser user, TRole role)
+        protected virtual IdentityUserRole CreateUserRole(IdentityUser user, IdentityRole role)
         {
-            return new TUserRole()
+            return new IdentityUserRole()
             {
                 UserId = user.IdentityUserId,
                 RoleId = role.IdentityRoleId
@@ -114,27 +68,27 @@ namespace AspNetCore.Identity.Uow
         }
 
         /// <summary>
-        /// Called to create a new instance of a <see cref="IdentityUserClaim{TKey}"/>.
+        /// Called to create a new instance of a <see cref="IdentityUserClaim{int}"/>.
         /// </summary>
         /// <param name="user">The associated user.</param>
         /// <param name="claim">The associated claim.</param>
         /// <returns></returns>
-        protected virtual TUserClaim CreateUserClaim(TUser user, Claim claim)
+        protected virtual IdentityUserClaim CreateUserClaim(IdentityUser user, Claim claim)
         {
-            var userClaim = new TUserClaim { UserId = user.IdentityUserId };
+            var userClaim = new IdentityUserClaim { UserId = user.IdentityUserId };
             userClaim.InitializeFromClaim(claim: claim);
             return userClaim;
         }
 
         /// <summary>
-        /// Called to create a new instance of a <see cref="IdentityUserLogin{TKey}"/>.
+        /// Called to create a new instance of a <see cref="IdentityUserLogin{int}"/>.
         /// </summary>
         /// <param name="user">The associated user.</param>
         /// <param name="login">The sasociated login.</param>
         /// <returns></returns>
-        protected virtual TUserLogin CreateUserLogin(TUser user, UserLoginInfo login)
+        protected virtual IdentityUserLogin CreateUserLogin(IdentityUser user, UserLoginInfo login)
         {
-            return new TUserLogin
+            return new IdentityUserLogin
             {
                 UserId = user.IdentityUserId,
                 ProviderKey = login.ProviderKey,
@@ -144,16 +98,16 @@ namespace AspNetCore.Identity.Uow
         }
 
         /// <summary>
-        /// Called to create a new instance of a <see cref="IdentityUserToken{TKey}"/>.
+        /// Called to create a new instance of a <see cref="IdentityUserToken{int}"/>.
         /// </summary>
         /// <param name="user">The associated user.</param>
         /// <param name="loginProvider">The associated login provider.</param>
         /// <param name="name">The name of the user token.</param>
         /// <param name="value">The value of the user token.</param>
         /// <returns></returns>
-        protected virtual TUserToken CreateUserToken(TUser user, string loginProvider, string name, string value)
+        protected virtual IdentityUserToken CreateUserToken(IdentityUser user, string loginProvider, string name, string value)
         {
-            return new TUserToken
+            return new IdentityUserToken
             {
                 UserId = user.IdentityUserId,
                 LoginProvider = loginProvider,
@@ -184,7 +138,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="user">The user whose identifier should be retrieved.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the identifier for the specified <paramref name="user"/>.</returns>
-        public virtual Task<string> GetUserIdAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<string> GetUserIdAsync(IdentityUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -201,7 +155,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="user">The user whose name should be retrieved.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the name for the specified <paramref name="user"/>.</returns>
-        public virtual Task<string> GetUserNameAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<string> GetUserNameAsync(IdentityUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -219,7 +173,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="userName">The user name to set.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public virtual Task SetUserNameAsync(TUser user, string userName, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task SetUserNameAsync(IdentityUser user, string userName, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -237,7 +191,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="user">The user whose normalized name should be retrieved.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the normalized user name for the specified <paramref name="user"/>.</returns>
-        public virtual Task<string> GetNormalizedUserNameAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<string> GetNormalizedUserNameAsync(IdentityUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -255,7 +209,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="normalizedName">The normalized name to set.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public virtual Task SetNormalizedUserNameAsync(TUser user, string normalizedName, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task SetNormalizedUserNameAsync(IdentityUser user, string normalizedName, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -273,7 +227,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="user">The user to create.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IdentityResult"/> of the creation operation.</returns>
-        public virtual async Task<IdentityResult> CreateAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<IdentityResult> CreateAsync(IdentityUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -282,7 +236,7 @@ namespace AspNetCore.Identity.Uow
                 throw new ArgumentNullException(paramName: nameof(user));
             }
 
-            Uow.GetCustomRepository<TUserRepository>().Add(entity: user);
+            Uow.GetCustomRepository<IIdentityUserRepository>().Add(entity: user);
 
             await SaveChanges(cancellationToken: cancellationToken);
 
@@ -295,7 +249,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="user">The user to update.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IdentityResult"/> of the update operation.</returns>
-        public virtual async Task<IdentityResult> UpdateAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<IdentityResult> UpdateAsync(IdentityUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -306,7 +260,7 @@ namespace AspNetCore.Identity.Uow
 
             //Context.Attach(user);
             user.ConcurrencyStamp = Guid.NewGuid().ToString();
-            Uow.GetCustomRepository<TUserRepository>().Update(entity: user);
+            Uow.GetCustomRepository<IIdentityUserRepository>().Update(entity: user);
             try
             {
                 await SaveChanges(cancellationToken: cancellationToken);
@@ -325,7 +279,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="user">The user to delete.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IdentityResult"/> of the update operation.</returns>
-        public virtual async Task<IdentityResult> DeleteAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<IdentityResult> DeleteAsync(IdentityUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -334,7 +288,7 @@ namespace AspNetCore.Identity.Uow
                 throw new ArgumentNullException(paramName: nameof(user));
             }
 
-            Uow.GetCustomRepository<TUserRepository>().Remove(entity: user);
+            Uow.GetCustomRepository<IIdentityUserRepository>().Remove(entity: user);
             try
             {
                 await SaveChanges(cancellationToken: cancellationToken);
@@ -354,26 +308,26 @@ namespace AspNetCore.Identity.Uow
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the user matching the specified <paramref name="userId"/> if it exists.
         /// </returns>
-        public virtual Task<TUser> FindByIdAsync(string userId, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<IdentityUser> FindByIdAsync(string userId, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
             var id = ConvertIdFromString(id: userId);
-            return Uow.GetCustomRepository<TUserRepository>().FindAsync(keyValues: new object[] { id }, cancellationToken: cancellationToken);
+            return Uow.GetCustomRepository<IIdentityUserRepository>().FindAsync(keyValues: new object[] { id }, cancellationToken: cancellationToken);
         }
 
         /// <summary>
         /// Converts the provided <paramref name="id"/> to a strongly typed key object.
         /// </summary>
         /// <param name="id">The id to convert.</param>
-        /// <returns>An instance of <typeparamref name="TKey"/> representing the provided <paramref name="id"/>.</returns>
-        public virtual TKey ConvertIdFromString(string id)
+        /// <returns>An instance of <typeparamref name="int"/> representing the provided <paramref name="id"/>.</returns>
+        public virtual int ConvertIdFromString(string id)
         {
             if (id == null)
             {
-                return default(TKey);
+                return default(int);
             }
-            return (TKey)TypeDescriptor.GetConverter(type: typeof(TKey)).ConvertFromInvariantString(text: id);
+            return (int)TypeDescriptor.GetConverter(type: typeof(int)).ConvertFromInvariantString(text: id);
         }
 
         /// <summary>
@@ -381,9 +335,9 @@ namespace AspNetCore.Identity.Uow
         /// </summary>
         /// <param name="id">The id to convert.</param>
         /// <returns>An <see cref="string"/> representation of the provided <paramref name="id"/>.</returns>
-        public virtual string ConvertIdToString(TKey id)
+        public virtual string ConvertIdToString(int id)
         {
-            if (object.Equals(objA: id, objB: default(TKey)))
+            if (object.Equals(objA: id, objB: default(int)))
             {
                 return null;
             }
@@ -398,11 +352,11 @@ namespace AspNetCore.Identity.Uow
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the user matching the specified <paramref name="normalizedUserName"/> if it exists.
         /// </returns>
-        public virtual Task<TUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<IdentityUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
-            return Uow.GetCustomRepository<TUserRepository>().FindByNameAsync(normalizedUserName: normalizedUserName, cancellationToken: cancellationToken);
+            return Uow.GetCustomRepository<IIdentityUserRepository>().FindByNameAsync(normalizedUserName: normalizedUserName, cancellationToken: cancellationToken);
             //return Users.FirstOrDefaultAsync(predicate: u => u.NormalizedUserName == normalizedUserName, cancellationToken: cancellationToken);
         }
 
@@ -413,7 +367,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="passwordHash">The password hash to set.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public virtual Task SetPasswordHashAsync(TUser user, string passwordHash, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task SetPasswordHashAsync(IdentityUser user, string passwordHash, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -431,7 +385,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="user">The user to retrieve the password hash for.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>A <see cref="Task{TResult}"/> that contains the password hash for the user.</returns>
-        public virtual Task<string> GetPasswordHashAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<string> GetPasswordHashAsync(IdentityUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -449,7 +403,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>A <see cref="Task{TResult}"/> containing a flag indicating if the specified user has a password. If the 
         /// user has a password the returned value with be true, otherwise it will be false.</returns>
-        public virtual Task<bool> HasPasswordAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<bool> HasPasswordAsync(IdentityUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             return Task.FromResult(result: user.PasswordHash != null);
@@ -461,9 +415,9 @@ namespace AspNetCore.Identity.Uow
         /// <param name="normalizedRoleName">The normalized role name.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The role if it exists.</returns>
-        protected virtual Task<TRole> FindRoleAsync(string normalizedRoleName, CancellationToken cancellationToken = default(CancellationToken))
+        protected virtual Task<IdentityRole> FindRoleAsync(string normalizedRoleName, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return Uow.GetCustomRepository<TRoleRepository>().FindByNameAsync(normalizedName: normalizedRoleName, cancellationToken: cancellationToken);
+            return Uow.GetCustomRepository<IIdentityRoleRepository>().FindByNameAsync(normalizedName: normalizedRoleName, cancellationToken: cancellationToken);
             //return Roles.SingleOrDefaultAsync(r => r.NormalizedName == normalizedRoleName, cancellationToken);
         }
 
@@ -474,9 +428,9 @@ namespace AspNetCore.Identity.Uow
         /// <param name="roleId">The role's id.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The user role if it exists.</returns>
-        protected virtual Task<TUserRole> FindUserRoleAsync(TKey userId, TKey roleId, CancellationToken cancellationToken = default(CancellationToken))
+        protected virtual Task<IdentityUserRole> FindUserRoleAsync(int userId, int roleId, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var repo = Uow.GetCustomRepository<TUserRoleRepository>();
+            var repo = Uow.GetCustomRepository<IIdentityUserRoleRepository>();
             var res = repo.FindUserRoleAsync(userId: userId, roleId: roleId, cancellationToken: cancellationToken);
             return res;
             //return UserRoles.FindAsync(new object[] { userId, roleId }, cancellationToken);
@@ -488,9 +442,9 @@ namespace AspNetCore.Identity.Uow
         /// <param name="userId">The user's id.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The user if it exists.</returns>
-        protected virtual Task<TUser> FindUserAsync(TKey userId, CancellationToken cancellationToken = default(CancellationToken))
+        protected virtual Task<IdentityUser> FindUserAsync(int userId, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return Uow.GetCustomRepository<TUserRepository>().FindAsync(userId, cancellationToken);
+            return Uow.GetCustomRepository<IIdentityUserRepository>().FindAsync(userId, cancellationToken);
             //return Users.SingleOrDefaultAsync(predicate: u => u.Id.Equals(userId), cancellationToken: cancellationToken);
         }
 
@@ -502,9 +456,9 @@ namespace AspNetCore.Identity.Uow
         /// <param name="providerKey">The key provided by the <paramref name="loginProvider"/> to identify a user.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The user login if it exists.</returns>
-        protected virtual Task<TUserLogin> FindUserLoginAsync(TKey userId, string loginProvider, string providerKey, CancellationToken cancellationToken = default(CancellationToken))
+        protected virtual Task<IdentityUserLogin> FindUserLoginAsync(int userId, string loginProvider, string providerKey, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return Uow.GetCustomRepository<TUserLoginRepository>().FindUserLoginAsync(userId: userId, loginProvider: loginProvider, providerKey: providerKey, cancellationToken: cancellationToken);
+            return Uow.GetCustomRepository<IIdentityUserLoginRepository>().FindUserLoginAsync(userId: userId, loginProvider: loginProvider, providerKey: providerKey, cancellationToken: cancellationToken);
             // return UserLogins.SingleOrDefaultAsync(userLogin => userLogin.UserId.Equals(userId) && userLogin.LoginProvider == loginProvider && userLogin.ProviderKey == providerKey, cancellationToken);
         }
 
@@ -515,9 +469,9 @@ namespace AspNetCore.Identity.Uow
         /// <param name="providerKey">The key provided by the <paramref name="loginProvider"/> to identify a user.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The user login if it exists.</returns>
-        protected virtual Task<TUserLogin> FindUserLoginAsync(string loginProvider, string providerKey, CancellationToken cancellationToken = default(CancellationToken))
+        protected virtual Task<IdentityUserLogin> FindUserLoginAsync(string loginProvider, string providerKey, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return Uow.GetCustomRepository<TUserLoginRepository>().FindUserLoginAsync(loginProvider: loginProvider, providerKey: providerKey, cancellationToken: cancellationToken);
+            return Uow.GetCustomRepository<IIdentityUserLoginRepository>().FindUserLoginAsync(loginProvider: loginProvider, providerKey: providerKey, cancellationToken: cancellationToken);
             // return UserLogins.SingleOrDefaultAsync(userLogin => userLogin.LoginProvider == loginProvider && userLogin.ProviderKey == providerKey, cancellationToken);
         }
 
@@ -529,7 +483,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="normalizedRoleName">The role to add.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public virtual async Task AddToRoleAsync(TUser user, string normalizedRoleName, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task AddToRoleAsync(IdentityUser user, string normalizedRoleName, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -546,7 +500,7 @@ namespace AspNetCore.Identity.Uow
             {
                 throw new InvalidOperationException(message: string.Format(provider: CultureInfo.CurrentCulture, format: "RoleNotFound", arg0: normalizedRoleName));
             }
-            Uow.GetCustomRepository<TUserRoleRepository>().Add(entity: CreateUserRole(user: user, role: roleEntity));
+            Uow.GetCustomRepository<IIdentityUserRoleRepository>().Add(entity: CreateUserRole(user: user, role: roleEntity));
             // UserRoles.Add(CreateUserRole(user: user, role: roleEntity));
         }
 
@@ -557,7 +511,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="normalizedRoleName">The role to remove.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public virtual async Task RemoveFromRoleAsync(TUser user, string normalizedRoleName, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task RemoveFromRoleAsync(IdentityUser user, string normalizedRoleName, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -575,7 +529,7 @@ namespace AspNetCore.Identity.Uow
                 var userRole = await FindUserRoleAsync(userId: user.IdentityUserId, roleId: roleEntity.IdentityRoleId, cancellationToken: cancellationToken);
                 if (userRole != null)
                 {
-                    Uow.GetCustomRepository<TUserRoleRepository>().Remove(entity: userRole);
+                    Uow.GetCustomRepository<IIdentityUserRoleRepository>().Remove(entity: userRole);
                     //UserRoles.Remove(userRole);
                 }
             }
@@ -587,7 +541,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="user">The user whose roles should be retrieved.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>A <see cref="Task{TResult}"/> that contains the roles the user is a member of.</returns>
-        public virtual async Task<IList<string>> GetRolesAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<IList<string>> GetRolesAsync(IdentityUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -596,7 +550,7 @@ namespace AspNetCore.Identity.Uow
                 throw new ArgumentNullException(paramName: nameof(user));
             }
 
-            return await Uow.GetCustomRepository<TUserRoleRepository>()
+            return await Uow.GetCustomRepository<IIdentityUserRoleRepository>()
                 .GetRolesAsync(userId: user.IdentityUserId, cancellationToken: cancellationToken);
 
             //var userId = user.Id;
@@ -615,7 +569,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>A <see cref="Task{TResult}"/> containing a flag indicating if the specified user is a member of the given group. If the 
         /// user is a member of the group the returned value with be true, otherwise it will be false.</returns>
-        public virtual async Task<bool> IsInRoleAsync(TUser user, string normalizedRoleName, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<bool> IsInRoleAsync(IdentityUser user, string normalizedRoleName, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -661,7 +615,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="user">The user whose claims should be retrieved.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>A <see cref="Task{TResult}"/> that contains the claims granted to a user.</returns>
-        public virtual async Task<IList<Claim>> GetClaimsAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<IList<Claim>> GetClaimsAsync(IdentityUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             ThrowIfDisposed();
             if (user == null)
@@ -669,7 +623,7 @@ namespace AspNetCore.Identity.Uow
                 throw new ArgumentNullException(paramName: nameof(user));
             }
 
-            return await Uow.GetCustomRepository<TUserClaimRepository>()
+            return await Uow.GetCustomRepository<IIdentityUserClaimRepository>()
                 .GetClaimsAsync(userId: user.IdentityUserId, cancellationToken: cancellationToken);
             // return await UserClaims.Where(uc => uc.UserId.Equals(user.Id)).Select(c => c.ToClaim()).ToListAsync(cancellationToken);
         }
@@ -681,7 +635,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="claims">The claim to add to the user.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public virtual Task AddClaimsAsync(TUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task AddClaimsAsync(IdentityUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken = default(CancellationToken))
         {
             ThrowIfDisposed();
             if (user == null)
@@ -694,7 +648,7 @@ namespace AspNetCore.Identity.Uow
             }
             foreach (var claim in claims)
             {
-                Uow.GetCustomRepository<TUserClaimRepository>().Add(entity: CreateUserClaim(user: user, claim: claim));
+                Uow.GetCustomRepository<IIdentityUserClaimRepository>().Add(entity: CreateUserClaim(user: user, claim: claim));
             }
             return Task.FromResult(result: false);
         }
@@ -707,7 +661,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="newClaim">The new claim replacing the <paramref name="claim"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public virtual async Task ReplaceClaimAsync(TUser user, Claim claim, Claim newClaim, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task ReplaceClaimAsync(IdentityUser user, Claim claim, Claim newClaim, CancellationToken cancellationToken = default(CancellationToken))
         {
             ThrowIfDisposed();
             if (user == null)
@@ -723,7 +677,7 @@ namespace AspNetCore.Identity.Uow
                 throw new ArgumentNullException(paramName: nameof(newClaim));
             }
 
-            await Uow.GetCustomRepository<TUserClaimRepository>()
+            await Uow.GetCustomRepository<IIdentityUserClaimRepository>()
                 .ReplaceClaimAsync(userId: user.IdentityUserId, claim: claim, newClaim: newClaim, cancellationToken: cancellationToken);
 
             //var matchedClaims = await UserClaims.Where(uc => uc.UserId.Equals(user.Id) && uc.ClaimValue == claim.Value && uc.ClaimType == claim.Type).ToListAsync(cancellationToken);
@@ -741,7 +695,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="claims">The claim to remove.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public virtual async Task RemoveClaimsAsync(TUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task RemoveClaimsAsync(IdentityUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken = default(CancellationToken))
         {
             ThrowIfDisposed();
             if (user == null)
@@ -753,7 +707,7 @@ namespace AspNetCore.Identity.Uow
                 throw new ArgumentNullException(paramName: nameof(claims));
             }
 
-            await Uow.GetCustomRepository<TUserClaimRepository>()
+            await Uow.GetCustomRepository<IIdentityUserClaimRepository>()
                 .RemoveClaimsAsync(userId: user.IdentityUserId, claims: claims, cancellationToken: cancellationToken);
 
             //foreach (var claim in claims)
@@ -774,7 +728,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="login">The login to add to the user.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public virtual Task AddLoginAsync(TUser user, UserLoginInfo login,
+        public virtual Task AddLoginAsync(IdentityUser user, UserLoginInfo login,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -788,7 +742,7 @@ namespace AspNetCore.Identity.Uow
                 throw new ArgumentNullException(paramName: nameof(login));
             }
 
-            Uow.GetCustomRepository<TUserLoginRepository>().Add(entity: CreateUserLogin(user: user, login: login));
+            Uow.GetCustomRepository<IIdentityUserLoginRepository>().Add(entity: CreateUserLogin(user: user, login: login));
 
             return Task.FromResult(result: false);
         }
@@ -801,7 +755,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="providerKey">The key provided by the <paramref name="loginProvider"/> to identify a user.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public virtual async Task RemoveLoginAsync(TUser user, string loginProvider, string providerKey,
+        public virtual async Task RemoveLoginAsync(IdentityUser user, string loginProvider, string providerKey,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -813,7 +767,7 @@ namespace AspNetCore.Identity.Uow
             var entry = await FindUserLoginAsync(userId: user.IdentityUserId, loginProvider: loginProvider, providerKey: providerKey, cancellationToken: cancellationToken);
             if (entry != null)
             {
-                Uow.GetCustomRepository<TUserLoginRepository>().Remove(entity: entry);
+                Uow.GetCustomRepository<IIdentityUserLoginRepository>().Remove(entity: entry);
             }
         }
 
@@ -825,7 +779,7 @@ namespace AspNetCore.Identity.Uow
         /// <returns>
         /// The <see cref="Task"/> for the asynchronous operation, containing a list of <see cref="UserLoginInfo"/> for the specified <paramref name="user"/>, if any.
         /// </returns>
-        public virtual async Task<IList<UserLoginInfo>> GetLoginsAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<IList<UserLoginInfo>> GetLoginsAsync(IdentityUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -834,7 +788,7 @@ namespace AspNetCore.Identity.Uow
                 throw new ArgumentNullException(paramName: nameof(user));
             }
 
-            return await Uow.GetCustomRepository<TUserLoginRepository>().GetLoginsAsync(userId: user.IdentityUserId, cancellationToken: cancellationToken);
+            return await Uow.GetCustomRepository<IIdentityUserLoginRepository>().GetLoginsAsync(userId: user.IdentityUserId, cancellationToken: cancellationToken);
 
             //var userId = user.Id;
             //return await UserLogins.Where(l => l.UserId.Equals(userId))
@@ -850,7 +804,7 @@ namespace AspNetCore.Identity.Uow
         /// <returns>
         /// The <see cref="Task"/> for the asynchronous operation, containing the user, if any which matched the specified login provider and key.
         /// </returns>
-        public virtual async Task<TUser> FindByLoginAsync(string loginProvider, string providerKey,
+        public virtual async Task<IdentityUser> FindByLoginAsync(string loginProvider, string providerKey,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -873,7 +827,7 @@ namespace AspNetCore.Identity.Uow
         /// The task object containing the results of the asynchronous operation, a flag indicating whether the email address for the specified <paramref name="user"/>
         /// has been confirmed or not.
         /// </returns>
-        public virtual Task<bool> GetEmailConfirmedAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<bool> GetEmailConfirmedAsync(IdentityUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -891,7 +845,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="confirmed">A flag indicating if the email address has been confirmed, true if the address is confirmed otherwise false.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
-        public virtual Task SetEmailConfirmedAsync(TUser user, bool confirmed, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task SetEmailConfirmedAsync(IdentityUser user, bool confirmed, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -910,7 +864,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="email">The email to set.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
-        public virtual Task SetEmailAsync(TUser user, string email, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task SetEmailAsync(IdentityUser user, string email, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -928,7 +882,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="user">The user whose email should be returned.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The task object containing the results of the asynchronous operation, the email address for the specified <paramref name="user"/>.</returns>
-        public virtual Task<string> GetEmailAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<string> GetEmailAsync(IdentityUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -947,7 +901,7 @@ namespace AspNetCore.Identity.Uow
         /// <returns>
         /// The task object containing the results of the asynchronous lookup operation, the normalized email address if any associated with the specified user.
         /// </returns>
-        public virtual Task<string> GetNormalizedEmailAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<string> GetNormalizedEmailAsync(IdentityUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -965,7 +919,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="normalizedEmail">The normalized email to set for the specified <paramref name="user"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
-        public virtual Task SetNormalizedEmailAsync(TUser user, string normalizedEmail, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task SetNormalizedEmailAsync(IdentityUser user, string normalizedEmail, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -985,11 +939,11 @@ namespace AspNetCore.Identity.Uow
         /// <returns>
         /// The task object containing the results of the asynchronous lookup operation, the user if any associated with the specified normalized email address.
         /// </returns>
-        public virtual Task<TUser> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<IdentityUser> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
-            return Uow.GetCustomRepository<TUserRepository>().FindByEmailAsync(normalizedEmail: normalizedEmail, cancellationToken: cancellationToken);
+            return Uow.GetCustomRepository<IIdentityUserRepository>().FindByEmailAsync(normalizedEmail: normalizedEmail, cancellationToken: cancellationToken);
 
             // return Users.FirstOrDefaultAsync(predicate: u => u.NormalizedEmail == normalizedEmail, cancellationToken: cancellationToken);
         }
@@ -1004,7 +958,7 @@ namespace AspNetCore.Identity.Uow
         /// A <see cref="Task{TResult}"/> that represents the result of the asynchronous query, a <see cref="DateTimeOffset"/> containing the last time
         /// a user's lockout expired, if any.
         /// </returns>
-        public virtual Task<DateTimeOffset?> GetLockoutEndDateAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<DateTimeOffset?> GetLockoutEndDateAsync(IdentityUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -1022,7 +976,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="lockoutEnd">The <see cref="DateTimeOffset"/> after which the <paramref name="user"/>'s lockout should end.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public virtual Task SetLockoutEndDateAsync(TUser user, DateTimeOffset? lockoutEnd, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task SetLockoutEndDateAsync(IdentityUser user, DateTimeOffset? lockoutEnd, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -1040,7 +994,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="user">The user whose cancellation count should be incremented.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the incremented failed access count.</returns>
-        public virtual Task<int> IncrementAccessFailedCountAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<int> IncrementAccessFailedCountAsync(IdentityUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -1059,7 +1013,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>This is typically called after the account is successfully accessed.</remarks>
-        public virtual Task ResetAccessFailedCountAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task ResetAccessFailedCountAsync(IdentityUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -1077,7 +1031,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="user">The user whose failed access count should be retrieved.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the failed access count.</returns>
-        public virtual Task<int> GetAccessFailedCountAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<int> GetAccessFailedCountAsync(IdentityUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -1096,7 +1050,7 @@ namespace AspNetCore.Identity.Uow
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, true if a user can be locked out, otherwise false.
         /// </returns>
-        public virtual Task<bool> GetLockoutEnabledAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<bool> GetLockoutEnabledAsync(IdentityUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -1114,7 +1068,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="enabled">A flag indicating if lock out can be enabled for the specified <paramref name="user"/>.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public virtual Task SetLockoutEnabledAsync(TUser user, bool enabled, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task SetLockoutEnabledAsync(IdentityUser user, bool enabled, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -1133,7 +1087,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="phoneNumber">The telephone number to set.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public virtual Task SetPhoneNumberAsync(TUser user, string phoneNumber, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task SetPhoneNumberAsync(IdentityUser user, string phoneNumber, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -1151,7 +1105,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="user">The user whose telephone number should be retrieved.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the user's telephone number, if any.</returns>
-        public virtual Task<string> GetPhoneNumberAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<string> GetPhoneNumberAsync(IdentityUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -1171,7 +1125,7 @@ namespace AspNetCore.Identity.Uow
         /// The <see cref="Task"/> that represents the asynchronous operation, returning true if the specified <paramref name="user"/> has a confirmed
         /// telephone number otherwise false.
         /// </returns>
-        public virtual Task<bool> GetPhoneNumberConfirmedAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<bool> GetPhoneNumberConfirmedAsync(IdentityUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -1189,7 +1143,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="confirmed">A flag indicating whether the user's telephone number has been confirmed.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public virtual Task SetPhoneNumberConfirmedAsync(TUser user, bool confirmed, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task SetPhoneNumberConfirmedAsync(IdentityUser user, bool confirmed, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -1208,7 +1162,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="stamp">The security stamp to set.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public virtual Task SetSecurityStampAsync(TUser user, string stamp, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task SetSecurityStampAsync(IdentityUser user, string stamp, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -1230,7 +1184,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="user">The user whose security stamp should be set.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the security stamp for the specified <paramref name="user"/>.</returns>
-        public virtual Task<string> GetSecurityStampAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<string> GetSecurityStampAsync(IdentityUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -1249,7 +1203,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="enabled">A flag indicating whether the specified <paramref name="user"/> has two factor authentication enabled.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public virtual Task SetTwoFactorEnabledAsync(TUser user, bool enabled, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task SetTwoFactorEnabledAsync(IdentityUser user, bool enabled, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -1271,7 +1225,7 @@ namespace AspNetCore.Identity.Uow
         /// The <see cref="Task"/> that represents the asynchronous operation, containing a flag indicating whether the specified 
         /// <paramref name="user"/> has two factor authentication enabled or not.
         /// </returns>
-        public virtual Task<bool> GetTwoFactorEnabledAsync(TUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<bool> GetTwoFactorEnabledAsync(IdentityUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -1290,7 +1244,7 @@ namespace AspNetCore.Identity.Uow
         /// <returns>
         /// The <see cref="Task"/> contains a list of users, if any, that contain the specified claim. 
         /// </returns>
-        public virtual async Task<IList<TUser>> GetUsersForClaimAsync(Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<IList<IdentityUser>> GetUsersForClaimAsync(Claim claim, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -1299,7 +1253,7 @@ namespace AspNetCore.Identity.Uow
                 throw new ArgumentNullException(paramName: nameof(claim));
             }
 
-            return await Uow.GetCustomRepository<TUserRepository>().GetUsersForClaimAsync(claim: claim, cancellationToken: cancellationToken);
+            return await Uow.GetCustomRepository<IIdentityUserRepository>().GetUsersForClaimAsync(claim: claim, cancellationToken: cancellationToken);
 
             //var query = from userclaims in UserClaims
             //    join user in Users on userclaims.UserId equals user.Id
@@ -1318,7 +1272,7 @@ namespace AspNetCore.Identity.Uow
         /// <returns>
         /// The <see cref="Task"/> contains a list of users, if any, that are in the specified role. 
         /// </returns>
-        public virtual async Task<IList<TUser>> GetUsersInRoleAsync(string normalizedRoleName, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<IList<IdentityUser>> GetUsersInRoleAsync(string normalizedRoleName, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -1331,7 +1285,7 @@ namespace AspNetCore.Identity.Uow
 
             if (role != null)
             {
-                return await Uow.GetCustomRepository<TUserRepository>()
+                return await Uow.GetCustomRepository<IIdentityUserRepository>()
                     .GetUsersInRoleAsync(roleId: role.IdentityRoleId, cancellationToken: cancellationToken);
 
                 //var query = from userrole in UserRoles
@@ -1341,7 +1295,7 @@ namespace AspNetCore.Identity.Uow
 
                 //return await query.ToListAsync(cancellationToken);
             }
-            return new List<TUser>();
+            return new List<IdentityUser>();
         }
 
         /// <summary>
@@ -1352,10 +1306,10 @@ namespace AspNetCore.Identity.Uow
         /// <param name="name">The name of the token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The user token if it exists.</returns>
-        protected virtual Task<TUserToken> FindTokenAsync(TUser user, string loginProvider, string name, CancellationToken cancellationToken)
-            => Uow.GetCustomRepository<TUserTokenRepository>().FindTokenAsync(userId: user.IdentityUserId, loginProvider: loginProvider, name: name, cancellationToken: cancellationToken);
+        protected virtual Task<IdentityUserToken> FindTokenAsync(IdentityUser user, string loginProvider, string name, CancellationToken cancellationToken)
+            => Uow.GetCustomRepository<IIdentityUserTokenRepository>().FindTokenAsync(userId: user.IdentityUserId, loginProvider: loginProvider, name: name, cancellationToken: cancellationToken);
 
-//        protected virtual Task<TUserToken> FindTokenAsync(TUser user, string loginProvider, string name, CancellationToken cancellationToken)
+//        protected virtual Task<IdentityUserToken> FindTokenAsync(IdentityUser user, string loginProvider, string name, CancellationToken cancellationToken)
 //            => UserTokens.FindAsync(new object[] { user.Id, loginProvider, name }, cancellationToken);
 
         /// <summary>
@@ -1367,7 +1321,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="value">The value of the token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public virtual async Task SetTokenAsync(TUser user, string loginProvider, string name, string value, CancellationToken cancellationToken)
+        public virtual async Task SetTokenAsync(IdentityUser user, string loginProvider, string name, string value, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -1380,7 +1334,7 @@ namespace AspNetCore.Identity.Uow
             var token = await FindTokenAsync(user: user, loginProvider: loginProvider, name: name, cancellationToken: cancellationToken);
             if (token == null)
             {
-                Uow.GetCustomRepository<TUserTokenRepository>().Add(entity: CreateUserToken(user: user, loginProvider: loginProvider, name: name, value: value));
+                Uow.GetCustomRepository<IIdentityUserTokenRepository>().Add(entity: CreateUserToken(user: user, loginProvider: loginProvider, name: name, value: value));
             }
             else
             {
@@ -1396,7 +1350,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="name">The name of the token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public virtual async Task RemoveTokenAsync(TUser user, string loginProvider, string name, CancellationToken cancellationToken)
+        public virtual async Task RemoveTokenAsync(IdentityUser user, string loginProvider, string name, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -1408,7 +1362,7 @@ namespace AspNetCore.Identity.Uow
             var entry = await FindTokenAsync(user: user, loginProvider: loginProvider, name: name, cancellationToken: cancellationToken);
             if (entry != null)
             {
-                Uow.GetCustomRepository<TUserTokenRepository>().Remove(entity: entry);
+                Uow.GetCustomRepository<IIdentityUserTokenRepository>().Remove(entity: entry);
             }
         }
 
@@ -1420,7 +1374,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="name">The name of the token.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public virtual async Task<string> GetTokenAsync(TUser user, string loginProvider, string name, CancellationToken cancellationToken)
+        public virtual async Task<string> GetTokenAsync(IdentityUser user, string loginProvider, string name, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -1433,7 +1387,7 @@ namespace AspNetCore.Identity.Uow
             return entry?.Value;
         }
 
-        private const string InternalLoginProvider = "[AspNetUserStore]";
+        private const string InternalLoginProvider = "[AspNeIdentityUserStore]";
         private const string AuthenticatorKeyTokenName = "AuthenticatorKey";
         private const string RecoveryCodeTokenName = "RecoveryCodes";
 
@@ -1444,7 +1398,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="key">The authenticator key to set.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public virtual Task SetAuthenticatorKeyAsync(TUser user, string key, CancellationToken cancellationToken)
+        public virtual Task SetAuthenticatorKeyAsync(IdentityUser user, string key, CancellationToken cancellationToken)
         {
             return SetTokenAsync(user: user, loginProvider: InternalLoginProvider, name: AuthenticatorKeyTokenName, value: key, cancellationToken: cancellationToken);
         }
@@ -1455,7 +1409,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="user">The user whose security stamp should be set.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the security stamp for the specified <paramref name="user"/>.</returns>
-        public virtual Task<string> GetAuthenticatorKeyAsync(TUser user, CancellationToken cancellationToken)
+        public virtual Task<string> GetAuthenticatorKeyAsync(IdentityUser user, CancellationToken cancellationToken)
         {
             return GetTokenAsync(user: user, loginProvider: InternalLoginProvider, name: AuthenticatorKeyTokenName, cancellationToken: cancellationToken);
         }
@@ -1467,7 +1421,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="recoveryCodes">The new recovery codes for the user.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The new recovery codes for the user.</returns>
-        public virtual Task ReplaceCodesAsync(TUser user, IEnumerable<string> recoveryCodes, CancellationToken cancellationToken)
+        public virtual Task ReplaceCodesAsync(IdentityUser user, IEnumerable<string> recoveryCodes, CancellationToken cancellationToken)
         {
             var mergedCodes = string.Join(separator: ";", values: recoveryCodes);
             return SetTokenAsync(user: user, loginProvider: InternalLoginProvider, name: RecoveryCodeTokenName, value: mergedCodes, cancellationToken: cancellationToken);
@@ -1481,7 +1435,7 @@ namespace AspNetCore.Identity.Uow
         /// <param name="code">The recovery code to use.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>True if the recovery code was found for the user.</returns>
-        public virtual async Task<bool> RedeemCodeAsync(TUser user, string code, CancellationToken cancellationToken)
+        public virtual async Task<bool> RedeemCodeAsync(IdentityUser user, string code, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();

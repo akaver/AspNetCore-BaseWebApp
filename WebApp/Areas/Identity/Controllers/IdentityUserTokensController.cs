@@ -2,29 +2,33 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AspNetCore.Identity.Uow.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AspNetCore.Identity.Uow.Models;
 using DAL.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using WebApp.Areas.Identity.ViewModels;
 
 namespace WebApp.Areas.Identity.Controllers
 {
-    [Area("Identity")]
+    [Area(areaName: "Identity")]
+    [Authorize(Roles = "Admin")]
     public class IdentityUserTokensController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IIdentityUnitOfWork _uow;
 
-        public IdentityUserTokensController(ApplicationDbContext context)
+        public IdentityUserTokensController(IIdentityUnitOfWork uow)
         {
-            _context = context;    
+            _uow = uow;
         }
 
         // GET: Identity/IdentityUserTokens
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.IdentityUserTokens.Include(i => i.User);
-            return View(await applicationDbContext.ToListAsync());
+            var userTokens = await _uow.IdentityUserTokens.AllIncludeUserAsync();
+            return View(model: userTokens);
         }
 
         // GET: Identity/IdentityUserTokens/Details/5
@@ -35,22 +39,22 @@ namespace WebApp.Areas.Identity.Controllers
                 return NotFound();
             }
 
-            var identityUserToken = await _context.IdentityUserTokens
-                .Include(i => i.User)
-                .SingleOrDefaultAsync(m => m.IdentityUserTokenId == id);
+            var identityUserToken = await _uow.IdentityUserTokens.SingleByIdIncludeUserAsync(id: id.Value);
             if (identityUserToken == null)
             {
                 return NotFound();
             }
 
-            return View(identityUserToken);
+            return View(model: identityUserToken);
         }
 
         // GET: Identity/IdentityUserTokens/Create
         public IActionResult Create()
         {
-            ViewData["UserId"] = new SelectList(_context.IdentityUsers, "IdentityUserId", "Discriminator");
-            return View();
+
+            var vm = new IdentityUserTokensCreateEditViewModel();
+            vm.UserSelectList = new SelectList(items: _uow.IdentityUsers.All(), dataValueField: nameof(IdentityUser.IdentityUserId), dataTextField: nameof(IdentityUser.Email));
+            return View(model: vm);
         }
 
         // POST: Identity/IdentityUserTokens/Create
@@ -58,16 +62,16 @@ namespace WebApp.Areas.Identity.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdentityUserTokenId,UserId,LoginProvider,Name,Value")] IdentityUserToken identityUserToken)
+        public async Task<IActionResult> Create(IdentityUserTokensCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(identityUserToken);
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Index");
+                _uow.IdentityUserTokens.Add(entity: vm.IdentityUserToken);
+                await _uow.SaveChangesAsync();
+                return RedirectToAction(actionName: nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.IdentityUsers, "IdentityUserId", "Discriminator", identityUserToken.UserId);
-            return View(identityUserToken);
+            vm.UserSelectList = new SelectList(items: _uow.IdentityUsers.All(), dataValueField: nameof(IdentityUser.IdentityUserId), dataTextField: nameof(IdentityUser.Email), selectedValue: vm.IdentityUserToken.UserId);
+            return View(model: vm);
         }
 
         // GET: Identity/IdentityUserTokens/Edit/5
@@ -78,13 +82,15 @@ namespace WebApp.Areas.Identity.Controllers
                 return NotFound();
             }
 
-            var identityUserToken = await _context.IdentityUserTokens.SingleOrDefaultAsync(m => m.IdentityUserTokenId == id);
+            var identityUserToken = await _uow.IdentityUserTokens.SingleByIdIncludeUserAsync(id: id.Value);
             if (identityUserToken == null)
             {
                 return NotFound();
             }
-            ViewData["UserId"] = new SelectList(_context.IdentityUsers, "IdentityUserId", "Discriminator", identityUserToken.UserId);
-            return View(identityUserToken);
+            var vm = new IdentityUserTokensCreateEditViewModel();
+            vm.IdentityUserToken = identityUserToken;
+            vm.UserSelectList = new SelectList(items: _uow.IdentityUsers.All(), dataValueField: nameof(IdentityUser.IdentityUserId), dataTextField: nameof(IdentityUser.Email), selectedValue: identityUserToken.UserId);
+            return View(model: vm);
         }
 
         // POST: Identity/IdentityUserTokens/Edit/5
@@ -92,9 +98,9 @@ namespace WebApp.Areas.Identity.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdentityUserTokenId,UserId,LoginProvider,Name,Value")] IdentityUserToken identityUserToken)
+        public async Task<IActionResult> Edit(int id, IdentityUserTokensCreateEditViewModel vm)
         {
-            if (id != identityUserToken.IdentityUserTokenId)
+            if (id != vm.IdentityUserToken.IdentityUserTokenId)
             {
                 return NotFound();
             }
@@ -103,12 +109,12 @@ namespace WebApp.Areas.Identity.Controllers
             {
                 try
                 {
-                    _context.Update(identityUserToken);
-                    await _context.SaveChangesAsync();
+                    _uow.IdentityUserTokens.Update(entity: vm.IdentityUserToken);
+                    await _uow.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!IdentityUserTokenExists(identityUserToken.IdentityUserTokenId))
+                    if (!_uow.IdentityUserTokens.Exists(id: vm.IdentityUserToken.IdentityUserTokenId))
                     {
                         return NotFound();
                     }
@@ -117,10 +123,11 @@ namespace WebApp.Areas.Identity.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("Index");
+                return RedirectToAction(actionName: nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.IdentityUsers, "IdentityUserId", "Discriminator", identityUserToken.UserId);
-            return View(identityUserToken);
+            vm.UserSelectList = new SelectList(items: _uow.IdentityUsers.All(), dataValueField: nameof(IdentityUser.IdentityUserId), dataTextField: nameof(IdentityUser.Email), selectedValue: vm.IdentityUserToken.UserId);
+
+            return View(model: vm);
         }
 
         // GET: Identity/IdentityUserTokens/Delete/5
@@ -131,31 +138,23 @@ namespace WebApp.Areas.Identity.Controllers
                 return NotFound();
             }
 
-            var identityUserToken = await _context.IdentityUserTokens
-                .Include(i => i.User)
-                .SingleOrDefaultAsync(m => m.IdentityUserTokenId == id);
+            var identityUserToken = await _uow.IdentityUserTokens.SingleByIdIncludeUserAsync(id: id.Value);
             if (identityUserToken == null)
             {
                 return NotFound();
             }
 
-            return View(identityUserToken);
+            return View(model: identityUserToken);
         }
 
         // POST: Identity/IdentityUserTokens/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost, ActionName(name: nameof(Delete))]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var identityUserToken = await _context.IdentityUserTokens.SingleOrDefaultAsync(m => m.IdentityUserTokenId == id);
-            _context.IdentityUserTokens.Remove(identityUserToken);
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Index");
-        }
-
-        private bool IdentityUserTokenExists(int id)
-        {
-            return _context.IdentityUserTokens.Any(e => e.IdentityUserTokenId == id);
+            _uow.IdentityUserTokens.Remove(id);
+            await _uow.SaveChangesAsync();
+            return RedirectToAction(actionName: nameof(Index));
         }
     }
 }

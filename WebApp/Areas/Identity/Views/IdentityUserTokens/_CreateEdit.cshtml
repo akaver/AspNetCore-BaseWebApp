@@ -1,0 +1,29 @@
+﻿@model WebApp.Areas.Identity.ViewModels.IdentityUserTokensCreateEditViewModel
+
+<div class="form-group">
+    <label asp-for="IdentityUserToken.UserId" class="col-md-2 control-label"></label>
+    <div class="col-md-10">
+        <select asp-for="IdentityUserToken.UserId" class ="form-control" asp-items="Model.UserSelectList"></select>
+    </div>
+</div>
+<div class="form-group">
+    <label asp-for="IdentityUserToken.LoginProvider" class="col-md-2 control-label"></label>
+    <div class="col-md-10">
+        <input asp-for="IdentityUserToken.LoginProvider" class="form-control" />
+        <span asp-validation-for="IdentityUserToken.LoginProvider" class="text-danger"></span>
+    </div>
+</div>
+<div class="form-group">
+    <label asp-for="IdentityUserToken.Name" class="col-md-2 control-label"></label>
+    <div class="col-md-10">
+        <input asp-for="IdentityUserToken.Name" class="form-control" />
+        <span asp-validation-for="IdentityUserToken.Name" class="text-danger"></span>
+    </div>
+</div>
+<div class="form-group">
+    <label asp-for="IdentityUserToken.Value" class="col-md-2 control-label"></label>
+    <div class="col-md-10">
+        <input asp-for="IdentityUserToken.Value" class="form-control" />
+        <span asp-validation-for="IdentityUserToken.Value" class="text-danger"></span>
+    </div>
+</div>

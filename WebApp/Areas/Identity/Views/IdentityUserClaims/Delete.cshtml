@@ -1,38 +1,21 @@
 @model AspNetCore.Identity.Uow.Models.IdentityUserClaim
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData[index: "Title"] = "Delete";
 }
 
 <h2>Delete</h2>
 
 <h3>Are you sure you want to delete this?</h3>
 <div>
-    <h4>IdentityUserClaim</h4>
+    <h4>UserClaim</h4>
     <hr />
     <dl class="dl-horizontal">
-        <input type="hidden" asp-for="IdentityUserClaimId" />
-        <dt>
-            @Html.DisplayNameFor(model => model.ClaimType)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.ClaimType)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.ClaimValue)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.ClaimValue)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.User)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.User.Discriminator)
-        </dd>
+        @Html.Partial(partialViewName: "_Info",model: Model)
     </dl>
     
     <form asp-action="Delete">
+        <input type="hidden" asp-for="IdentityUserClaimId" />
         <div class="form-actions no-color">
             <input type="submit" value="Delete" class="btn btn-default" /> |
             <a asp-action="Index">Back to List</a>

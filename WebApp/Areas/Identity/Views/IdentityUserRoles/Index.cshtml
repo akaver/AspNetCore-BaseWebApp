@@ -1,7 +1,7 @@
-@model IEnumerable<AspNetCore.Identity.Uow.Models.IdentityUserRole<int>>
+@model IEnumerable<AspNetCore.Identity.Uow.Models.IdentityUserRole>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData[index: "Title"] = "Index";
 }
 
 <h2>Index</h2>
@@ -13,29 +13,37 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Role)
+                @Html.DisplayNameFor(expression: model => model.Role)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.User)
+                @Html.DisplayNameFor(expression: model => model.User)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.RoleId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UserId)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.IdentityUserRoleId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IdentityUserRoleId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IdentityUserRoleId">Delete</a>
-            </td>
-        </tr>
-}
+        @{
+            var prevrolename = "";
+        }
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @if (prevrolename != item.Role.Name)
+                    {
+                        @Html.DisplayFor(expression: modelItem => item.Role.Name)
+                        prevrolename = item.Role.Name;
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(expression: modelItem => item.User.Email)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.IdentityUserRoleId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.IdentityUserRoleId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.IdentityUserRoleId">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

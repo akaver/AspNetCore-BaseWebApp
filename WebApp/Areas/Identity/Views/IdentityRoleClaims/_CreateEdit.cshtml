@@ -1,0 +1,22 @@
+﻿@model WebApp.Areas.Identity.ViewModels.IdentityRoleClaimsCreateEditViewModel
+
+<div class="form-group">
+    <label asp-for="IdentityRoleClaim.RoleId" class="col-md-2 control-label"></label>
+    <div class="col-md-10">
+        <select asp-for="IdentityRoleClaim.RoleId" class ="form-control" asp-items="Model.RoleSelectList"></select>
+    </div>
+</div>
+<div class="form-group">
+    <label asp-for="IdentityRoleClaim.ClaimType" class="col-md-2 control-label"></label>
+    <div class="col-md-10">
+        <input asp-for="IdentityRoleClaim.ClaimType" class="form-control" />
+        <span asp-validation-for="IdentityRoleClaim.ClaimType" class="text-danger"></span>
+    </div>
+</div>
+<div class="form-group">
+    <label asp-for="IdentityRoleClaim.ClaimValue" class="col-md-2 control-label"></label>
+    <div class="col-md-10">
+        <input asp-for="IdentityRoleClaim.ClaimValue" class="form-control" />
+        <span asp-validation-for="IdentityRoleClaim.ClaimValue" class="text-danger"></span>
+    </div>
+</div>

@@ -1,0 +1,22 @@
+﻿@model WebApp.Areas.Identity.ViewModels.IdentityUserClaimsCreateEditViewModel
+
+<div class="form-group">
+    <label asp-for="IdentityUserClaim.UserId" class="col-md-2 control-label"></label>
+    <div class="col-md-10">
+        <select asp-for="IdentityUserClaim.UserId" class ="form-control" asp-items="Model.UserSelectList"></select>
+    </div>
+</div>
+<div class="form-group">
+    <label asp-for="IdentityUserClaim.ClaimType" class="col-md-2 control-label"></label>
+    <div class="col-md-10">
+        <input asp-for="IdentityUserClaim.ClaimType" class="form-control" />
+        <span asp-validation-for="IdentityUserClaim.ClaimType" class="text-danger"></span>
+    </div>
+</div>
+<div class="form-group">
+    <label asp-for="IdentityUserClaim.ClaimValue" class="col-md-2 control-label"></label>
+    <div class="col-md-10">
+        <input asp-for="IdentityUserClaim.ClaimValue" class="form-control" />
+        <span asp-validation-for="IdentityUserClaim.ClaimValue" class="text-danger"></span>
+    </div>
+</div>

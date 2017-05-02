@@ -8,21 +8,17 @@ using DAL.Repositories;
 
 namespace AspNetCore.Identity.Uow.Interfaces
 {
-    public interface IIdentityUserTokenRepository : IIdentityUserTokenRepository<IdentityUserToken<int>>
+    public interface IIdentityUserTokenRepository : IRepository<IdentityUserToken>
     {
+        bool Exists(int id);
 
-    }
-    public interface IIdentityUserTokenRepository<TUserToken> : IIdentityUserTokenRepository<int, TUserToken>
-        where TUserToken : IdentityUserToken<int>, new()
-    {
+        Task<bool> ExistsAsync(int id);
 
-    }
+        Task<List<IdentityUserToken>> AllIncludeUserAsync();
 
-    public interface IIdentityUserTokenRepository<TKey, TUserToken> : IRepository<TUserToken>
-        where TKey : IEquatable<TKey>
-        where TUserToken : IdentityUserToken<TKey>, new()
-    {
-        Task<TUserToken> FindTokenAsync(TKey userId, string loginProvider, string name, CancellationToken cancellationToken = default(CancellationToken));
+        Task<IdentityUserToken> SingleByIdIncludeUserAsync(int id);
+
+        Task<IdentityUserToken> FindTokenAsync(int userId, string loginProvider, string name, CancellationToken cancellationToken = default(CancellationToken));
 
     }
 }

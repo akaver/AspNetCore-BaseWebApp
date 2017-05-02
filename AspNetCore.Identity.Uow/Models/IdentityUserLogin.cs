@@ -9,24 +9,11 @@ namespace AspNetCore.Identity.Uow.Models
     /// <summary>
     /// Represents a login and its associated provider for a user.
     /// </summary>
-    public class IdentityUserLogin : IdentityUserLogin<int>
-    {
-    }
-
-    public class IdentityUserLogin<TKey> : IdentityUserLogin<TKey, IdentityUser<TKey>>
-        where TKey : IEquatable<TKey>
-    {
-    }
-
-    /// <summary>
-    /// Represents a login and its associated provider for a user.
-    /// </summary>
     /// <typeparam name="TKey">The type of the primary key of the user associated with this login.</typeparam>
-    public class IdentityUserLogin<TKey, TUser> 
-        where TKey : IEquatable<TKey>
+    public class IdentityUserLogin
     {
         [Key]
-        public virtual TKey IdentityUserLoginId { get; set; }
+        public virtual int IdentityUserLoginId { get; set; }
 
 
         /// <summary>
@@ -47,8 +34,8 @@ namespace AspNetCore.Identity.Uow.Models
         /// <summary>
         /// Gets or sets the of the primary key of the user associated with this login.
         /// </summary>
-        public virtual TKey UserId { get; set; }
-        public virtual TUser User { get; set; }
+        public virtual int UserId { get; set; }
+        public virtual IdentityUser User { get; set; }
     }
 
 }

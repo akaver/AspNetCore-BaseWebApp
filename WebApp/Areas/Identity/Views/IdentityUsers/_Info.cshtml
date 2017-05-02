@@ -1,4 +1,4 @@
-﻿@model AspNetCore.Identity.Uow.Models.IdentityUser<int>
+﻿@model AspNetCore.Identity.Uow.Models.IdentityUser
 
 <dt>
     @Html.DisplayNameFor(model => model.UserName)
@@ -83,4 +83,14 @@
 </dt>
 <dd>
     @Html.DisplayFor(model => model.AccessFailedCount)
+</dd>
+<dt>
+    @Html.DisplayNameFor(model => model.Roles)
+</dt>
+<dd>
+    @Model.Roles.Count<br/>
+    @foreach (var role in Model.Roles)
+    {
+        @role.Role.Name<br/>
+    }
 </dd>

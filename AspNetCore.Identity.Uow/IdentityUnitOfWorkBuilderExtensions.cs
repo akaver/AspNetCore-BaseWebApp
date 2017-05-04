@@ -65,14 +65,14 @@ namespace AspNetCore.Identity.Uow
             // public class RoleStore<TKey, TRole, TUserRole, TRoleClaim, TUnitOfWork, TRoleRepository, TRoleClaimRepository>
          services.TryAddScoped(
                 service: typeof(IRoleStore<>).MakeGenericType(roleType),
-                implementationType: typeof(RoleStore));
+                implementationType: typeof(RoleStore<>).MakeGenericType(userType));
 
 
 
             // public class UserStore<TKey, TUser, TRole, TUserClaim, TUserRole, TUserLogin, TUserToken, TRoleClaim, TUnitOfWork, TUserRepository, TRoleRepository, TUserRoleRepository, TUserLoginRepository, TUserClaimRepository, TUserTokenRepository>
             services.TryAddScoped(
                 service: typeof(IUserStore<>).MakeGenericType(userType),
-                implementationType: typeof(UserStore));
+                implementationType: typeof(UserStore<>).MakeGenericType(userType));
         }
 
         private static TypeInfo FindGenericBaseType(Type currentType, Type genericBaseType)

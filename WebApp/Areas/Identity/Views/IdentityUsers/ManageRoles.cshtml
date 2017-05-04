@@ -1,0 +1,55 @@
+﻿@model WebApp.Areas.Identity.ViewModels.IdentityUsersManageRolesViewModel
+
+@{
+    ViewData["Title"] = "Manage roles for userr";
+}
+
+<h2>Manage</h2>
+    
+<form asp-action="Create">
+    <div class="form-horizontal">
+        <h4>User roles for <b>@Model.IdentityUser.Email</b></h4>
+        <hr />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="IdentityUser.IdentityUserId">
+        <div class="form-group">
+            <div class="col-md-2">
+                Unassigned roles<br/>
+                <select size="10" multiple="multiple" class="form-control">
+                    @foreach (var role in Model.AllRoles)
+                    {
+                        <option value="@role.IdentityRoleId">@role.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-1">
+                <br/><br/>
+                <input type="button" value="==>" class="btn btn-default"/><br/><br/>
+                <input type="button" value="<==" class="btn btn-default"/>
+            </div>
+            <div class="col-md-2">
+                Assigned roles<br />
+                <select size="10" multiple="multiple" class="form-control">
+                    @foreach (var role in Model.IdentityUser.Roles)
+                    {
+                        <option value="@role.Role.IdentityRoleId">@role.Role.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div class="col-md-offset-4 col-md-8">
+                <input type="submit" value="Submit" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+</form>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

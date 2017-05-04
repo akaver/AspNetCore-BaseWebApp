@@ -19,14 +19,15 @@ namespace AspNetCore.Identity.Uow
     /// <summary>
     /// Creates a new instance of a persistence store for roles.
     /// </summary>
-    public class RoleStore : IRoleClaimStore<IdentityRole>
+    public class RoleStore<TUser> : IRoleClaimStore<IdentityRole>
+        where TUser : IdentityUser
     {
         /// <summary>
         /// Constructs a new instance of RoleStore.
         /// </summary>
         /// <param name="uow">The <see cref="IIdentityUnitOfWork"/>.</param>
         /// <param name="describer">The <see cref="IdentityErrorDescriber"/>.</param>
-        public RoleStore(IIdentityUnitOfWork uow, IdentityErrorDescriber describer = null)
+        public RoleStore(IIdentityUnitOfWork<TUser> uow, IdentityErrorDescriber describer = null)
         {
 
             Uow = uow;
@@ -43,7 +44,7 @@ namespace AspNetCore.Identity.Uow
         /// <summary>
         /// Gets the database context for this store.
         /// </summary>
-        public IIdentityUnitOfWork Uow { get; private set; }
+        public IIdentityUnitOfWork<TUser> Uow { get; private set; }
 
         /// <summary>
         /// Gets or sets the <see cref="IdentityErrorDescriber"/> for any error that occurred with the current operation.

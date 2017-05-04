@@ -5,6 +5,7 @@ using AspNetCore.Identity.Uow.Interfaces;
 using AspNetCore.Identity.Uow.Models;
 using DAL.EntityFrameworkCore.Repositories;
 using DAL.Helpers;
+using Domain;
 
 
 namespace DAL.EntityFrameworkCore.Helpers
@@ -35,7 +36,7 @@ namespace DAL.EntityFrameworkCore.Helpers
                 {typeof(IIdentityRoleRepository), dbContext => new IdentityRoleRepository(dataContext: dbContext)},
                 {typeof(IIdentityUserClaimRepository), dbContext => new IdentityUserClaimRepository(dataContext: dbContext)},
                 {typeof(IIdentityUserLoginRepository), dbContext => new IdentityUserLoginRepository(dataContext: dbContext)},
-                {typeof(IIdentityUserRepository), dbContext => new IdentityUserRepository(dataContext: dbContext)},
+                {typeof(IIdentityUserRepository<ApplicationUser>), dbContext => new IdentityUserRepository<ApplicationUser>(dataContext: dbContext)},
                 {typeof(IIdentityUserRoleRepository), dbContext => new IdentityUserRoleRepository(dataContext: dbContext)},
                 {typeof(IIdentityUserTokenRepository), dbContext => new IdentityUserTokenRepository(dataContext: dbContext)},
             };

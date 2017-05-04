@@ -35,6 +35,7 @@
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AspNetCore.Identity.Extensions\AspNetCore.Identity.Extensions.csproj" />
     <ProjectReference Include="..\AspNetCore.Identity.Uow\AspNetCore.Identity.Uow.csproj" />
     <ProjectReference Include="..\DAL.EntityFrameworkCore\DAL.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\DAL\DAL.csproj" />

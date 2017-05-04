@@ -9,7 +9,9 @@ using Microsoft.EntityFrameworkCore;
 using AspNetCore.Identity.Uow.Models;
 using DAL;
 using DAL.EntityFrameworkCore;
+using Domain;
 using Microsoft.AspNetCore.Authorization;
+using WebApp.Areas.Identity.ViewModels;
 
 namespace WebApp.Areas.Identity.Controllers
 {
@@ -17,11 +19,31 @@ namespace WebApp.Areas.Identity.Controllers
     [Authorize(Roles = "Admin")]
     public class IdentityUsersController : Controller
     {
-        private readonly IIdentityUnitOfWork _uow;
+        private readonly IIdentityUnitOfWork<ApplicationUser> _uow;
 
-        public IdentityUsersController(IIdentityUnitOfWork uow)
+        public IdentityUsersController(IIdentityUnitOfWork<ApplicationUser> uow)
         {
             _uow = uow;
+        }
+
+        public async Task<IActionResult> ManageRoles(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var identityUser = await _uow.IdentityUsers.FindByIdIncludeRolesAsync(userId: id.Value);
+            if (identityUser == null)
+            {
+                return NotFound();
+            }
+
+            var vm = new IdentityUsersManageRolesViewModel();
+            vm.IdentityUser = identityUser;
+            vm.AllRoles = await _uow.IdentityRoles.AllAsync();
+
+            return View(model: vm);
         }
 
         // GET: Identity/IdentityUsers
@@ -38,7 +60,7 @@ namespace WebApp.Areas.Identity.Controllers
                 return NotFound();
             }
 
-            var identityUser = await _uow.IdentityUsers.FindByIdIncludeRolesAsync(id.Value);
+            var identityUser = await _uow.IdentityUsers.FindByIdIncludeRolesAsync(userId: id.Value);
             if (identityUser == null)
             {
                 return NotFound();
@@ -58,7 +80,7 @@ namespace WebApp.Areas.Identity.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(IdentityUser identityUser)
+        public async Task<IActionResult> Create(ApplicationUser identityUser)
         {
             if (ModelState.IsValid)
             {
@@ -87,7 +109,7 @@ namespace WebApp.Areas.Identity.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, IdentityUser identityUser)
+        public async Task<IActionResult> Edit(int id, ApplicationUser identityUser)
         {
             if (id != identityUser.IdentityUserId)
             {
@@ -125,7 +147,7 @@ namespace WebApp.Areas.Identity.Controllers
                 return NotFound();
             }
 
-            var identityUser = await _uow.IdentityUsers.FindByIdIncludeRolesAsync(id.Value);
+            var identityUser = await _uow.IdentityUsers.FindByIdIncludeRolesAsync(userId: id.Value);
             if (identityUser == null)
             {
                 return NotFound();

@@ -1,6 +1,7 @@
 ﻿using System;
 using AspNetCore.Identity.Uow.Models;
 using DAL.EntityFrameworkCore.Extensions;
+using Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.EntityFrameworkCore
@@ -10,7 +11,7 @@ namespace DAL.EntityFrameworkCore
         // Web scaffolding requires fully qyalified names
         public DbSet<AspNetCore.Identity.Uow.Models.IdentityRole> IdentityRoles { get; set; }
         public DbSet<AspNetCore.Identity.Uow.Models.IdentityRoleClaim> IdentityRoleClaims { get; set; }
-        public DbSet<AspNetCore.Identity.Uow.Models.IdentityUser> IdentityUsers { get; set; }
+        public DbSet<Domain.ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<AspNetCore.Identity.Uow.Models.IdentityUserClaim> IdentityUserClaims { get; set; }
         public DbSet<AspNetCore.Identity.Uow.Models.IdentityUserLogin> IdentityUserLogins { get; set; }
         public DbSet<AspNetCore.Identity.Uow.Models.IdentityUserRole> IdentityUserRoles { get; set; }
@@ -27,15 +28,25 @@ namespace DAL.EntityFrameworkCore
 
             modelBuilder.DisableCascadingDeletes();
 
+            #region Identity configuration
             // configure identity entities
             // removed composite keys
             // renamed all PK-s as <ClassName>Id
             // added all possible navigation properties 
+            modelBuilder.Entity<ApplicationUser>(buildAction: b =>
+            {
+                b.HasIndex(indexExpression: u => u.NormalizedUserName).HasName(name: "UserNameIndex").IsUnique();
+                b.HasIndex(indexExpression: u => u.NormalizedEmail).HasName(name: "EmailIndex");
+                b.Property(propertyExpression: u => u.ConcurrencyStamp).IsConcurrencyToken();
+
+                b.ToTable(name: "IdentityUsers");
+            });
+
             modelBuilder.Entity<IdentityRole>(buildAction: b =>
             {
                 b.HasIndex(indexExpression: r => r.NormalizedName).HasName(name: "RoleNameIndex").IsUnique();
                 b.Property(propertyExpression: r => r.ConcurrencyStamp).IsConcurrencyToken();
-               
+
                 b.ToTable(name: "IdentityRoles");
             });
 
@@ -44,14 +55,6 @@ namespace DAL.EntityFrameworkCore
                 b.ToTable(name: "IdentityRoleClaims");
             });
 
-            modelBuilder.Entity<IdentityUser>(buildAction: b =>
-            {
-                b.HasIndex(indexExpression: u => u.NormalizedUserName).HasName(name: "UserNameIndex").IsUnique();
-                b.HasIndex(indexExpression: u => u.NormalizedEmail).HasName(name: "EmailIndex");
-                b.Property(propertyExpression: u => u.ConcurrencyStamp).IsConcurrencyToken();
-
-                b.ToTable(name: "IdentityUsers");
-            });
 
             modelBuilder.Entity<IdentityUserClaim>(buildAction: b =>
             {
@@ -79,6 +82,7 @@ namespace DAL.EntityFrameworkCore
 
                 b.ToTable(name: "IdentityUserTokens");
             });
+            #endregion
 
         }
 

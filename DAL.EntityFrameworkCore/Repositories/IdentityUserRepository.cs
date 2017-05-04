@@ -7,12 +7,22 @@ using System.Threading;
 using System.Threading.Tasks;
 using AspNetCore.Identity.Uow.Interfaces;
 using AspNetCore.Identity.Uow.Models;
+using Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.EntityFrameworkCore.Repositories
 {
+    //public class IdentityUserRepository : IdentityUserRepository<ApplicationUser>
+    //{
+    //    public IdentityUserRepository(IDataContext dataContext) : base(dataContext)
+    //    {
+    //    }
+    //}
 
-    public class IdentityUserRepository : EFRepository<IdentityUser>, IIdentityUserRepository
+
+
+    public class IdentityUserRepository<TUser> : EFRepository<TUser>, IIdentityUserRepository<TUser>
+        where TUser: IdentityUser
     {
         public IdentityUserRepository(IDataContext dataContext) : base(dataContext: dataContext)
         {
@@ -32,29 +42,29 @@ namespace DAL.EntityFrameworkCore.Repositories
             // ReSharper restore ArgumentsStyleNamedExpression
         }
 
-        public Task<List<IdentityUser>> AllIncludeRolesAsync()
+        public Task<List<TUser>> AllIncludeRolesAsync()
         {
             return RepositoryDbSet.Include(u => u.Roles).ThenInclude(r => r.Role).ToListAsync();
         }
 
-        public Task<IdentityUser> FindByIdIncludeRolesAsync(int userId)
+        public Task<TUser> FindByIdIncludeRolesAsync(int userId)
         {
             return RepositoryDbSet.Include(ur => ur.Roles)
                 .ThenInclude(r => r.Role)
-                .SingleOrDefaultAsync(u => u.IdentityUserId == userId);
+                .SingleOrDefaultAsync(u => u.IdentityUserId.Equals(userId));
         }
 
-        public Task<IdentityUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<TUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken = default(CancellationToken))
         {
             return RepositoryDbSet.FirstOrDefaultAsync(predicate: u => u.NormalizedUserName == normalizedUserName, cancellationToken: cancellationToken);
         }
 
-        public Task<IdentityUser> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<TUser> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken = default(CancellationToken))
         {
             return RepositoryDbSet.FirstOrDefaultAsync(predicate: u => u.NormalizedEmail == normalizedEmail, cancellationToken: cancellationToken);
         }
 
-        public Task<List<IdentityUser>> GetUsersForClaimAsync(Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<List<TUser>> GetUsersForClaimAsync(Claim claim, CancellationToken cancellationToken = default(CancellationToken))
         {
             // TODO: Is this working?
 
@@ -74,7 +84,7 @@ namespace DAL.EntityFrameworkCore.Repositories
             //return await query.ToListAsync(cancellationToken);
         }
 
-        public Task<List<IdentityUser>> GetUsersInRoleAsync(int roleId, CancellationToken cancellationToken = new CancellationToken())
+        public Task<List<TUser>> GetUsersInRoleAsync(int roleId, CancellationToken cancellationToken = new CancellationToken())
         {
             var query = RepositoryDbSet
                 // ReSharper disable ArgumentsStyleAnonymousFunction

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AspNetCore.Identity.Uow.Models;
 using DAL.EntityFrameworkCore;
+using Domain;
 using Microsoft.AspNetCore.Authorization;
 using WebApp.Areas.Identity.ViewModels;
 
@@ -17,9 +18,9 @@ namespace WebApp.Areas.Identity.Controllers
     [Authorize(Roles = "Admin")]
     public class IdentityUserRolesController : Controller
     {
-        private readonly IIdentityUnitOfWork _uow;
+        private readonly IIdentityUnitOfWork<ApplicationUser> _uow;
 
-        public IdentityUserRolesController(IIdentityUnitOfWork uow)
+        public IdentityUserRolesController(IIdentityUnitOfWork<ApplicationUser> uow)
         {
             _uow = uow;    
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AspNetCore.Identity.Extensions;
 using AspNetCore.Identity.Uow;
 using AspNetCore.Identity.Uow.Interfaces;
 using AspNetCore.Identity.Uow.Models;
@@ -10,6 +11,7 @@ using DAL.EntityFrameworkCore;
 using DAL.EntityFrameworkCore.Extensions;
 using DAL.EntityFrameworkCore.Helpers;
 using DAL.Helpers;
+using Domain;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -52,19 +54,19 @@ namespace WebApp
 
             services.AddScoped<IDataContext, ApplicationDbContext>();
             services.AddScoped<IUnitOfWork, UnitOfWork<IDataContext>>();
-            services.AddScoped<IIdentityUnitOfWork, UnitOfWork<IDataContext>>();
+
+            services.AddScoped<IIdentityUnitOfWork<ApplicationUser>, UnitOfWork<IDataContext>>();
+
             services.AddScoped<IRepositoryProvider, EFRepositoryProvider<IDataContext>>();
             services.AddSingleton<IRepositoryFactory, EFRepositoryFactory>();
 
 
 
 
-            services.AddIdentity<IdentityUser, IdentityRole>()
+            services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddUnitOfWork<
-                    IIdentityUserRepository,
+                    IIdentityUserRepository<ApplicationUser>,
                     IIdentityRoleRepository,
-                    //IIdentityUserRepository<int, IdentityUser>,
-                    //IIdentityRoleRepository<int, IdentityRole>,
                     IIdentityUserRoleRepository,
                     IIdentityUserLoginRepository,
                     IIdentityUserClaimRepository,

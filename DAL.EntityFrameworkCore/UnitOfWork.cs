@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 using AspNetCore.Identity.Uow.Interfaces;
 using DAL.Helpers;
 using DAL.Repositories;
+using Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.EntityFrameworkCore
 {
-    public class UnitOfWork<TContext> : IUnitOfWork, IIdentityUnitOfWork, IDisposable
+    public class UnitOfWork<TContext> : IUnitOfWork, IIdentityUnitOfWork<ApplicationUser>, IDisposable
         where TContext : IDataContext
     {
 
@@ -18,7 +19,7 @@ namespace DAL.EntityFrameworkCore
         public IIdentityRoleRepository IdentityRoles => GetCustomRepository<IIdentityRoleRepository>();
         public IIdentityUserClaimRepository IdentityUserClaims => GetCustomRepository<IIdentityUserClaimRepository>();
         public IIdentityUserLoginRepository IdentityUserLogins => GetCustomRepository<IIdentityUserLoginRepository>();
-        public IIdentityUserRepository IdentityUsers => GetCustomRepository<IIdentityUserRepository>();
+        public IIdentityUserRepository<ApplicationUser> IdentityUsers => GetCustomRepository<IIdentityUserRepository<ApplicationUser>>();
         public IIdentityUserRoleRepository IdentityUserRoles => GetCustomRepository<IIdentityUserRoleRepository>();
         public IIdentityUserTokenRepository IdentityUserTokens => GetCustomRepository<IIdentityUserTokenRepository>();
 

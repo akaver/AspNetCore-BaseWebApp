@@ -9,6 +9,8 @@ namespace DAL.EntityFrameworkCore
     public class ApplicationDbContext : DbContext, IDataContext
     {
         // Web scaffolding requires fully qyalified names
+        public DbSet<Domain.FooBar> FooBars { get; set; }
+
         public DbSet<AspNetCore.Identity.Uow.Models.IdentityRole> IdentityRoles { get; set; }
         public DbSet<AspNetCore.Identity.Uow.Models.IdentityRoleClaim> IdentityRoleClaims { get; set; }
         public DbSet<Domain.ApplicationUser> ApplicationUsers { get; set; }

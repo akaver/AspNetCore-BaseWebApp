@@ -39,9 +39,25 @@
     <ProjectReference Include="..\AspNetCore.Identity.Uow\AspNetCore.Identity.Uow.csproj" />
     <ProjectReference Include="..\DAL.EntityFrameworkCore\DAL.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\DAL\DAL.csproj" />
+    <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\Resources\Resources.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\Identity\Controllers\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Controllers.HomeController.en.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\SharedResources.en.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\ViewModels.HomeTestViewModel.et.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Home\About.en.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

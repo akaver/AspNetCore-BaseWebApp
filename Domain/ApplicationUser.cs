@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using AspNetCore.Identity.Uow.Models;
 
 namespace Domain
@@ -6,6 +7,8 @@ namespace Domain
     public class ApplicationUser : IdentityUser
     {
         // custom fields go here
-        public string FooBar { get; set; }
+        public string NickName { get; set; }
+
+        public List<FooBar> FooBars { get; set; }
     }
 }

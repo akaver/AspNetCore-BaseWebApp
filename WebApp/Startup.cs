@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using AspNetCore.Identity.Extensions;
@@ -15,11 +16,14 @@ using Domain;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using WebApp.Services;
 
 namespace WebApp
@@ -74,13 +78,34 @@ namespace WebApp
                     IIdentityRoleClaimRepository>()
                 .AddDefaultTokenProviders();
 
+            // Add the localization services to the services container
+            services.AddLocalization(options => options.ResourcesPath = "Resources");
 
-
-            services.AddMvc();
+            // Add framework services.
+            services.AddMvc()
+                .AddViewLocalization(format: LanguageViewLocationExpanderFormat.Suffix)
+                .AddDataAnnotationsLocalization();
 
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
+
+            services.Configure<RequestLocalizationOptions>(options => {
+                var supportedCultures = new[]{
+                    new CultureInfo(name: "en"),
+                    new CultureInfo(name: "et")
+                };
+
+                // State what the default culture for your application is. 
+                options.DefaultRequestCulture = new RequestCulture(culture: "en", uiCulture: "en");
+
+                // You must explicitly state which cultures your application supports.
+                options.SupportedCultures = supportedCultures;
+
+                // These are the cultures the app supports for UI strings
+                options.SupportedUICultures = supportedCultures;
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -88,6 +113,11 @@ namespace WebApp
         {
             loggerFactory.AddConsole(configuration: Configuration.GetSection(key: "Logging"));
             loggerFactory.AddDebug();
+
+            app.UseRequestLocalization(
+                options: app.ApplicationServices
+                    .GetService<IOptions<RequestLocalizationOptions>>().Value);
+
 
             if (env.IsDevelopment())
             {

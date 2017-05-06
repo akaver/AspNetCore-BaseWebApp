@@ -20,6 +20,7 @@
   
   <ItemGroup>
     <ProjectReference Include="..\AspNetCore.Identity.Uow\AspNetCore.Identity.Uow.csproj" />
+    <ProjectReference Include="..\DAL.App\DAL.App.csproj" />
     <ProjectReference Include="..\DAL\DAL.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>

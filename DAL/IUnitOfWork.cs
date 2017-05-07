@@ -5,7 +5,11 @@ using DAL.Repositories;
 
 namespace DAL
 {
-    public interface IUnitOfWork
+
+    /// <summary>
+    /// Base interface for UOW implementation
+    /// </summary>
+    public interface IUnitOfWork : IDisposable
     {
         // Save changes to underlaying datastore (if supported)
         int SaveChanges();

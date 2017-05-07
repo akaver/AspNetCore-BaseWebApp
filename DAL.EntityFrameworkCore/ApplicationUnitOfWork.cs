@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.EntityFrameworkCore
 {
-    public class UnitOfWork<TContext> : IUnitOfWork, IIdentityUnitOfWork<ApplicationUser>, IDisposable
+    public class ApplicationUnitOfWork<TContext> : IApplicationUnitOfWork
         where TContext : IDataContext
     {
         //public IFooBarRepository FooBars => GetCustomRepository<IFooBarRepository>();
@@ -32,7 +32,7 @@ namespace DAL.EntityFrameworkCore
         private DbContext _context;
         private readonly IRepositoryProvider _repositoryProvider;
 
-        public UnitOfWork(TContext context, IRepositoryProvider repositoryProvider)
+        public ApplicationUnitOfWork(TContext context, IRepositoryProvider repositoryProvider)
         {
             _context = (context as DbContext) ?? throw new NullReferenceException(message: nameof(context));
             _repositoryProvider = repositoryProvider ?? throw new NullReferenceException(message: nameof(repositoryProvider));
@@ -102,7 +102,8 @@ namespace DAL.EntityFrameworkCore
             GC.SuppressFinalize(obj: this);
         }
 
-        ~UnitOfWork()
+        // destructor
+        ~ApplicationUnitOfWork()
         {
             Dispose(disposing: false);
         }

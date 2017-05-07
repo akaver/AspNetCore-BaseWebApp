@@ -8,6 +8,7 @@ using AspNetCore.Identity.Uow;
 using AspNetCore.Identity.Uow.Interfaces;
 using AspNetCore.Identity.Uow.Models;
 using DAL;
+using DAL.App;
 using DAL.EntityFrameworkCore;
 using DAL.EntityFrameworkCore.Extensions;
 using DAL.EntityFrameworkCore.Helpers;
@@ -56,15 +57,12 @@ namespace WebApp
             services.AddDbContext<ApplicationDbContext>(optionsAction: options =>
                 options.UseSqlServer(connectionString: Configuration.GetConnectionString(name: "AppDbConnection")));
 
-            services.AddScoped<IDataContext, ApplicationDbContext>();
-            services.AddScoped<IUnitOfWork, UnitOfWork<IDataContext>>();
-
-            services.AddScoped<IIdentityUnitOfWork<ApplicationUser>, UnitOfWork<IDataContext>>();
-
             services.AddScoped<IRepositoryProvider, EFRepositoryProvider<IDataContext>>();
             services.AddSingleton<IRepositoryFactory, EFRepositoryFactory>();
 
-
+            services.AddScoped<IDataContext, ApplicationDbContext>();
+            services.AddScoped<IApplicationUnitOfWork, ApplicationUnitOfWork<IDataContext>>();
+            services.AddScoped<IIdentityUnitOfWork<ApplicationUser>, ApplicationUnitOfWork<IDataContext>>();
 
 
             services.AddIdentity<ApplicationUser, IdentityRole>()

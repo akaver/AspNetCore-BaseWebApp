@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AspNetCore.Identity.Uow.Interfaces;
+using DAL.App;
 using DAL.Helpers;
 using DAL.Repositories;
 using Domain;
@@ -14,6 +15,10 @@ namespace DAL.EntityFrameworkCore
     public class UnitOfWork<TContext> : IUnitOfWork, IIdentityUnitOfWork<ApplicationUser>, IDisposable
         where TContext : IDataContext
     {
+        //public IFooBarRepository FooBars => GetCustomRepository<IFooBarRepository>();
+        public IRepository<FooBar> FooBars => GetEntityRepository<FooBar>();
+        public IApplicationUserRepository ApplicationUsers => GetCustomRepository<IApplicationUserRepository>();
+
 
         public IIdentityRoleClaimRepository IdentityRoleClaims => GetCustomRepository<IIdentityRoleClaimRepository>();
         public IIdentityRoleRepository IdentityRoles => GetCustomRepository<IIdentityRoleRepository>();

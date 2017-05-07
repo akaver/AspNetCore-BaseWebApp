@@ -25,6 +25,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using WebApp.Filters;
 using WebApp.Services;
 
 namespace WebApp
@@ -82,7 +83,10 @@ namespace WebApp
             // Add framework services.
             services.AddMvc()
                 .AddViewLocalization(format: LanguageViewLocationExpanderFormat.Suffix)
-                .AddDataAnnotationsLocalization();
+                .AddDataAnnotationsLocalization().AddMvcOptions(setupAction: options =>
+                    {
+                        options.Filters.Add(item: new AddCultureCookieFromQueryFilter());
+                    });
 
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();

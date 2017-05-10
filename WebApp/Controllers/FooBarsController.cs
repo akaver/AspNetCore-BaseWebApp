@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using AspNetCore.Identity.Extensions;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
+using WebApp.ViewModels;
 
 namespace WebApp.Controllers
 {
@@ -39,8 +41,8 @@ namespace WebApp.Controllers
 
             //so, extension method to simplify things
             //look in AspNetCore.Identity.Extensions ClaimsPrincipalExtension
-            var foobars = await _uow.FooBars.AllForUserAsync(User.GetUserId<int>());
-            return View(foobars);
+            var foobars = await _uow.FooBars.AllForUserAsync(userId: User.GetUserId<int>());
+            return View(model: foobars);
         }
 
         //GET: FooBars/Details/5
@@ -57,13 +59,18 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            return View(fooBar);
+            return View(model: fooBar);
         }
 
         // GET: FooBars/Create
         public IActionResult Create()
         {
-            return View();
+            var vm = new FooBarsCreateEditViewModel();
+            vm.BlahOneSelectList = new SelectList(items: _uow.Blahs.All(), dataValueField: nameof(Blah.BlahId), dataTextField: nameof(Blah.BlahValue));
+            vm.BlahTwoSelectList = new SelectList(items: _uow.Blahs.All(), dataValueField: nameof(Blah.BlahId), dataTextField: nameof(Blah.BlahValue));
+            vm.BlahThreeSelectList = new SelectList(items: _uow.Blahs.All(), dataValueField: nameof(Blah.BlahId), dataTextField: nameof(Blah.BlahValue));
+
+            return View(vm);
         }
 
         // POST: FooBars/Create
@@ -71,16 +78,21 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(FooBar fooBar)
+        public async Task<IActionResult> Create(FooBarsCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
             {
-                fooBar.ApplicationUserId = User.GetUserId<int>();
-                _uow.FooBars.Add(fooBar);
+                vm.FooBar.ApplicationUserId = User.GetUserId<int>();
+                _uow.FooBars.Add(entity: vm.FooBar);
                 await _uow.SaveChangesAsync();
-                return RedirectToAction("Index");
+                return RedirectToAction(actionName: nameof(Index));
             }
-            return View(fooBar);
+
+            vm.BlahOneSelectList = new SelectList(items: _uow.Blahs.All(), dataValueField: nameof(Blah.BlahId), dataTextField: nameof(Blah.BlahValue), selectedValue: vm.FooBar.BlahOneId);
+            vm.BlahTwoSelectList = new SelectList(items: _uow.Blahs.All(), dataValueField: nameof(Blah.BlahId), dataTextField: nameof(Blah.BlahValue), selectedValue: vm.FooBar.BlahTwoId);
+            vm.BlahThreeSelectList = new SelectList(items: _uow.Blahs.All(), dataValueField: nameof(Blah.BlahId), dataTextField: nameof(Blah.BlahValue), selectedValue: vm.FooBar.BlahThreeId);
+
+            return View(model: vm);
         }
 
         // GET: FooBars/Edit/5
@@ -96,7 +108,7 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
-            return View(fooBar);
+            return View(model: fooBar);
         }
 
         // POST: FooBars/Edit/5
@@ -125,12 +137,12 @@ namespace WebApp.Controllers
 
                 try
                 {
-                    _uow.FooBars.Update(dbFooBar);
+                    _uow.FooBars.Update(entity: dbFooBar);
                     await _uow.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!_uow.FooBars.Exists(fooBar.FooBarId))
+                    if (!_uow.FooBars.Exists(id: fooBar.FooBarId))
                     {
                         return NotFound();
                     }
@@ -139,9 +151,9 @@ namespace WebApp.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("Index");
+                return RedirectToAction(actionName: "Index");
             }
-            return View(fooBar);
+            return View(model: fooBar);
         }
 
         // GET: FooBars/Delete/5
@@ -158,11 +170,11 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            return View(fooBar);
+            return View(model: fooBar);
         }
 
         // POST: FooBars/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost, ActionName(name: "Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
@@ -172,10 +184,10 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
-            _uow.FooBars.Remove(fooBar);
+            _uow.FooBars.Remove(entity: fooBar);
             await _uow.SaveChangesAsync();
 
-            return RedirectToAction("Index");
+            return RedirectToAction(actionName: "Index");
         }
 
     }

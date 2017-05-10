@@ -14,10 +14,13 @@ namespace DAL.EntityFrameworkCore.Repositories
         public FooBarRepository(IDataContext dataContext) : base(dataContext: dataContext)
         {
         }
-
         public Task<List<FooBar>> AllForUserAsync(int userId)
         {
-            return RepositoryDbSet.Where(predicate: f => f.ApplicationUserId == userId).ToListAsync();
+            return RepositoryDbSet
+                .Include(navigationPropertyPath: a => a.BlahOne)
+                .Include(navigationPropertyPath: b => b.BlahTwo)
+                .Include(navigationPropertyPath: c => c.BlahThree)
+                .Where(predicate: f => f.ApplicationUserId == userId).ToListAsync();
         }
 
         public bool Exists(int id)

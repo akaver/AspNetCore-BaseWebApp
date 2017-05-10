@@ -10,6 +10,7 @@ namespace DAL.App
     public interface IApplicationUnitOfWork : IUnitOfWork, IIdentityUnitOfWork<ApplicationUser>
     {
         IFooBarRepository FooBars { get; }
+        IBlahRepository Blahs { get; }
         IApplicationUserRepository ApplicationUsers { get; }
 
     }

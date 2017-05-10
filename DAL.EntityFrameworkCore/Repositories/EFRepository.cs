@@ -24,26 +24,26 @@ namespace DAL.EntityFrameworkCore.Repositories
         }
 
 
-        public IEnumerable<TEntity> All() => RepositoryDbSet.ToList();
+        public virtual IEnumerable<TEntity> All() => RepositoryDbSet.ToList();
 
         // TODO: should await in controller?!
-        public async Task<IEnumerable<TEntity>> AllAsync() => await RepositoryDbSet.ToListAsync();
+        public virtual async Task<IEnumerable<TEntity>> AllAsync() => await RepositoryDbSet.ToListAsync();
 
-        public TEntity Find(params object[] id)
+        public virtual TEntity Find(params object[] id)
         {
             return RepositoryDbSet.Find(keyValues: id);
         }
 
-        public Task<TEntity> FindAsync(params object[] id)
+        public virtual Task<TEntity> FindAsync(params object[] id)
         {
             return RepositoryDbSet.FindAsync(keyValues: id);
         }
-        public async Task<TEntity> FindAsync(object[] keyValues, CancellationToken cancellationToken)
+        public virtual async Task<TEntity> FindAsync(object[] keyValues, CancellationToken cancellationToken)
         {
             return await RepositoryDbSet.FindAsync(keyValues: keyValues, cancellationToken: cancellationToken);
         }
 
-        public void Add(TEntity entity)
+        public virtual void Add(TEntity entity)
         {
             if (entity == null) throw new InvalidOperationException(message: "Unable to add a null entity to the repository.");
             RepositoryDbSet.Add(entity: entity);
@@ -55,19 +55,19 @@ namespace DAL.EntityFrameworkCore.Repositories
             await RepositoryDbSet.AddAsync(entity: entity);
         }
 
-        public TEntity Update(TEntity entity)
+        public virtual TEntity Update(TEntity entity)
         {
             return RepositoryDbSet.Update(entity: entity).Entity;
         }
 
-        public void Remove(TEntity entity)
+        public virtual void Remove(TEntity entity)
         {
             RepositoryDbSet.Attach(entity: entity);
             RepositoryDbContext.Entry(entity: entity).State = EntityState.Deleted;
             RepositoryDbSet.Remove(entity: entity);
         }
 
-        public void Remove(params object[] id)
+        public virtual void Remove(params object[] id)
         {
             Remove(entity: Find(id: id));
         }

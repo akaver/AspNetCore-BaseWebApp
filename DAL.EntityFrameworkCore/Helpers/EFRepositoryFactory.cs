@@ -34,6 +34,7 @@ namespace DAL.EntityFrameworkCore.Helpers
             {
                 // app repos
                 {typeof(IFooBarRepository), dbContext => new FooBarRepository(dataContext: dbContext)},
+                {typeof(IBlahRepository), dbContext => new BlahRepository(dataContext: dbContext)},
                 {typeof(IApplicationUserRepository), dbContext => new ApplicationUserRepository(dataContext: dbContext)},
                 
                 // Identity repos

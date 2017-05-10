@@ -12,30 +12,49 @@
 <table class="table">
     <thead>
         <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.StringValue)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.IntValue)
-                </th>
-               <th></th>
+            <th>
+                @Html.DisplayNameFor(model => model.StringValue)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IntValue)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BlahOne)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BlahTwo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BlahThree)
+            </th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.StringValue)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IntValue)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.FooBarId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.FooBarId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.FooBarId">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StringValue)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IntValue)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BlahOne.BlahValue)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BlahTwo.BlahValue)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BlahThree.BlahValue)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.FooBarId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.FooBarId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.FooBarId">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

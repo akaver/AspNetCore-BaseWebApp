@@ -65,7 +65,8 @@ namespace WebApp
             services.AddScoped<IApplicationUnitOfWork, ApplicationUnitOfWork<IDataContext>>();
             services.AddScoped<IIdentityUnitOfWork<ApplicationUser>, ApplicationUnitOfWork<IDataContext>>();
 
-
+            // ApplicationUser and IdentityRole have to come from our own models
+            // check usages (no Microsoft.AspNetCore.Identity.EntityFrameworkCore);
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddUnitOfWork<
                     IIdentityUserRepository<ApplicationUser>,
@@ -83,7 +84,8 @@ namespace WebApp
             // Add framework services.
             services.AddMvc()
                 .AddViewLocalization(format: LanguageViewLocationExpanderFormat.Suffix)
-                .AddDataAnnotationsLocalization().AddMvcOptions(setupAction: options =>
+                .AddDataAnnotationsLocalization()
+                .AddMvcOptions(setupAction: options =>
                     {
                         options.Filters.Add(item: new AddCultureCookieFromQueryFilter());
                     });

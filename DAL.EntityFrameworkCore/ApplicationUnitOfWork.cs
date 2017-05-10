@@ -15,8 +15,7 @@ namespace DAL.EntityFrameworkCore
     public class ApplicationUnitOfWork<TContext> : IApplicationUnitOfWork
         where TContext : IDataContext
     {
-        //public IFooBarRepository FooBars => GetCustomRepository<IFooBarRepository>();
-        public IRepository<FooBar> FooBars => GetEntityRepository<FooBar>();
+        public IFooBarRepository FooBars => GetCustomRepository<IFooBarRepository>();
         public IApplicationUserRepository ApplicationUsers => GetCustomRepository<IApplicationUserRepository>();
 
 

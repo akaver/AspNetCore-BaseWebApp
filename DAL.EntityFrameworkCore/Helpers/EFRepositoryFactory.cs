@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using AspNetCore.Identity.Uow.Interfaces;
 using AspNetCore.Identity.Uow.Models;
+using DAL.App;
 using DAL.EntityFrameworkCore.Repositories;
 using DAL.Helpers;
 using Domain;
@@ -31,8 +32,12 @@ namespace DAL.EntityFrameworkCore.Helpers
         {
             return new Dictionary<Type, Func<IDataContext, object>>
             {
-                // "No factory for repository type AspNetCore.Identity.Uow.Interfaces.IIdentityRoleRepository`2[[System.Int32, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[AspNetCore.Identity.Uow.Models.IdentityRole, AspNetCore.Identity.Uow, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"
-                {typeof(IIdentityRoleClaimRepository), dbContext => new IdentityRoleClaimRepository(dataContext: dbContext)},
+                // app repos
+                {typeof(IFooBarRepository), dbContext => new FooBarRepository(dataContext: dbContext)},
+                {typeof(IApplicationUserRepository), dbContext => new ApplicationUserRepository(dataContext: dbContext)},
+                
+                // Identity repos
+                { typeof(IIdentityRoleClaimRepository), dbContext => new IdentityRoleClaimRepository(dataContext: dbContext)},
                 {typeof(IIdentityRoleRepository), dbContext => new IdentityRoleRepository(dataContext: dbContext)},
                 {typeof(IIdentityUserClaimRepository), dbContext => new IdentityUserClaimRepository(dataContext: dbContext)},
                 {typeof(IIdentityUserLoginRepository), dbContext => new IdentityUserLoginRepository(dataContext: dbContext)},

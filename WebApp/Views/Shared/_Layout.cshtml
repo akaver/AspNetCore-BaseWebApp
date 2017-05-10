@@ -34,6 +34,7 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+                    <li><a asp-area="" asp-controller="FooBars" asp-action="Index">FooBars</a></li>
                     @if (SignInManager.IsSignedIn(principal: User) && User.IsInRole(role: "Admin"))
                     {
                         <li class="dropdown">

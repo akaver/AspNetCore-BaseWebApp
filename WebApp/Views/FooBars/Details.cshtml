@@ -1,7 +1,7 @@
 @model Domain.FooBar
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData[index: "Title"] = "Details";
 }
 
 <h2>Details</h2>
@@ -10,18 +10,9 @@
     <h4>FooBar</h4>
     <hr />
     <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.StringValue)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.StringValue)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.IntValue)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.IntValue)
-        </dd>
+
+        @Html.Partial(partialViewName: "_Info", model: Model)
+
     </dl>
 </div>
 <div>

@@ -1,4 +1,4 @@
-@model Domain.FooBar
+@model FooBarsCreateEditViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -12,20 +12,9 @@
         <hr />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input type="hidden" asp-for="FooBarId" />
-        <div class="form-group">
-            <label asp-for="StringValue" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="StringValue" class="form-control" />
-                <span asp-validation-for="StringValue" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="IntValue" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="IntValue" class="form-control" />
-                <span asp-validation-for="IntValue" class="text-danger"></span>
-            </div>
-        </div>
+        
+        @Html.Partial("_CreateEdit", Model)
+    
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Save" class="btn btn-default" />

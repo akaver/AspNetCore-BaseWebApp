@@ -1,7 +1,7 @@
 @model Domain.FooBar
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData[index: "Title"] = "Delete";
 }
 
 <h2>Delete</h2>
@@ -11,20 +11,9 @@
     <h4>FooBar</h4>
     <hr />
     <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.StringValue)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.StringValue)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.IntValue)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.IntValue)
-        </dd>
+        @Html.Partial(partialViewName: "_Info", model: Model)
     </dl>
-    
+
     <form asp-action="Delete">
         <input type="hidden" asp-for="FooBarId" />
         <div class="form-actions no-color">

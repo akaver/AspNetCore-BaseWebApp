@@ -1,0 +1,41 @@
+﻿@model FooBarsCreateEditViewModel
+
+<div class="form-group">
+    <label asp-for="FooBar.StringValue" class="col-md-2 control-label"></label>
+    <div class="col-md-10">
+        <input asp-for="FooBar.StringValue" class="form-control" />
+        <span asp-validation-for="FooBar.StringValue" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="form-group">
+    <label asp-for="FooBar.IntValue" class="col-md-2 control-label"></label>
+    <div class="col-md-10">
+        <input asp-for="FooBar.IntValue" class="form-control" />
+        <span asp-validation-for="FooBar.IntValue" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="form-group">
+    <label asp-for="FooBar.BlahOne" class="col-md-2 control-label"></label>
+    <div class="col-md-10">
+        <select asp-for="FooBar.BlahOneId" asp-items="Model.BlahOneSelectList" class="form-control"></select>
+        <span asp-validation-for="FooBar.BlahOne" class="text-danger"></span>
+    </div>
+</div>
+        
+<div class="form-group">
+    <label asp-for="FooBar.BlahTwo" class="col-md-2 control-label"></label>
+    <div class="col-md-10">
+        <select asp-for="FooBar.BlahTwoId" asp-items="Model.BlahTwoSelectList" class="form-control"></select>
+        <span asp-validation-for="FooBar.BlahTwo" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="form-group">
+    <label asp-for="FooBar.BlahThree" class="col-md-2 control-label"></label>
+    <div class="col-md-10">
+        <select asp-for="FooBar.BlahThreeId" asp-items="Model.BlahThreeSelectList" class="form-control"></select>
+        <span asp-validation-for="FooBar.BlahThree" class="text-danger"></span>
+    </div>
+</div>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using DAL.App;
 using Domain;
@@ -14,6 +15,16 @@ namespace DAL.EntityFrameworkCore.Repositories
         public FooBarRepository(IDataContext dataContext) : base(dataContext: dataContext)
         {
         }
+
+        public Task<FooBar> SingleOrDefaultIncludeNavigation(int id)
+        {
+            return RepositoryDbSet
+                .Include(navigationPropertyPath: a => a.BlahOne)
+                .Include(navigationPropertyPath: b => b.BlahTwo)
+                .Include(navigationPropertyPath: c => c.BlahThree)
+                .SingleOrDefaultAsync(predicate: f => f.FooBarId == id);
+        }
+
         public Task<List<FooBar>> AllForUserAsync(int userId)
         {
             return RepositoryDbSet

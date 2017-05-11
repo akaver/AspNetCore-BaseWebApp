@@ -9,6 +9,8 @@ namespace DAL.App
 {
     public interface IFooBarRepository : IRepository<FooBar>
     {
+        Task<FooBar> SingleOrDefaultIncludeNavigation(int id);
+
         Task<List<FooBar>> AllForUserAsync(int userId);
         bool Exists(int id);
         Task<bool> ExistsAsync(int id);

@@ -53,7 +53,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var fooBar = await _uow.FooBars.FindAsync(id);
+            var fooBar = await _uow.FooBars.SingleOrDefaultIncludeNavigation(id: id.Value);
             if (fooBar == null || fooBar.ApplicationUserId != User.GetUserId<int>())
             {
                 return NotFound();
@@ -108,7 +108,14 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
-            return View(model: fooBar);
+
+            var vm = new FooBarsCreateEditViewModel();
+            vm.FooBar = fooBar;
+            vm.BlahOneSelectList = new SelectList(items: _uow.Blahs.All(), dataValueField: nameof(Blah.BlahId), dataTextField: nameof(Blah.BlahValue), selectedValue: vm.FooBar.BlahOneId);
+            vm.BlahTwoSelectList = new SelectList(items: _uow.Blahs.All(), dataValueField: nameof(Blah.BlahId), dataTextField: nameof(Blah.BlahValue), selectedValue: vm.FooBar.BlahTwoId);
+            vm.BlahThreeSelectList = new SelectList(items: _uow.Blahs.All(), dataValueField: nameof(Blah.BlahId), dataTextField: nameof(Blah.BlahValue), selectedValue: vm.FooBar.BlahThreeId);
+
+            return View(model: vm);
         }
 
         // POST: FooBars/Edit/5
@@ -116,21 +123,24 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, FooBar fooBar)
+        public async Task<IActionResult> Edit(int id, FooBarsCreateEditViewModel vm)
         {
-            if (id != fooBar.FooBarId)
+            if (id != vm.FooBar.FooBarId)
             {
                 return NotFound();
             }
 
             var dbFooBar = await _uow.FooBars.FindAsync(id);
-            if (fooBar == null || dbFooBar.ApplicationUserId != User.GetUserId<int>())
+            if (vm.FooBar == null || dbFooBar.ApplicationUserId != User.GetUserId<int>())
             {
                 return NotFound();
             }
 
-            dbFooBar.IntValue = fooBar.IntValue;
-            dbFooBar.StringValue = fooBar.StringValue;
+            dbFooBar.IntValue = vm.FooBar.IntValue;
+            dbFooBar.StringValue = vm.FooBar.StringValue;
+            dbFooBar.BlahOneId = vm.FooBar.BlahThreeId;
+            dbFooBar.BlahTwoId = vm.FooBar.BlahThreeId;
+            dbFooBar.BlahThreeId = vm.FooBar.BlahThreeId;
 
             if (ModelState.IsValid)
             {
@@ -142,7 +152,7 @@ namespace WebApp.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!_uow.FooBars.Exists(id: fooBar.FooBarId))
+                    if (!_uow.FooBars.Exists(id: dbFooBar.FooBarId))
                     {
                         return NotFound();
                     }
@@ -153,7 +163,12 @@ namespace WebApp.Controllers
                 }
                 return RedirectToAction(actionName: "Index");
             }
-            return View(model: fooBar);
+
+            vm.BlahOneSelectList = new SelectList(items: _uow.Blahs.All(), dataValueField: nameof(Blah.BlahId), dataTextField: nameof(Blah.BlahValue), selectedValue: vm.FooBar.BlahOneId);
+            vm.BlahTwoSelectList = new SelectList(items: _uow.Blahs.All(), dataValueField: nameof(Blah.BlahId), dataTextField: nameof(Blah.BlahValue), selectedValue: vm.FooBar.BlahTwoId);
+            vm.BlahThreeSelectList = new SelectList(items: _uow.Blahs.All(), dataValueField: nameof(Blah.BlahId), dataTextField: nameof(Blah.BlahValue), selectedValue: vm.FooBar.BlahThreeId);
+
+            return View(model: vm);
         }
 
         // GET: FooBars/Delete/5
@@ -164,7 +179,8 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var fooBar = await _uow.FooBars.FindAsync(id.Value);
+            var fooBar = await _uow.FooBars.SingleOrDefaultIncludeNavigation(id: id.Value);
+
             if (fooBar == null || fooBar.ApplicationUserId != User.GetUserId<int>())
             {
                 return NotFound();

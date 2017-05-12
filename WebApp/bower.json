@@ -5,7 +5,13 @@
     "bootstrap": "3.3.7",
     "jquery": "2.2.4",
     "jquery-validation": "1.16.0",
-    "jquery-validation-unobtrusive": "3.2.6"
+    "jquery-validation-unobtrusive": "3.2.6",
+    "globalize": "1.2.3",
+    "moment": "2.18.1",
+    "eonasdan-bootstrap-datetimepicker": "v4.17.45",
+    "cldr-core": "31.0.1",
+    "cldr-numbers-modern": "31.0.1",
+    "cldr-dates-modern": "31.0.1"
   },
   "resolutions": {
     "jquery-validation": "1.16.0",

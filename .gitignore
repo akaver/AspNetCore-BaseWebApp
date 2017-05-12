@@ -4,6 +4,9 @@
 # akaver
 # Do not include migration files in git
 Migrations/
+# dont commit cldr data to git
+cldr-dates-modern/
+cldr-numbers-modern/
 
 # User-specific files
 *.suo

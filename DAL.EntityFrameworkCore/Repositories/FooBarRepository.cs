@@ -19,6 +19,10 @@ namespace DAL.EntityFrameworkCore.Repositories
         public Task<FooBar> SingleOrDefaultIncludeNavigation(int id)
         {
             return RepositoryDbSet
+                .Include(navigationPropertyPath: a => a.Wibble)
+                .ThenInclude(b => b.Translations)
+                .Include(navigationPropertyPath: a => a.Wobble)
+                .ThenInclude(b => b.Translations)
                 .Include(navigationPropertyPath: a => a.BlahOne)
                 .Include(navigationPropertyPath: b => b.BlahTwo)
                 .Include(navigationPropertyPath: c => c.BlahThree)
@@ -28,6 +32,10 @@ namespace DAL.EntityFrameworkCore.Repositories
         public Task<List<FooBar>> AllForUserAsync(int userId)
         {
             return RepositoryDbSet
+                .Include(navigationPropertyPath: a => a.Wibble)
+                .ThenInclude(b => b.Translations)
+                .Include(navigationPropertyPath: a => a.Wobble)
+                .ThenInclude(b => b.Translations)
                 .Include(navigationPropertyPath: a => a.BlahOne)
                 .Include(navigationPropertyPath: b => b.BlahTwo)
                 .Include(navigationPropertyPath: c => c.BlahThree)

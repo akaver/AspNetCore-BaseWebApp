@@ -16,6 +16,15 @@ namespace Domain
         public string StringValue { get; set; }
         public int IntValue { get; set; }
 
+        public int WibbleId { get; set; }
+        [ForeignKey(name: nameof(WibbleId))]
+        public MultiLangString Wibble { get; set; }
+
+        public int WobbleId { get; set; }
+        [ForeignKey(name: nameof(WobbleId))]
+        public MultiLangString Wobble { get; set; }
+
+
         [DataType(dataType: DataType.DateTime)]
         public DateTime DateTime { get; set; }
         [DataType(dataType: DataType.Date)]

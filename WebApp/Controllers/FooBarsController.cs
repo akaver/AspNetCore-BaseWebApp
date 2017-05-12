@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using DAL.App;
@@ -70,12 +71,6 @@ namespace WebApp.Controllers
             vm.BlahTwoSelectList = new SelectList(items: _uow.Blahs.All(), dataValueField: nameof(Blah.BlahId), dataTextField: nameof(Blah.BlahValue));
             vm.BlahThreeSelectList = new SelectList(items: _uow.Blahs.All(), dataValueField: nameof(Blah.BlahId), dataTextField: nameof(Blah.BlahValue));
 
-            vm.FooBar = new FooBar()
-            {
-                DateTime = DateTime.Now,
-                Time = DateTime.Now,
-                Date = DateTime.Now
-            };
             return View(vm);
         }
 
@@ -88,7 +83,11 @@ namespace WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
+                vm.FooBar.Wibble = new MultiLangString(vm.Wibble, CultureInfo.CurrentCulture.Name, nameof(FooBar)+"."+nameof(FooBar.Wibble));
+                vm.FooBar.Wobble = new MultiLangString(vm.Wobble, CultureInfo.CurrentCulture.Name, nameof(FooBar) + "." + nameof(FooBar.Wobble));
+
                 vm.FooBar.ApplicationUserId = User.GetUserId<int>();
+
                 _uow.FooBars.Add(entity: vm.FooBar);
                 await _uow.SaveChangesAsync();
                 return RedirectToAction(actionName: nameof(Index));
@@ -110,7 +109,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var fooBar = await _uow.FooBars.FindAsync(id);
+            var fooBar = await _uow.FooBars.SingleOrDefaultIncludeNavigation(id.Value);
             if (fooBar == null || fooBar.ApplicationUserId != User.GetUserId<int>())
             {
                 return NotFound();
@@ -118,6 +117,10 @@ namespace WebApp.Controllers
 
             var vm = new FooBarsCreateEditViewModel();
             vm.FooBar = fooBar;
+
+            vm.Wibble = fooBar.Wibble.ToString();
+            vm.Wobble = fooBar.Wobble.ToString();
+
             vm.BlahOneSelectList = new SelectList(items: _uow.Blahs.All(), dataValueField: nameof(Blah.BlahId), dataTextField: nameof(Blah.BlahValue), selectedValue: vm.FooBar.BlahOneId);
             vm.BlahTwoSelectList = new SelectList(items: _uow.Blahs.All(), dataValueField: nameof(Blah.BlahId), dataTextField: nameof(Blah.BlahValue), selectedValue: vm.FooBar.BlahTwoId);
             vm.BlahThreeSelectList = new SelectList(items: _uow.Blahs.All(), dataValueField: nameof(Blah.BlahId), dataTextField: nameof(Blah.BlahValue), selectedValue: vm.FooBar.BlahThreeId);
@@ -137,11 +140,14 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var dbFooBar = await _uow.FooBars.FindAsync(id);
+            var dbFooBar = await _uow.FooBars.SingleOrDefaultIncludeNavigation(id);
             if (vm.FooBar == null || dbFooBar.ApplicationUserId != User.GetUserId<int>())
             {
                 return NotFound();
             }
+
+            dbFooBar.Wibble.SetTranslation(vm.Wibble);
+            dbFooBar.Wobble.SetTranslation(vm.Wobble);
 
             dbFooBar.IntValue = vm.FooBar.IntValue;
             dbFooBar.StringValue = vm.FooBar.StringValue;

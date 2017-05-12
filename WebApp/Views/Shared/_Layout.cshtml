@@ -146,6 +146,11 @@
         Globalize.locale('@currentCultureCode');
     });
 
+    $(function() {
+        $('[type=datetime]').datetimepicker({ locale: '@currentCultureCode' }).attr('type', 'text');
+        $('[type=time]').datetimepicker({ locale: '@currentCultureCode', format: 'LT' }).attr('type', 'text');
+        $('[type=date]').datetimepicker({ locale: '@currentCultureCode', format: 'L' }).attr('type', 'text');
+    });
 </script>
 </body>
 </html>

@@ -17,6 +17,22 @@
 </div>
 
 <div class="form-group">
+    <label asp-for="Wibble" class="col-md-2 control-label"></label>
+    <div class="col-md-10">
+        <input asp-for="Wibble" class="form-control" />
+        <span asp-validation-for="Wibble" class="text-danger"></span>
+    </div>
+</div>
+<div class="form-group">
+    <label asp-for="Wobble" class="col-md-2 control-label"></label>
+    <div class="col-md-10">
+        <input asp-for="Wobble" class="form-control" />
+        <span asp-validation-for="Wobble" class="text-danger"></span>
+    </div>
+</div>
+
+
+<div class="form-group">
     <label asp-for="FooBar.Time" class="col-md-2 control-label"></label>
     <div class="col-md-10">
         <input asp-for="FooBar.Time" class="form-control" />

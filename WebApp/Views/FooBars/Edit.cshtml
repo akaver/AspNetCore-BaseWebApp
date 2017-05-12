@@ -11,7 +11,9 @@
         <h4>FooBar</h4>
         <hr />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <input type="hidden" asp-for="FooBarId" />
+        <input type="hidden" asp-for="FooBar.FooBarId" />
+        <input type="hidden" asp-for="FooBar.WibbleId" />
+        <input type="hidden" asp-for="FooBar.WobbleId" />
         
         @Html.Partial("_CreateEdit", Model)
     

@@ -19,6 +19,12 @@
                 @Html.DisplayNameFor(model => model.IntValue)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.Wibble)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Wobble)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Time)
             </th>
             <th>
@@ -48,6 +54,12 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.IntValue)
+                </td>
+                <td>
+                    @item.Wobble.ToString()
+                </td>
+                <td>
+                    @item.Wibble.ToString()
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Time)

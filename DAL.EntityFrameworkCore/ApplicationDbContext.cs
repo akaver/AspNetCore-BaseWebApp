@@ -11,6 +11,8 @@ namespace DAL.EntityFrameworkCore
         // Web scaffolding requires fully qyalified names
         public DbSet<Domain.FooBar> FooBars { get; set; }
         public DbSet<Domain.Blah> Blahs { get; set; }
+        public DbSet<Domain.MultiLangString> MultiLangStrings { get; set; }
+        public DbSet<Domain.Translation> Translations { get; set; }
 
         public DbSet<AspNetCore.Identity.Uow.Models.IdentityRole> IdentityRoles { get; set; }
         public DbSet<AspNetCore.Identity.Uow.Models.IdentityRoleClaim> IdentityRoleClaims { get; set; }

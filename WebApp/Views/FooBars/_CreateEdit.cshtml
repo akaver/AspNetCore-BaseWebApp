@@ -17,6 +17,32 @@
 </div>
 
 <div class="form-group">
+    <label asp-for="FooBar.Time" class="col-md-2 control-label"></label>
+    <div class="col-md-10">
+        <input asp-for="FooBar.Time" class="form-control" />
+        <span asp-validation-for="FooBar.Time" class="text-danger"></span>
+    </div>
+</div>
+
+
+<div class="form-group">
+    <label asp-for="FooBar.Date" class="col-md-2 control-label"></label>
+    <div class="col-md-10">
+        <input asp-for="FooBar.Date" class="form-control" />
+        <span asp-validation-for="FooBar.Date" class="text-danger"></span>
+    </div>
+</div>
+<div class="form-group">
+    <label asp-for="FooBar.DateTime" class="col-md-2 control-label"></label>
+    <div class="col-md-10">
+        <input asp-for="FooBar.DateTime" class="form-control" />
+        <span asp-validation-for="FooBar.DateTime" class="text-danger"></span>
+    </div>
+</div>
+
+
+
+<div class="form-group">
     <label asp-for="FooBar.BlahOne" class="col-md-2 control-label"></label>
     <div class="col-md-10">
         <select asp-for="FooBar.BlahOneId" asp-items="Model.BlahOneSelectList" class="form-control"></select>

@@ -70,6 +70,12 @@ namespace WebApp.Controllers
             vm.BlahTwoSelectList = new SelectList(items: _uow.Blahs.All(), dataValueField: nameof(Blah.BlahId), dataTextField: nameof(Blah.BlahValue));
             vm.BlahThreeSelectList = new SelectList(items: _uow.Blahs.All(), dataValueField: nameof(Blah.BlahId), dataTextField: nameof(Blah.BlahValue));
 
+            vm.FooBar = new FooBar()
+            {
+                DateTime = DateTime.Now,
+                Time = DateTime.Now,
+                Date = DateTime.Now
+            };
             return View(vm);
         }
 
@@ -92,6 +98,7 @@ namespace WebApp.Controllers
             vm.BlahTwoSelectList = new SelectList(items: _uow.Blahs.All(), dataValueField: nameof(Blah.BlahId), dataTextField: nameof(Blah.BlahValue), selectedValue: vm.FooBar.BlahTwoId);
             vm.BlahThreeSelectList = new SelectList(items: _uow.Blahs.All(), dataValueField: nameof(Blah.BlahId), dataTextField: nameof(Blah.BlahValue), selectedValue: vm.FooBar.BlahThreeId);
 
+            
             return View(model: vm);
         }
 

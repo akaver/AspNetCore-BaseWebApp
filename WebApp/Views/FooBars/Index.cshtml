@@ -19,6 +19,15 @@
                 @Html.DisplayNameFor(model => model.IntValue)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.Time)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DateTime)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.BlahOne)
             </th>
             <th>
@@ -39,6 +48,15 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.IntValue)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Time)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DateTime)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.BlahOne.BlahValue)

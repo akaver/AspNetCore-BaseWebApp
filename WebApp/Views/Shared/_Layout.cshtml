@@ -9,6 +9,7 @@
 
     <environment names="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/lib/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css" />
         <link rel="stylesheet" href="~/css/site.css" />
     </environment>
     <environment names="Staging,Production">
@@ -75,6 +76,25 @@
     <environment names="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+
+        <script src="~/lib/cldrjs/dist/cldr.js"></script>
+        <script src="~/lib/cldrjs/dist/cldr/event.js"></script>
+        <script src="~/lib/cldrjs/dist/cldr/supplemental.js"></script>
+        <script src="~/lib/cldrjs/dist/cldr/unresolved.js"></script>
+        
+        <script src="~/lib/globalize/dist/globalize.js"></script>
+        <script src="~/lib/globalize/dist/globalize/number.js"></script>
+        <script src="~/lib/globalize/dist/globalize/currency.js"></script>
+        <script src="~/lib/globalize/dist/globalize/date.js"></script>
+        <script src="~/lib/globalize/dist/globalize/message.js"></script>
+        <script src="~/lib/globalize/dist/globalize/plural.js"></script>
+        <script src="~/lib/globalize/dist/globalize/relative-time.js"></script>
+        <script src="~/lib/globalize/dist/globalize/unit.js"></script>
+        
+        <script src="~/lib/moment/min/moment-with-locales.js"></script>
+
+        <script src="~/lib/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+                
         <script src="~/js/site.js" asp-append-version="true"></script>
     </environment>
     <environment names="Staging,Production">
@@ -94,5 +114,38 @@
     </environment>
 
     @RenderSection(name: "Scripts", required: false)
+
+@{
+    var currentCultureCode = CultureInfo.CurrentCulture.Name;
+    if (currentCultureCode == "et-EE")
+    {
+        currentCultureCode = "et";
+    }
+}
+    
+<script type="text/javascript">
+    $.when(
+        $.get("/lib/cldr-core/supplemental/likelySubtags.json"),
+        $.get("/lib/cldr-core/supplemental/numberingSystems.json"),
+        $.get("/lib/cldr-core/supplemental/timeData.json"),
+        $.get("/lib/cldr-core/supplemental/weekData.json"),
+
+        $.get("/lib/cldr-numbers-modern/main/@currentCultureCode/numbers.json"),
+        $.get("/lib/cldr-numbers-modern/main/@currentCultureCode/currencies.json"),
+
+        $.get("/lib/cldr-dates-modern/main/@currentCultureCode/ca-generic.json"),
+        $.get("/lib/cldr-dates-modern/main/@currentCultureCode/ca-gregorian.json"),
+        $.get("/lib/cldr-dates-modern/main/@currentCultureCode/dateFields.json"),
+        $.get("/lib/cldr-dates-modern/main/@currentCultureCode/timeZoneNames.json")
+    ).then(function() {
+        // get the json, drop request statuses
+        return [].slice.apply(arguments, [0]).map(function(result) {
+            return result[0];
+        });
+    }).then(Globalize.load).then(function() {
+        Globalize.locale('@currentCultureCode');
+    });
+
+</script>
 </body>
 </html>

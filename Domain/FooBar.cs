@@ -25,11 +25,18 @@ namespace Domain
         public MultiLangString Wobble { get; set; }
 
 
+        // no Display attribute, no custom messages
         [DataType(dataType: DataType.DateTime)]
         public DateTime DateTime { get; set; }
-        [DataType(dataType: DataType.Date)]
+
+        // not translated attributes
+        [DataType(dataType: DataType.Date, ErrorMessage = "there is an error in  {0} field!")]
+        [Display(Name = "KalaMajaDate")]
         public DateTime Date { get; set; }
-        [DataType(dataType: DataType.Time)]
+
+        // attributes with translation
+        [DataType(dataType: DataType.Time, ErrorMessageResourceType = typeof(Resources.Common), ErrorMessageResourceName = "FieldMustBeDataTypeDateTime")]
+        [Display(ResourceType = typeof(Resources.Misc), Name = "PersonLabel")]
         public DateTime Time { get; set; }  
 
         public int ApplicationUserId { get; set; }

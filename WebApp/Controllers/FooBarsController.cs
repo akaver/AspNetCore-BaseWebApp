@@ -151,6 +151,11 @@ namespace WebApp.Controllers
 
             dbFooBar.IntValue = vm.FooBar.IntValue;
             dbFooBar.StringValue = vm.FooBar.StringValue;
+
+            dbFooBar.Time = vm.FooBar.Time;
+            dbFooBar.Date = vm.FooBar.Date;
+            dbFooBar.DateTime = vm.FooBar.DateTime;
+
             dbFooBar.BlahOneId = vm.FooBar.BlahThreeId;
             dbFooBar.BlahTwoId = vm.FooBar.BlahThreeId;
             dbFooBar.BlahThreeId = vm.FooBar.BlahThreeId;

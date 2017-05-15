@@ -96,12 +96,13 @@ namespace WebApp
 
             services.Configure<RequestLocalizationOptions>(options => {
                 var supportedCultures = new[]{
-                    new CultureInfo(name: "en"),
-                    new CultureInfo(name: "et")
+                    new CultureInfo(name: "en-US"),
+                    new CultureInfo(name: "en-GB"),
+                    new CultureInfo(name: "et-EE")
                 };
 
                 // State what the default culture for your application is. 
-                options.DefaultRequestCulture = new RequestCulture(culture: "en", uiCulture: "en");
+                options.DefaultRequestCulture = new RequestCulture(culture: "en-GB", uiCulture: "en-GB");
 
                 // You must explicitly state which cultures your application supports.
                 options.SupportedCultures = supportedCultures;

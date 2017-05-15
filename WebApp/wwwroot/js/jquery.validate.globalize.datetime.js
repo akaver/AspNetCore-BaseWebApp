@@ -28,8 +28,11 @@
         // is it optional
         if (this.optional(element) === true) return true;
 
-        //TODO: this is an hack
-        if ($(element).attr("type") === "datetime") return true;
+        //TODO: this is an hack, caused by chrome behaviour
+        if ($(element).attr("type") === "datetime") {
+            console.log('chrome date hack');
+            return true;
+        }
 
         // remove spaces just in case
         value = value.trim();
@@ -39,9 +42,9 @@
         // console.log(element);
         for (var i = 0; i < $.validator.methods.dateGlobalizeOptions.dateParseFormat.length; i++) {
             val = Globalize.parseDate(value, $.validator.methods.dateGlobalizeOptions.dateParseFormat[i]);
-            console.log($.validator.methods.dateGlobalizeOptions.dateParseFormat[i], val, Globalize.dateFormatter($.validator.methods.dateGlobalizeOptions.dateParseFormat[i])(new Date(2016, 1, 1, 0, 0, 0)));
+            // console.log($.validator.methods.dateGlobalizeOptions.dateParseFormat[i], val, Globalize.dateFormatter($.validator.methods.dateGlobalizeOptions.dateParseFormat[i])(new Date(2016, 1, 1, 0, 0, 0)));
             res = res || (val instanceof Date);
-            console.log(res);
+            // console.log(res);
             if (res === true) return res;
         }
         return res;
@@ -61,9 +64,9 @@
         // console.log(element);
         for (var i = 0; i < $.validator.methods.timeGlobalizeOptions.dateParseFormat.length; i++) {
             val = Globalize.parseDate(value, $.validator.methods.timeGlobalizeOptions.dateParseFormat[i]);
-            console.log($.validator.methods.timeGlobalizeOptions.dateParseFormat[i], val, Globalize.dateFormatter($.validator.methods.timeGlobalizeOptions.dateParseFormat[i])(new Date(2016, 1, 1, 0, 0, 0)));
+            //console.log($.validator.methods.timeGlobalizeOptions.dateParseFormat[i], val, Globalize.dateFormatter($.validator.methods.timeGlobalizeOptions.dateParseFormat[i])(new Date(2016, 1, 1, 0, 0, 0)));
             res = res || (val instanceof Date);
-            console.log(res);
+            //console.log(res);
             if (res === true) return res;
         }
         return res;
@@ -115,7 +118,7 @@
         return originalMethods.range.call(this, val, element, param);
     };
 
-    //create adapters for new type - so they will be attached automatically
+    //create adapters for new types - so they will be attached automatically
     //this depends on attribute data-val-time, data-val-datetime
 
     $.validator.unobtrusive.adapters.addBool('time');

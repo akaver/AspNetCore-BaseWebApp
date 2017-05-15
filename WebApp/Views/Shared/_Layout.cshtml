@@ -81,7 +81,7 @@
         <script src="~/lib/cldrjs/dist/cldr/event.js"></script>
         <script src="~/lib/cldrjs/dist/cldr/supplemental.js"></script>
         <script src="~/lib/cldrjs/dist/cldr/unresolved.js"></script>
-        
+
         <script src="~/lib/globalize/dist/globalize.js"></script>
         <script src="~/lib/globalize/dist/globalize/number.js"></script>
         <script src="~/lib/globalize/dist/globalize/currency.js"></script>
@@ -90,11 +90,13 @@
         <script src="~/lib/globalize/dist/globalize/plural.js"></script>
         <script src="~/lib/globalize/dist/globalize/relative-time.js"></script>
         <script src="~/lib/globalize/dist/globalize/unit.js"></script>
-        
-        <script src="~/lib/moment/min/moment-with-locales.js"></script>
+
+        <script src="~/lib/moment/min/moment-with-locales.min.js"></script>
+
+        <script src="~/lib/time-js/time.js"></script>
 
         <script src="~/lib/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
-                
+
         <script src="~/js/site.js" asp-append-version="true"></script>
     </environment>
     <environment names="Staging,Production">
@@ -115,42 +117,67 @@
 
     @RenderSection(name: "Scripts", required: false)
 
-@{
-    var currentCultureCode = CultureInfo.CurrentCulture.Name;
-    if (currentCultureCode == "et-EE")
-    {
-        currentCultureCode = "et";
+    @{
+        // cldr does not use region code for default. (et-EE -> et, en-US -> en).
+        // so get the language part fot these cases
+        // TODO: change cldr loading to fall back automatically (globalize and moment itself fall back nicely)
+        var currentCultureCode = CultureInfo.CurrentCulture.Name;
+        switch (currentCultureCode)
+        {
+            case "et-EE":
+            case "en-US":
+                currentCultureCode = currentCultureCode.Split('-')[0];
+                break;
+        }
     }
-}
-    
-<script type="text/javascript">
-    $.when(
-        $.get("/lib/cldr-core/supplemental/likelySubtags.json"),
-        $.get("/lib/cldr-core/supplemental/numberingSystems.json"),
-        $.get("/lib/cldr-core/supplemental/timeData.json"),
-        $.get("/lib/cldr-core/supplemental/weekData.json"),
 
-        $.get("/lib/cldr-numbers-modern/main/@currentCultureCode/numbers.json"),
-        $.get("/lib/cldr-numbers-modern/main/@currentCultureCode/currencies.json"),
+    <script type="text/javascript">
+        $.when(
+                $.get("/lib/cldr-core/supplemental/likelySubtags.json"),
+                $.get("/lib/cldr-core/supplemental/numberingSystems.json"),
+                $.get("/lib/cldr-core/supplemental/timeData.json"),
+                $.get("/lib/cldr-core/supplemental/weekData.json"),
+                $.get("/lib/cldr-numbers-modern/main/@currentCultureCode/numbers.json"),
+                $.get("/lib/cldr-numbers-modern/main/@currentCultureCode/currencies.json"),
+                $.get("/lib/cldr-dates-modern/main/@currentCultureCode/ca-generic.json"),
+                $.get("/lib/cldr-dates-modern/main/@currentCultureCode/ca-gregorian.json"),
+                $.get("/lib/cldr-dates-modern/main/@currentCultureCode/dateFields.json"),
+                $.get("/lib/cldr-dates-modern/main/@currentCultureCode/timeZoneNames.json")
+            ).then(function() {
+            // get the json, drop request statuses
+            return [].slice.apply(arguments, [0]).map(function(result) {
+                return result[0];
+            });
+        })
+            .then(Globalize.load)
+            .then(function() {
+            Globalize.locale('@CultureInfo.CurrentCulture.Name');
+            }).then(function () {
+                // TODO: for now, moment-with-locales is used alongside globalize. should get rid of moment or plug in globalize into moment
 
-        $.get("/lib/cldr-dates-modern/main/@currentCultureCode/ca-generic.json"),
-        $.get("/lib/cldr-dates-modern/main/@currentCultureCode/ca-gregorian.json"),
-        $.get("/lib/cldr-dates-modern/main/@currentCultureCode/dateFields.json"),
-        $.get("/lib/cldr-dates-modern/main/@currentCultureCode/timeZoneNames.json")
-    ).then(function() {
-        // get the json, drop request statuses
-        return [].slice.apply(arguments, [0]).map(function(result) {
-            return result[0];
+                // asp.net core sends datetimes in html5 spec format (independent of culture and uiculture)
+                // datetime 2017-05-28T15:29:00.000, date 2017-05-05, time 15:29:00.000
+                $('[type=time]').each(function(index, value) {
+                    $(value).attr('type', 'text').datetimepicker({ locale: '@CultureInfo.CurrentCulture.Name', format: 'LT' });
+                    $(value).attr('placeholder', moment.localeData('@CultureInfo.CurrentCulture.Name').longDateFormat('LT'));
+                    if (value.defaultValue !== '')
+                        $(value).val(moment('0001-01-01T' + value.defaultValue).locale('@CultureInfo.CurrentCulture.Name').format('LT'));
+                });
+                $('[type="date"]').each(function (index, value) {
+                    $(value).attr('type', 'text').datetimepicker({ locale: '@CultureInfo.CurrentCulture.Name', format: 'L' });
+                    $(value).attr('placeholder', moment.localeData('@CultureInfo.CurrentCulture.Name').longDateFormat('L'));
+                    if (value.defaultValue !== '')
+                        $(value).val(moment(value.defaultValue).locale('@CultureInfo.CurrentCulture.Name').format('L'));
+                });
+                $('[type=datetime]').each(function (index, value) {
+                    $(value).attr('type', 'text').datetimepicker({ locale: '@CultureInfo.CurrentCulture.Name' });
+                    $(value).attr('placeholder', moment.localeData('@CultureInfo.CurrentCulture.Name').longDateFormat('L') + ' ' + moment.localeData('@CultureInfo.CurrentCulture.Name').longDateFormat('LT'));
+                    if (value.defaultValue !== '')
+                        $(value).val(Globalize.dateFormatter({ datetime: "short" })(new Date(value.defaultValue)));
+                });
+
         });
-    }).then(Globalize.load).then(function() {
-        Globalize.locale('@currentCultureCode');
-    });
 
-    $(function() {
-        $('[type=datetime]').datetimepicker({ locale: '@currentCultureCode' }).attr('type', 'text');
-        $('[type=time]').datetimepicker({ locale: '@currentCultureCode', format: 'LT' }).attr('type', 'text');
-        $('[type=date]').datetimepicker({ locale: '@currentCultureCode', format: 'L' }).attr('type', 'text');
-    });
-</script>
+    </script>
 </body>
 </html>

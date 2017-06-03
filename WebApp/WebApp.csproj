@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="BuildBundlerMinifier" Version="2.4.337" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore" Version="1.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="1.1.2" />
@@ -50,6 +51,7 @@
     <Folder Include="Areas\Culture\Controllers\" />
     <Folder Include="Areas\Culture\ViewModels\" />
     <Folder Include="Areas\Identity\Controllers\" />
+    <Folder Include="Controllers\Api\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="Resources\Controllers.HomeController.en.resx">

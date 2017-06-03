@@ -38,7 +38,7 @@
         value = value.trim();
         var res = false;
         var val;
-        // console.log("date validation: ", value);
+        console.log("validate date: ", value);
         // console.log(element);
         for (var i = 0; i < $.validator.methods.dateGlobalizeOptions.dateParseFormat.length; i++) {
             val = Globalize.parseDate(value, $.validator.methods.dateGlobalizeOptions.dateParseFormat[i]);
@@ -60,7 +60,7 @@
         var res = false;
         var val;
 
-        // console.log("time validation: ", value);
+        console.log("validate time: ", value);
         // console.log(element);
         for (var i = 0; i < $.validator.methods.timeGlobalizeOptions.dateParseFormat.length; i++) {
             val = Globalize.parseDate(value, $.validator.methods.timeGlobalizeOptions.dateParseFormat[i]);
@@ -82,7 +82,7 @@
         var res = false;
         var val;
 
-        // console.log("datetime validation: ", value);
+        console.log("validate datetime: ", value);
         // console.log(element);
         for (var i = 0; i < $.validator.methods.datetimeGlobalizeOptions.dateParseFormat.length; i++) {
             val = Globalize.parseDate(value, $.validator.methods.datetimeGlobalizeOptions.dateParseFormat[i]);
@@ -96,6 +96,8 @@
 
     // Tell the validator that we want numbers parsed using Globalize
     $.validator.methods.number = function (value, element) {
+        console.log("validate number: ", value);
+
         var val = Globalize.parseNumber(value);
         return this.optional(element) || ($.isNumeric(val));
     };
@@ -104,16 +106,21 @@
     // then call into original implementation with parsed value
 
     $.validator.methods.min = function (value, element, param) {
+        console.log("validate min: ", value);
         var val = Globalize.parseNumber(value);
         return originalMethods.min.call(this, val, element, param);
     };
 
     $.validator.methods.max = function (value, element, param) {
+        console.log("validate max: ", value);
+
         var val = Globalize.parseNumber(value);
         return originalMethods.max.call(this, val, element, param);
     };
 
     $.validator.methods.range = function (value, element, param) {
+        console.log("validate range: ", value);
+
         var val = Globalize.parseNumber(value);
         return originalMethods.range.call(this, val, element, param);
     };

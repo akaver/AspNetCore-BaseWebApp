@@ -1,0 +1,16 @@
+@model WebApp.ViewModels.AsyncTestIndexViewModel
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Index</h2>
+
+
+<h4>Request started at: @Model.RequestStartAt</h4>
+<h4>Result:
+@foreach (var item in Model.Res)
+{
+    @item<br />
+}
+</h4>
+<h4>Request done at: @Model.RequestDoneAt</h4>

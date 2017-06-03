@@ -71,5 +71,24 @@ namespace WebApp.Controllers
             return View(vm);
         }
 
+        [HttpPost]
+        public IActionResult Test(HomeTestViewModel vm)
+        {
+            // just this is not working, data is not updated for html helpers or tag helpers
+            vm.FirstName = "Mait";
+            vm.DecimalNumber = vm.DecimalNumber + 1;
+            vm.DoubleNumber = vm.DoubleNumber + 1;
+
+            // you need to update the modelstate for fields that are presented in post!!!!!!!
+            // read this: https://stackoverflow.com/questions/2686652/how-to-modify-posted-form-data-within-controller-action-before-sending-to-view 
+            // http://garyclarke.us/programming/consumption-of-data-in-mvc2-views/
+            ModelState.FirstOrDefault(x => x.Key == nameof(vm.FirstName)).Value.RawValue = vm.FirstName;
+            ModelState.FirstOrDefault(x => x.Key == nameof(vm.DecimalNumber)).Value.RawValue = vm.DecimalNumber;
+            ModelState.FirstOrDefault(x => x.Key == nameof(vm.DoubleNumber)).Value.RawValue = vm.DoubleNumber;
+
+            return View(vm);
+        }
+
+
     }
 }

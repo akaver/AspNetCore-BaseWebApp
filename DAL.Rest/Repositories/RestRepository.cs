@@ -25,9 +25,9 @@ namespace DAL.Rest.Repositories
         protected string EndPoint;
         private DataContractJsonSerializer _serializer;
 
-        public RestRepository(HttpClient httpClient, string endPoint)
+        public RestRepository(IDataContext context, string endPoint)
         {
-            HttpClient = httpClient ?? throw new ArgumentNullException(paramName: nameof(HttpClient), message: "Web API baserepo repo for type:" + typeof(TEntity).FullName);
+            HttpClient = context as HttpClient ?? throw new ArgumentNullException(paramName: nameof(context), message: "Web API baserepo repo for type:" + typeof(TEntity).FullName);
             EndPoint = endPoint ?? throw new ArgumentNullException(paramName: nameof(endPoint), message: "Web API baserepo repo for type:" + typeof(TEntity).FullName);
         }
 
@@ -271,7 +271,13 @@ namespace DAL.Rest.Repositories
             //HttpContext.Current.Response.Redirect(@"~/Account/Login");
         }
 
-
+        /// <summary>
+        /// Try to find primary keys from entity
+        /// [Key] attribute (with support for Order - for composite keys)
+        /// EntityNameId or Id (convention based keys)
+        /// </summary>
+        /// <param name="entity">Entity to parse</param>
+        /// <returns>List of possible primary keys and their value</returns>
         public List<EntityKeyInfo> GetEntityKeys(TEntity entity)
         {
             var res = new List<EntityKeyInfo>();

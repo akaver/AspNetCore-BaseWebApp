@@ -43,6 +43,7 @@
     <ProjectReference Include="..\AspNetCore.Identity.Extensions\AspNetCore.Identity.Extensions.csproj" />
     <ProjectReference Include="..\AspNetCore.Identity.Uow\AspNetCore.Identity.Uow.csproj" />
     <ProjectReference Include="..\DAL.EntityFrameworkCore\DAL.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\DAL.Rest\DAL.Rest.csproj" />
     <ProjectReference Include="..\DAL\DAL.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\Resources\Resources.csproj" />

@@ -13,6 +13,8 @@ using DAL.EntityFrameworkCore;
 using DAL.EntityFrameworkCore.Extensions;
 using DAL.EntityFrameworkCore.Helpers;
 using DAL.Helpers;
+using DAL.Rest;
+using DAL.Rest.Helpers;
 using Domain;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -54,16 +56,34 @@ namespace WebApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add framework services.
-            services.AddDbContext<ApplicationDbContext>(optionsAction: options =>
-                options.UseSqlServer(connectionString: Configuration.GetConnectionString(name: "AppDbConnection")));
+            if (Configuration.GetValue<bool>(key: "UseRestBasedUnitOfWork", defaultValue: false))
+            {
+                // set up rest based uow
 
-            services.AddScoped<IRepositoryProvider, EFRepositoryProvider<IDataContext>>();
-            services.AddSingleton<IRepositoryFactory, EFRepositoryFactory>();
+                services.AddSingleton<IDataContext>(implementationInstance: new ApplicationHttpClient(baseAddr: Configuration.GetConnectionString(name: "AppRestBaseAddr")));
 
-            services.AddScoped<IDataContext, ApplicationDbContext>();
-            services.AddScoped<IApplicationUnitOfWork, ApplicationUnitOfWork<IDataContext>>();
-            services.AddScoped<IIdentityUnitOfWork<ApplicationUser>, ApplicationUnitOfWork<IDataContext>>();
+                services.AddScoped<IRepositoryProvider, RestRepositoryProvider<IDataContext>>();
+                services.AddSingleton<IRepositoryFactory, RestRepositoryFactory>();
+                services.AddScoped<IApplicationUnitOfWork, ApplicationUnitOfWorkRest<IDataContext>>();
+                services.AddScoped<IIdentityUnitOfWork<ApplicationUser>, ApplicationUnitOfWorkRest<IDataContext>>();
+            }
+            else
+            {
+                // set up EF based uow
+
+                // Add framework services.
+                services.AddDbContext<ApplicationDbContext>(optionsAction: options =>
+                    options.UseSqlServer(connectionString: Configuration.GetConnectionString(name: "AppDbConnection")));
+
+                services.AddScoped<IRepositoryProvider, EFRepositoryProvider<IDataContext>>();
+                services.AddSingleton<IRepositoryFactory, EFRepositoryFactory>();
+
+                services.AddScoped<IDataContext, ApplicationDbContext>();
+                services.AddScoped<IApplicationUnitOfWork, ApplicationUnitOfWork<IDataContext>>();
+                services.AddScoped<IIdentityUnitOfWork<ApplicationUser>, ApplicationUnitOfWork<IDataContext>>();
+            }
+
+
 
             // ApplicationUser and IdentityRole have to come from our own models
             // check usages (no Microsoft.AspNetCore.Identity.EntityFrameworkCore);

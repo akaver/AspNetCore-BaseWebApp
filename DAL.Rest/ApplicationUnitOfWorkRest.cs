@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AspNetCore.Identity.Uow.Interfaces;
 using DAL.App;
+using DAL.Helpers;
 using DAL.Repositories;
 using Domain;
 
@@ -34,30 +35,29 @@ namespace DAL.Rest
         // httpclient, common for all repos
         // make it static, do not dispose. much better resource usage
         // https://aspnetmonsters.com/2016/08/2016-08-27-httpclientwrong/
+
         private readonly HttpClient _httpClient;
+        private readonly IRepositoryProvider _repositoryProvider;
 
-        public ApplicationUnitOfWorkRest(HttpClient httpClient, string baseAddr)
+        public ApplicationUnitOfWorkRest(TContext context, IRepositoryProvider repositoryProvider)
         {
-            _httpClient = httpClient ?? throw new ArgumentNullException(paramName: nameof(httpClient), message: "HttpClient in UOW cannot be null, and it should be singleton!");
-
-            if (string.IsNullOrWhiteSpace(value: baseAddr))
-            {
-                throw new ArgumentNullException(paramName: nameof(baseAddr), message: "Please provide Rest server base address!");
-            }
-
-            _httpClient.DefaultRequestHeaders.Accept.Clear();
-            _httpClient.DefaultRequestHeaders.Accept.Add(item: new MediaTypeWithQualityHeaderValue(mediaType: "application/json"));
-            _httpClient.BaseAddress = new Uri(uriString: baseAddr);
+            _httpClient = (context as HttpClient) ?? throw new 
+                ArgumentNullException(
+                paramName: nameof(context), 
+                message: $"{nameof(context)}(HttpClient) in {nameof(ApplicationUnitOfWorkRest<TContext>)} cannot be null, and it should be singleton!");
+            _repositoryProvider = repositoryProvider ?? throw new NullReferenceException(message: nameof(repositoryProvider));
         }
 
         public IRepository<TEntity> GetEntityRepository<TEntity>() where TEntity : class
         {
-            throw new NotImplementedException();
+            CheckDisposed();
+            return _repositoryProvider.GetEntityRepository<TEntity>();
         }
 
         public TRepository GetCustomRepository<TRepository>() where TRepository : class
         {
-            throw new NotImplementedException();
+            CheckDisposed();
+            return _repositoryProvider.GetCustomRepository<TRepository>();
         }
 
 

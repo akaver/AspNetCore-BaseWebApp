@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,11 +15,40 @@ namespace DAL.Rest
     public class ApplicationUnitOfWorkRest<TContext> : IApplicationUnitOfWork
         where TContext : IDataContext
     {
+        #region Repositories
+        public IFooBarRepository FooBars => GetCustomRepository<IFooBarRepository>();
+        public IBlahRepository Blahs => GetCustomRepository<IBlahRepository>();
+        public IApplicationUserRepository ApplicationUsers => GetCustomRepository<IApplicationUserRepository>();
+
+
+        public IIdentityRoleClaimRepository IdentityRoleClaims => GetCustomRepository<IIdentityRoleClaimRepository>();
+        public IIdentityRoleRepository IdentityRoles => GetCustomRepository<IIdentityRoleRepository>();
+        public IIdentityUserClaimRepository IdentityUserClaims => GetCustomRepository<IIdentityUserClaimRepository>();
+        public IIdentityUserLoginRepository IdentityUserLogins => GetCustomRepository<IIdentityUserLoginRepository>();
+        public IIdentityUserRepository<ApplicationUser> IdentityUsers => GetCustomRepository<IIdentityUserRepository<ApplicationUser>>();
+        public IIdentityUserRoleRepository IdentityUserRoles => GetCustomRepository<IIdentityUserRoleRepository>();
+        public IIdentityUserTokenRepository IdentityUserTokens => GetCustomRepository<IIdentityUserTokenRepository>();
+        #endregion
+
 
         // httpclient, common for all repos
-        private readonly HttpClient _httpClient = new HttpClient();
+        // make it static, do not dispose. much better resource usage
+        // https://aspnetmonsters.com/2016/08/2016-08-27-httpclientwrong/
+        private readonly HttpClient _httpClient;
 
+        public ApplicationUnitOfWorkRest(HttpClient httpClient, string baseAddr)
+        {
+            _httpClient = httpClient ?? throw new ArgumentNullException(paramName: nameof(httpClient), message: "HttpClient in UOW cannot be null, and it should be singleton!");
 
+            if (string.IsNullOrWhiteSpace(value: baseAddr))
+            {
+                throw new ArgumentNullException(paramName: nameof(baseAddr), message: "Please provide Rest server base address!");
+            }
+
+            _httpClient.DefaultRequestHeaders.Accept.Clear();
+            _httpClient.DefaultRequestHeaders.Accept.Add(item: new MediaTypeWithQualityHeaderValue(mediaType: "application/json"));
+            _httpClient.BaseAddress = new Uri(uriString: baseAddr);
+        }
 
         public IRepository<TEntity> GetEntityRepository<TEntity>() where TEntity : class
         {
@@ -30,16 +60,6 @@ namespace DAL.Rest
             throw new NotImplementedException();
         }
 
-        public IIdentityRoleClaimRepository IdentityRoleClaims { get; }
-        public IIdentityRoleRepository IdentityRoles { get; }
-        public IIdentityUserClaimRepository IdentityUserClaims { get; }
-        public IIdentityUserLoginRepository IdentityUserLogins { get; }
-        public IIdentityUserRepository<ApplicationUser> IdentityUsers { get; }
-        public IIdentityUserRoleRepository IdentityUserRoles { get; }
-        public IIdentityUserTokenRepository IdentityUserTokens { get; }
-        public IFooBarRepository FooBars { get; }
-        public IBlahRepository Blahs { get; }
-        public IApplicationUserRepository ApplicationUsers { get; }
 
         #region SaveChanges
         public int SaveChanges()
@@ -78,7 +98,7 @@ namespace DAL.Rest
             {
                 if (disposing)
                 {
-                    _httpClient?.Dispose();
+                    // do not dispose httpclient, its static
                 }
             }
             _isDisposed = true;

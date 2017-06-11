@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Identity;
 
-namespace WebApp.RestServer.Models.ManageViewModels
+namespace WebApp.RestServer.ViewModels.ManageViewModels
 {
     public class ManageLoginsViewModel
     {

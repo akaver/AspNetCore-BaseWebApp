@@ -23,7 +23,7 @@ namespace DAL.Rest.Repositories
     {
         protected HttpClient HttpClient;
         protected string EndPoint;
-        private DataContractJsonSerializer _serializer;
+        protected DataContractJsonSerializer _serializer;
 
         public RestRepository(IDataContext context, string endPoint)
         {

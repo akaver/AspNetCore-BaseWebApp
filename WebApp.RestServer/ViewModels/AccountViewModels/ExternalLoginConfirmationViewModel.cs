@@ -4,9 +4,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WebApp.RestServer.Models.AccountViewModels
+namespace WebApp.RestServer.ViewModels.AccountViewModels
 {
-    public class ForgotPasswordViewModel
+    public class ExternalLoginConfirmationViewModel
     {
         [Required]
         [EmailAddress]

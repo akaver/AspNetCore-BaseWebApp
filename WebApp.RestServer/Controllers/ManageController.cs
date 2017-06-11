@@ -2,16 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AspNetCore.Identity.Uow.Models;
+using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using WebApp.RestServer.Models;
-using WebApp.RestServer.Models.ManageViewModels;
+using WebApp.RestServer.ViewModels;
+using WebApp.RestServer.ViewModels.ManageViewModels;
 using WebApp.RestServer.Services;
 
-namespace WebApp.RestServer.Controllers
+namespace WebApp.Controllers
 {
     [Authorize]
     public class ManageController : Controller

@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Runtime.Serialization.Json;
 using System.Security.Claims;
 using System.Text;
 using System.Threading;
@@ -41,9 +44,28 @@ namespace DAL.Rest.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<TUser> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<TUser> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken = new CancellationToken())
         {
-            throw new NotImplementedException();
+            //return RepositoryDbSet.FirstOrDefaultAsync(predicate: u => u.NormalizedEmail == normalizedEmail, cancellationToken: cancellationToken);
+
+            var uri = EndPoint + "/" + nameof(FindByEmailAsync) + "/" + normalizedEmail;
+
+            var response = await HttpClient.GetAsync(requestUri: uri, cancellationToken: cancellationToken);
+
+            if (response.IsSuccessStatusCode)
+            {
+                _serializer = new DataContractJsonSerializer(type: typeof(TUser));
+                var content = await response.Content.ReadAsStringAsync();
+
+                var res = _serializer.ReadObject(stream: new MemoryStream(buffer: Encoding.UTF8.GetBytes(s: content))) as TUser;
+                return res;
+            }
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                SignOutAndRedirectToLogin();
+            }
+
+            return null;
         }
 
         public Task<List<TUser>> GetUsersForClaimAsync(Claim claim, CancellationToken cancellationToken = new CancellationToken())
